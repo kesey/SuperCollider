@@ -22,6 +22,8 @@ s.options.outDevice_("Built-in Output");
 //s.options.device_("name your sound card");
 s.options.numInputBusChannels_(8);
 s.options.numOutputBusChannels_(8);
+
+//s.options.blockSize = 1; // sample and control rate are equals (control rate = sample rate = 44100) to make feedback more accurate
 //s.options.memSize_(2.pow(20));
 s.newBusAllocators;
 s.serverRunning.not.if({ s.boot });

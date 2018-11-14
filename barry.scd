@@ -101,7 +101,7 @@ SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 =
 	sin = SinOsc.ar(note1.midicps, 0, amp1) + SinOsc.ar(note2.midicps, 0, amp2);
 	lpf = LPF.ar(sin, lpfFreq.max(1));
 	hpf = HPF.ar(LPF.ar(WhiteNoise.ar(0.008), 12000), hpfFreq.max(1));
-	sig = (lpf + hpf) * EnvGen.kr(Env([0, 1, 0.6, 0], [attack, decay, release]), t_trig);
+	sig = (lpf + hpf) * EnvGen.kr(Env(#[0, 1, 0.6, 0], [attack, decay, release]), t_trig);
 	Out.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
@@ -114,8 +114,8 @@ SynthDef(\IkedaHiNoise, { arg out = 0, t_trig = 0, attack = 0.02, decay = 0.1, a
 
 SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, level = 1;
 	var env, sin, sig;
-	env = EnvGen.ar(Env([0, 0.5, 0.4, 0], [0, 0.2, 0.01], -5), t_trig, doneAction: 2);
-	sin = SinOsc.ar(0, (Sweep.ar(t_trig, 2pi * [52.8, 740]) + (pi/3)).wrap(-pi, pi), [2, 0.05]).mean.tanh;
+	env = EnvGen.ar(Env(#[0, 0.5, 0.4, 0], #[0, 0.2, 0.01], -5), t_trig, doneAction: 2);
+	sin = SinOsc.ar(0, (Sweep.ar(t_trig, 2pi * [52.8, 740]) + (pi/3)).wrap(-pi, pi), #[2, 0.05]).mean.tanh;
 	sig = (sin * env)!2;
 	Out.ar(out, Pan2.ar(sig, pan, level));
 }).add;
@@ -191,8 +191,8 @@ w.onClose = {sound.free;};
 SynthDef(\mytriggersynth,{ arg t_trig = 0;
 	var env;
 	//must have additional starting level in envelope, else no nodes to go back to
-	env = EnvGen.ar(Env([2,2,1],[0.0,0.5],'exponential'),t_trig);
-	Out.ar(0, Pan2.ar(Resonz.ar(Saw.ar(env*440),1000,0.1),0.0));
+	env = EnvGen.ar(Env(#[2, 2, 1], #[0.0, 0.5], 'exponential'), t_trig);
+	Out.ar(0, Pan2.ar(Resonz.ar(Saw.ar(env * 440), 1000, 0.1), 0.0));
 }).add;
 
 a = Synth(\mytriggersynth);
@@ -224,8 +224,8 @@ Synth(\sample, [\out, 0, \bufnum, b.bufnum, \rate, 0.5]); // play at half rate
 
 SynthDef(\kick, { arg out = 0, tu = 1, amp = 1, level = 1;
 	var env0, env1, env1m, sig;
-	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.3, 0], [0.01, 0.5, 0.26], [-4, -2, -4]), doneAction: 2);
-	env1 = EnvGen.ar(Env.new([120, 43, 29], [0.03, 0.29], [-4, -5]));
+	env0 =  EnvGen.ar(Env.new(#[0.5, 1, 0.3, 0], #[0.01, 0.5, 0.26], #[-4, -2, -4]), doneAction: 2);
+	env1 = EnvGen.ar(Env.new(#[120, 43, 29], #[0.03, 0.29], #[-4, -5]));
 	env1m = env1.midicps;
 	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
 	sig = sig + WhiteNoise.ar(1);
@@ -286,8 +286,8 @@ t = TempoClock(n*2/60); // Another TempoClock twice as fast as the TempoClock de
     };
 });
 
-Pdefn(\dur1, Pseq([1,0.5,2], inf));
-Pdefn(\amp1, Pseq([1,0.15], inf));
+Pdefn(\dur1, Pseq(#[1,0.5,2], inf));
+Pdefn(\amp1, Pseq(#[1,0.15], inf));
 
 Pdef(\kix,
 	Pchain(
@@ -305,15 +305,15 @@ Pdef(\kix,
 Pdef(\snares,
 	Pbind(
 		\instrument, \sd,
-		\amp, 2, //Pseq([1,0.15], inf),
-		\dur, 4 //Pseq([4,5], inf)
+		\amp, 2, //Pseq(#[1,0.15], inf),
+		\dur, 4 //Pseq(#[4,5], inf)
 	)
 ).play();
 
 Pdef(\hats,
 	Pbind(
 		\instrument, \hat,
-		\amp, Pseq([1,0.15,1], inf),
+		\amp, Pseq(#[1,0.15,1], inf),
 		\dur, 0.25//,
 		//\timingOffset, 2.5
 	)
@@ -331,7 +331,7 @@ Pdef(\snares).play;
 Pdef(\snares).pause;
 Pdef(\snares).resume; // play since where we paused
 Pdef(\hats).stop;
-Pbindef(\snares,\dur,Pseq([2, 3], inf),\amp,2);
+Pbindef(\snares,\dur,Pseq(#[2, 3], inf),\amp,2);
 
 /*********************************************************test******************************************************************/
 
@@ -368,8 +368,8 @@ t = TempoClock(n/60);
     };
 });
 
-Pdefn(\dur1, Pseq([1,0.5,2], inf));
-Pdefn(\amp1, Pseq([1,0.15], inf));
+Pdefn(\dur1, Pseq(#[1,0.5,2], inf));
+Pdefn(\amp1, Pseq(#[1,0.15], inf));
 
 p = Penvir((), Ptpar([
     0.0, Pdef(\kix,
@@ -408,7 +408,7 @@ p = Penvir((), Ptpar([
 			~swingify,
 		    Pbind(
 				\instrument, \hat,
-				\amp, Pseq([1,0.15,1], inf),
+				\amp, Pseq(#[1,0.15,1], inf),
 				\dur, 0.25,
 				\timingOffset, 0.06,
 				\sustain, 0

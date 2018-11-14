@@ -62,17 +62,21 @@ SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 )
 /**********************************************************************Routing*******************************************************************/
 (
-var channel1, channel2, channel3, channel4, masterBus;
+var channels, masterBus;
 
-channel1 = Bus.audio(s, 2);
-channel2 = Bus.audio(s, 2);
-channel3 = Bus.audio(s, 2);
-channel4 = Bus.audio(s, 2);
 masterBus = Bus.audio(s, 2);
+~masterBus = Synth(\MasterStrip, [\in, masterBus], addAction: 'addToTail');
+
+channels = Array.newClear(4); // number of channels
+channels.size.do {
+	arg i;
+	channels[i] = Bus.audio(s, 2);
+	currentEnvironment.put((\channel ++ i).asSymbol, Synth(\ChannelStrip, [\in, channels[i], \out, masterBus]));
+};
 
 n = 180; // Tempo in beat per minutes
-TempoClock.default.tempo = n/60; // TempoClock in beat per seconds
-t = TempoClock(n*2/60); // Another TempoClock twice as fast as the TempoClock default
+TempoClock.default.tempo = n / 60; // TempoClock in beat per seconds
+t = TempoClock((n * 2) / 60); // Another TempoClock twice as fast as the TempoClock default
 
 Pdefn(\dur1, Pseq(#[1,0.5], inf));
 Pdefn(\amp1, Pseq(#[5,3.15], inf));
@@ -83,55 +87,51 @@ Pdef(\Click,
 		\instrument, \IkedaClick,
 		\amp, Pdefn(\amp1).dbamp, // 0.2.coin; // probability of true: 20%
 		\dur, Pdefn(\dur1), // Pwrand(#[2,1,\rest,2,1], #[1,3,2,2,3].normalizeSum, inf); // chooses values according to a list of probabilities/weights
-		\out, channel1
+		\out, channels[0]
 	)
-).play(); // use the TempoClock default
+).play(); // use the TempoClock default if .play(t) use the TempoClock twice as fast as the TempoClock default
+
 Pdef(\Bass,
 	Pbind(
 		\instrument, \IkedaBass,
 		\level, 6,
 		\dur, Pdefn(\dur2), // Pif(0.1.loop.coin, Pseq([Rest(), 7], inf), Pseries(0, 1, inf))
-		\out, channel2
+		\out, channels[1]
 	)
 ).play();
-~reverb = Synth(\Reverb, [\in, ~aux1, \out, channel3]);
-~simpleDelay = Synth(\SimpleDelay, [\in, ~aux2, \out, channel4]);
 
-~channel1 = Synth(\ChannelStrip, [\in, channel1, \out, masterBus]);
-~channel2 = Synth(\ChannelStrip, [\in, channel2, \out, masterBus]);
-~channel3 = Synth(\ChannelStrip, [\in, channel3, \out, masterBus]);
-~channel4 = Synth(\ChannelStrip, [\in, channel4, \out, masterBus]);
-~masterBus = Synth(\MasterStrip, [\in, masterBus], addAction: 'addToTail');
+~reverb = Synth(\Reverb, [\in, ~aux1, \out, channels[2]], ~masterBus, 'addBefore');
+~simpleDelay = Synth(\SimpleDelay, [\in, ~aux2, \out, channels[3]], ~masterBus, 'addBefore');
 )
 
 // Mixer actions
-// Channel 1 = Click
-~channel1.set(\auxsend1, 0.5); // aux 1 => Reverb
+// Channel 0 = Click
+~channel0.set(\auxsend1, 1.5); // aux 1 => Reverb
+~channel0.set(\auxsend1, 0);
+
+~channel0.set(\auxsend2, 1.6); // aux 2 => Delay
+~channel0.set(\auxsend2, 0);
+
+// Channel 1 = Bass
+~channel1.set(\auxsend1, 0.7); // aux 1 => Reverb
 ~channel1.set(\auxsend1, 0);
 
-~channel1.set(\auxsend2, 0.6); // aux 2 => Delay
+~channel1.set(\auxsend2, 0.4); // aux 2 => Delay
 ~channel1.set(\auxsend2, 0);
 
-// Channel 2 = Bass
-~channel2.set(\auxsend1, 0.7); // aux 1 => Reverb
+// Channel 2 = Reverb
+~channel2.set(\auxsend1, 0.05); // aux 1 => Reverb
 ~channel2.set(\auxsend1, 0);
 
-~channel2.set(\auxsend2, 0.4); // aux 2 => Delay
+~channel2.set(\auxsend2, 0.5); // aux 2 => Delay
 ~channel2.set(\auxsend2, 0);
 
-// Channel 3 = Reverb
-~channel3.set(\auxsend1, 0.05); // aux 1 => Reverb
+// Channel 3 = Delay
+~channel3.set(\auxsend1, 0.5); // aux 1 => Reverb
 ~channel3.set(\auxsend1, 0);
 
-~channel3.set(\auxsend2, 0.5); // aux 2 => Delay
+~channel3.set(\auxsend2, 1); // aux 2 => Delay
 ~channel3.set(\auxsend2, 0);
-
-// Channel 4 = Delay
-~channel4.set(\auxsend1, 0.5); // aux 1 => Reverb
-~channel4.set(\auxsend1, 0);
-
-~channel4.set(\auxsend2, 1); // aux 2 => Delay
-~channel4.set(\auxsend2, 0);
 
 // Master
 ~masterBus.set(\hpfreq, 20, \lpfreq, 200);
@@ -158,4 +158,3 @@ band1freq = EZKnob(channel, 50@60, 'band1freq', ControlSpec(20, 20000, step: 1, 
 band1rq = EZKnob(channel, 30@70, 'band1rq', ControlSpec(0, 1, step: 0.01, default: 1), { arg band1rq; ~channel1.set(\band1rq, band1rq.value); });
 band1db = EZKnob(channel, 30@70, 'band1db', ControlSpec(0, 1, step: 0.01, default: 0, unit: 'db'), { arg band1rq; ~channel1.set(\band1rq, band1rq.value); });
 )
-
