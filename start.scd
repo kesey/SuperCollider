@@ -23,7 +23,6 @@ s.options.outDevice_("Built-in Output");
 s.options.numInputBusChannels_(8);
 s.options.numOutputBusChannels_(8);
 
-//s.options.blockSize = 1; // sample and control rate are equals (control rate = sample rate = 44100) to make feedback more accurate
 //s.options.memSize_(2.pow(20));
 s.newBusAllocators;
 s.serverRunning.not.if({ s.boot });
@@ -66,8 +65,18 @@ ServerQuit.removeAll;
 	ServerQuit.removeAll;
 };
 
+~startRec = {
+	s.recHeaderFormat = "wav";
+	s.prepareForRecord("~/path/name/session.wav"); // ~path ++ "session.wav"
+	s.record;
+};
+
+~stopRec = {
+	s.stopRecording;
+};
+
 // 5. register functions with ServerBoot/Quit/Tree
-ServerBoot.add(~makeBuffers);
-ServerQuit.add(~cleanup);
+ServerBoot.add(~makeBuffers, ~startRec);
+ServerQuit.add(~cleanup, ~stopRec);
 )
 

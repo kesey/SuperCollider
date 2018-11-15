@@ -62,16 +62,17 @@ SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 )
 /**********************************************************************Routing*******************************************************************/
 (
-var channels, masterBus;
+var channel, masterBus;
 
 masterBus = Bus.audio(s, 2);
 ~masterBus = Synth(\MasterStrip, [\in, masterBus], addAction: 'addToTail');
 
-channels = Array.newClear(4); // number of channels
-channels.size.do {
+~channelNumber = 4; // number of channels
+channel = Array.newClear(~channelNumber);
+~channelNumber.do {
 	arg i;
-	channels[i] = Bus.audio(s, 2);
-	currentEnvironment.put((\channel ++ i).asSymbol, Synth(\ChannelStrip, [\in, channels[i], \out, masterBus]));
+	channel[i] = Bus.audio(s, 2);
+	currentEnvironment.put((\channel ++ i).asSymbol, Synth(\ChannelStrip, [\in, channel[i], \out, masterBus]));
 };
 
 n = 180; // Tempo in beat per minutes
@@ -87,7 +88,7 @@ Pdef(\Click,
 		\instrument, \IkedaClick,
 		\amp, Pdefn(\amp1).dbamp, // 0.2.coin; // probability of true: 20%
 		\dur, Pdefn(\dur1), // Pwrand(#[2,1,\rest,2,1], #[1,3,2,2,3].normalizeSum, inf); // chooses values according to a list of probabilities/weights
-		\out, channels[0]
+		\out, channel[0]
 	)
 ).play(); // use the TempoClock default if .play(t) use the TempoClock twice as fast as the TempoClock default
 
@@ -96,65 +97,145 @@ Pdef(\Bass,
 		\instrument, \IkedaBass,
 		\level, 6,
 		\dur, Pdefn(\dur2), // Pif(0.1.loop.coin, Pseq([Rest(), 7], inf), Pseries(0, 1, inf))
-		\out, channels[1]
+		\out, channel[1]
 	)
 ).play();
 
-~reverb = Synth(\Reverb, [\in, ~aux1, \out, channels[2]], ~masterBus, 'addBefore');
-~simpleDelay = Synth(\SimpleDelay, [\in, ~aux2, \out, channels[3]], ~masterBus, 'addBefore');
+~reverb = Synth(\Reverb, [\in, ~aux1, \out, channel[2]], ~masterBus, 'addBefore');
+~simpleDelay = Synth(\SimpleDelay, [\in, ~aux2, \out, channel[3]], ~masterBus, 'addBefore');
 )
 
 // Mixer actions
 // Channel 0 = Click
-~channel0.set(\auxsend1, 1.5); // aux 1 => Reverb
+~channel0.set(\auxsend1, 0.8, \level, 1); // aux 1 => Reverb
 ~channel0.set(\auxsend1, 0);
+~channel0.set(\band3freq, 900, \band3rq, 0.2, \band3db, 0);
 
-~channel0.set(\auxsend2, 1.6); // aux 2 => Delay
+~channel0.set(\auxsend2, 0.9); // aux 2 => Delay
 ~channel0.set(\auxsend2, 0);
 
 // Channel 1 = Bass
-~channel1.set(\auxsend1, 0.7); // aux 1 => Reverb
+~channel1.set(\auxsend1, 0.7, \level, 1); // aux 1 => Reverb
 ~channel1.set(\auxsend1, 0);
 
 ~channel1.set(\auxsend2, 0.4); // aux 2 => Delay
 ~channel1.set(\auxsend2, 0);
 
 // Channel 2 = Reverb
-~channel2.set(\auxsend1, 0.05); // aux 1 => Reverb
+~channel2.set(\auxsend1, 0.5); // aux 1 => Reverb
 ~channel2.set(\auxsend1, 0);
 
 ~channel2.set(\auxsend2, 0.5); // aux 2 => Delay
 ~channel2.set(\auxsend2, 0);
 
 // Channel 3 = Delay
-~channel3.set(\auxsend1, 0.5); // aux 1 => Reverb
+~channel3.set(\auxsend1, 0.7); // aux 1 => Reverb
 ~channel3.set(\auxsend1, 0);
 
-~channel3.set(\auxsend2, 1); // aux 2 => Delay
+~channel3.set(\auxsend2, 0.9); // aux 2 => Delay
 ~channel3.set(\auxsend2, 0);
 
 // Master
 ~masterBus.set(\hpfreq, 20, \lpfreq, 200);
-~masterBus.set(\hpfreq, 20, \lpfreq, 20000);
+~masterBus.set(\hpfreq, 20, \lpfreq, 20000, \level, 1);
 
 Pdef(\Click).play;
 Pdef(\Click).stop;
 Pdef(\Bass).play;
 Pdef(\Bass).stop;
 Pbindef(\Click,\dur,Pseq(#[0.5, 0.5, 0.5, 0.85], inf),\amp,3.dbamp);
+// Pbindef(\Click,\instrument, \IkedaBass);
 
 /************************************************************************GUI*********************************************************************/
 
 (
-var channel, hpfreq, band1freq, band1rq, band1db, band2freq, band2rq, band2db, band3freq, band3rq, band3db, lpfreq;
-w = Window("Mixer",Rect(0, 0, 800, 600));
+var channel, channelMaster;
+channel = IdentityDictionary.new;
+
+w = Window("Mixer",Rect(0, 0, 800, 690), scroll: true);
 w.front;
 w.alwaysOnTop_(true);
 w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
-channel = CompositeView(w, 100@400).background_(Color.white);
-channel.decorator_(FlowLayout(channel.bounds, 32@3, 3@3));
-hpfreq = EZKnob(channel, 50@60, 'hpf', ControlSpec(20, 20000, step: 1, default: 20, unit: 'hz'), { arg hpfreq; ~channel1.set(\hpfreq, hpfreq.value); }, labelWidth: 50, unitWidth: 60);
-band1freq = EZKnob(channel, 50@60, 'band1freq', ControlSpec(20, 20000, step: 1, default: 80, unit: 'hz'), { arg band1freq; ~channel1.set(\band1freq, band1freq.value); }, labelWidth: 50, unitWidth: 40);
-band1rq = EZKnob(channel, 30@70, 'band1rq', ControlSpec(0, 1, step: 0.01, default: 1), { arg band1rq; ~channel1.set(\band1rq, band1rq.value); });
-band1db = EZKnob(channel, 30@70, 'band1db', ControlSpec(0, 1, step: 0.01, default: 0, unit: 'db'), { arg band1rq; ~channel1.set(\band1rq, band1rq.value); });
+
+~channelNumber.do {
+	arg i;
+	channel[\channelView] = CompositeView(w, 118@685);
+	channel[\channelView].background_(Color.white);
+	channel[\channelView].decorator_(FlowLayout(channel[\channelView].bounds, 3@3, 3@3));
+
+	// Channel name
+	StaticText(channel[\channelView], 100@10)
+	    .string_("Channel " ++ i)
+	    .stringColor_(Color.black)
+	    .align_(\center);
+	channel[\channelView].decorator.nextLine;
+
+	// hpf
+	channel[(\hpfreq ++ i).asSymbol] = EZKnob(channel[\channelView], 112@70, 'hpfreq', ControlSpec(20, 20000, step: 1, default: 20, units: 'hz'), { arg hpfreq; currentEnvironment.at((\channel ++ i).asSymbol).set(\hpfreq, hpfreq.value.lag(0.4)); }, margin: 39@0);
+	channel[\channelView].decorator.nextLine;
+
+	// band 1
+	channel[(\band1freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq1', ControlSpec(20, 20000, step: 1, default: 80, units: 'hz'), { arg band1freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1freq, band1freq.value.lag(0.2)); });
+
+	channel[(\band1rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq1', ControlSpec(0, 1, step: 0.01, default: 1), { arg band1rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1rq, band1rq.value.lag(0.4)); });
+
+	channel[(\band1db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db1', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band1db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1db, band1db.value.lag(0.2)); });
+
+	// band 2
+	channel[(\band2freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq2', ControlSpec(20, 20000, step: 1, default: 1200, units: 'hz'), { arg band2freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2freq, band2freq.value.lag(0.2)); });
+
+	channel[(\band2rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq2', ControlSpec(0, 1, step: 0.01, default: 1), { arg band2rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2rq, band2rq.value.lag(0.4)); });
+
+	channel[(\band2db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db2', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band2db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2db, band2db.value.lag(0.2)); });
+
+	// band 3
+	channel[(\band3freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq3', ControlSpec(20, 20000, step: 1, default: 8000, units: 'hz'), { arg band3freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3freq, band3freq.value.lag(0.2)); });
+
+	channel[(\band3rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq3', ControlSpec(0, 1, step: 0.01, default: 1), { arg band3rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3rq, band3rq.value.lag(0.4)); });
+
+	channel[(\band3db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db3', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band3db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3db, band3db.value.lag(0.2)); });
+
+	// lpf
+	channel[(\lpfreq ++ i).asSymbol] = EZKnob(channel[\channelView], 112@70, 'lpfreq', ControlSpec(20, 20000, step: 1, default: 20000, units: 'hz'), { arg lpfreq; currentEnvironment.at((\channel ++ i).asSymbol).set(\lpfreq, lpfreq.value.lag(0.4)); }, margin: 39@0);
+	channel[\channelView].decorator.nextLine;
+
+	// aux 1
+	channel[(\aux1 ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux1', ControlSpec(0, 1, step: 0.01, default: 0), { arg aux1; currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend1, aux1.value.lag(0.2)); });
+
+	StaticText(channel[\channelView], 35@65)
+	    .string_("Send")
+	    .align_(\center);
+
+	// aux 2
+	channel[(\aux2 ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux2', ControlSpec(0, 1, step: 0.01, default: 0), { arg aux2; currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend2, aux2.value.lag(0.2)); });
+
+	// pan
+	channel[(\pan ++ i).asSymbol] = EZSlider(channel[\channelView], 112@60, 'pan', ControlSpec(-1, 1, step: 0.01, default: 0), { arg pan; currentEnvironment.at((\channel ++ i).asSymbol).set(\pan, pan.value.lag(0.2)); }, layout: 'vert');
+	channel[\channelView].decorator.nextLine;
+
+	// level
+	channel[(\level ++ i).asSymbol] = EZSlider(channel[\channelView], 112@160, 'level', ControlSpec(0, 1, step: 0.01, default: 0.5), { arg level; currentEnvironment.at((\channel ++ i).asSymbol).set(\level, level.value.lag(0.2)); }, layout: 'vert', margin: 39@0);
+};
+
+channelMaster = CompositeView(w, 118@350);
+channelMaster.background_(Color.grey);
+channelMaster.decorator_(FlowLayout(channelMaster.bounds, 3@3, 3@3));
+
+// Channel name
+StaticText(channelMaster, 100@10)
+	.string_("Master")
+	.stringColor_(Color.white)
+	.align_(\center);
+channelMaster.decorator.nextLine;
+
+// hpf
+channel[\hpfreqMaster] = EZKnob(channelMaster, 112@70, 'hpfreq', ControlSpec(20, 20000, step: 1, default: 20, units: 'hz'), { arg hpfreq; ~masterBus.set(\hpfreq, hpfreq.value.lag(0.4)); }, margin: 39@0).setColors(stringColor: Color.white);
+	channelMaster.decorator.nextLine;
+
+// lpf
+channel[\lpfreqMaster] = EZKnob(channelMaster, 112@70, 'lpfreq', ControlSpec(20, 20000, step: 1, default: 20000, units: 'hz'), { arg lpfreq; ~masterBus.set(\lpfreq, lpfreq.value.lag(0.4)); }, margin: 39@0).setColors(stringColor: Color.white);
+	channelMaster.decorator.nextLine;
+
+// level
+channel[\levelMaster] = EZSlider(channelMaster, 112@160, 'level', ControlSpec(0, 1, step: 0.01, default: 0.5), { arg level; ~masterBus.set(\level, level.value.lag(0.2)); }, layout: 'vert', margin: 39@0).setColors(stringColor: Color.white);
 )
