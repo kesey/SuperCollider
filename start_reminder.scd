@@ -8,22 +8,23 @@ a.nextN(20);
 
 ( // general set up
 // 1. midi config
-MIDIClient.init;
-//MIDIClient.sources; // list avalaible midi sources
-MIDIIn.connectAll;
-//MIDIClient.destinations; // list avalaible midi destinations
-//~midiOut = MIDIOut.newByName("deviceName", "portName").latency_(Server.default.latency);
+MIDIClient.init; // post a list of available devices
+// MIDIClient.sources; // list avalaible midi sources
+// MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect
+MIDIIn.connectAll; // connect to all attached input sources
+// MIDIClient.destinations; // list avalaible midi destinations
+// ~midiOut = MIDIOut(0).latency_(Server.default.latency); //quick way to access device 0, port 0
 
 // 2. server config
 Server.default = s = Server.local;
-//s.options.devices; // list avalaible audio devices MacOS only
+// s.options.devices; // list avalaible audio devices MacOS only
 s.options.inDevice_("Built-in Microph");
 s.options.outDevice_("Built-in Output");
-//s.options.device_("name your sound card");
+// s.options.device_("name your sound card");
 s.options.numInputBusChannels_(8);
 s.options.numOutputBusChannels_(8);
 
-//s.options.memSize_(2.pow(20));
+// s.options.memSize_(2.pow(20));
 s.newBusAllocators;
 s.serverRunning.not.if({ s.boot });
 s.meter; // level meter
@@ -32,7 +33,7 @@ ServerBoot.removeAll;
 ServerTree.removeAll;
 ServerQuit.removeAll;
 
-//GUI.current; // Test which GUI library you are using by default
+// GUI.current; // Test which GUI library you are using by default
 )
 
 (

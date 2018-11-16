@@ -422,3 +422,140 @@ p = Penvir((), Ptpar([
 )
 
 p.stop;
+
+/********************************************************************midi************************************************************************/
+
+( // unlimited midi polyphony
+var activenotes = Array.newClear(128); // make Array of 128 slots, initially with nil objects in to represent nothing
+var releasefunction = {|index|
+	// release existing note if present already
+	if(activenotes[index].notNil) {
+		activenotes[index].release; // will send gate=0
+		activenotes[index] = nil; // make sure now empty slot ready
+	}
+};
+
+// create one Synth for every new note, with logic to check existing notes (though not MIDI channel sensitive)
+
+MIDIIn.noteOn = { arg src,chan, midinote, velocity;
+	releasefunction.value(midinote);
+
+	// put active note in array; function above tidied any existing note on this key
+	activenotes[midinote] = Synth(\sound,[\freq,midinote.midicps,\amp,velocity/127.0]);
+};
+
+// must also look for note offs as indicated end of held note
+
+MIDIIn.noteOff = { arg src,chan, midinote, velocity;
+	releasefunction.value(midinote);
+};
+)
+
+// or quicker
+(
+var notes, on, off;
+notes = Array.newClear(128);    // array has one slot per possible MIDI note
+
+on = MIDIFunc.noteOn({ |veloc, num, chan, src|
+    notes[num] = Synth(\default, [\freq, num.midicps,
+        \amp, veloc * 0.00315]);
+});
+
+off = MIDIFunc.noteOff({ |veloc, num, chan, src|
+    notes[num].release;
+});
+
+q = { on.free; off.free; };
+)
+
+// MIDIFunc.polytouch // ?? polyphony ??
+
+m = MIDIOut(0).latency_(Server.default.latency); //quick way to access device 0, port 0
+m.noteOn(1,60,127); //arguments: channel, note, velocity
+m.noteOff(1,60,0);
+m.control(/*chan*/, ctlNum: 7, val: 64); // control change
+m.program(/*chan*/, num: 1); // program change
+m.sysex(/*packet*/); // packet is a Int8Array
+m.midiClock; // ??
+
+/******************************************************************signal follow*****************************************************************/
+
+// use an amplitude follower to control Pulse amplitude - use headphones to prevent feedback.
+{
+	Pulse.ar(90, 0.3, Amplitude.kr(SoundIn.ar(0)));
+}.play;
+)
+
+(
+// threshold the input to avoid picking up background noise
+{
+var input,inputAmp,threshhold,gate;
+
+input = SoundIn.ar(0,0.1);
+inputAmp = Amplitude.kr(input);
+
+threshhold = 0.02;	// noise gating threshold
+
+gate = Lag.kr(inputAmp > threshhold, 0.01);
+
+(input * gate)
+
+}.play;
+)
+
+(
+// pitch follower
+{
+	var in, amp, freq, hasFreq, out;
+	in = Mix.ar(SoundIn.ar([0,1]));
+	amp = Amplitude.kr(in, mul: 0.4);
+	# freq, hasFreq = Pitch.kr(in);
+	out = Mix.ar( LFTri.ar(freq * [0.5, 1, 2]) ) * amp;
+
+	6.do({
+		out = AllpassN.ar(out, 0.040, [0.040.rand,0.040.rand], 2);
+	});
+
+	out
+}.play;
+)
+
+(
+// switch waveform based on hasFreq output
+{
+	var in, amp, freq, hasFreq, out;
+	in = SoundIn.ar(0);
+	amp = Amplitude.kr(in, mul: 0.4);
+	# freq, hasFreq = Pitch.kr(in);
+	out = if(hasFreq,Pulse.ar(freq,0.5,0.1),SinOsc.ar(freq,0,0.1));
+
+	6.do({
+		out = AllpassN.ar(out, 0.040, [0.040.rand,0.040.rand], 2);
+	});
+
+	out
+}.play
+)
+
+
+// other types of signal detection
+//run this first
+
+b = Buffer.read(s,Platform.resourceDir +/+"sounds/a11wlk01.wav");
+
+//now this
+
+(
+{
+var source, detect;
+	source = SoundIn.ar(0);
+	detect = Onsets.kr(FFT(LocalBuf(2048),source),0.4); // second argument is detection threshold onset detect drum hits and send trigs
+
+	// detect = PV_HainsworthFoote.ar(FFT(LocalBuf(2048),source), 1.0, 0.0, 0.7, 0.01); // detect spectral change
+
+	// PV_JensenAndersen.ar(FFT(LocalBuf(2048),source), 1.0, 0.0, 0.7, 0.01); // detect tempo in real time
+
+	TGrains.ar(2, detect, b, LFNoise0.kr(10,0.2,1.0), MouseX.kr(0,BufDur.kr(b)), MouseY.kr(0.1,0.5), LFNoise0.kr(10,1.0), 0.5, 2);
+}.play;
+)
+
