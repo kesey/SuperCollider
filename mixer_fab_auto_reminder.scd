@@ -1,5 +1,8 @@
 /************************************************************************Mixer*******************************************************************/
 (
+/*this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "SetUp.scd");
+this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "SynthDef.scd");*/
+
 ~aux1 = Bus.audio(s, 2);
 ~aux2 = Bus.audio(s, 2);
 
@@ -151,11 +154,12 @@ Pbindef(\Click,\dur,Pseq(#[0.5, 0.5, 0.5, 0.85], inf),\amp,3.dbamp);
 
 MIDIClient.init; // post a list of available devices
 MIDIIn.connectAll; // connect to all attached input sources
-
+// this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "GUI.scd");
 (
 var channel, channelMaster, ccStart;
 
-~ccStart = 21;
+~ccStart = 21; // start mapping midi cc from here
+~ccStart = ~ccStart - 1;
 channel = IdentityDictionary.new;
 
 w = Window("Mixer",Rect(0, 0, 800, 690), scroll: true);
@@ -179,22 +183,24 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 	// hpf
 	channel[(\hpfreq ++ i).asSymbol] = EZKnob(channel[\channelView], 112@70, 'hpfreq', ControlSpec(20, 20000, step: 1, default: 20, units: 'hz'), { arg hpfreq; currentEnvironment.at((\channel ++ i).asSymbol).set(\hpfreq, hpfreq.value); }, margin: 39@0);
 	channel[\channelView].decorator.nextLine;
-	MIDIFunc.cc({ arg val, num, chan, src;
-		var value;
-		value = val.linlin(0, 127, 20, 20000);
-		/*if ( // soft takeover
-			value == channel[(\hpfreq ++ i).asSymbol].value,
-			{ channel[(\hpfreq ++ i).asSymbol].valueAction_(value); "true".postln; }.defer,
-			//{ "true".postln; },
-			{ "false".postln; }
-		)*/
-		while (
-			{ value == channel[(\hpfreq ++ i).asSymbol].value },
-			{ channel[(\hpfreq ++ i).asSymbol].valueAction_(value); "whileTrue".postln; }.defer
 
+	// hpf midi map
+	~ccStart = ~ccStart + 1;
+	channel[(\activeSoftTakeOver ++ i).asSymbol] = false;
+	MIDIFunc.cc({ arg val, num, chan, src;
+		var guiControl, midiControl, treshold;
+		midiControl = val.linlin(0, 127, 20, 20000);
+		guiControl = knob.value;
+		treshold = 500;
+		if ( // soft takeover
+			(channel[(\activeSoftTakeOver ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
+			{
+				channel[(\activeSoftTakeOver ++ i).asSymbol] = true;
+				{ knob.valueAction_(midiControl); }.defer;
+			}
 		);
-	}, ~ccStart + i, 0, 0);
-	(~ccStart + i).debug("Channel " ++ i ++ " hpfreq cc number");
+	}, ~ccStart, 0, 0);
+	(~ccStart).debug("Channel " ++ i ++ " hpfreq cc number");
 
 	// band 1
 	channel[(\band1freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq1', ControlSpec(20, 20000, step: 1, default: 80, units: 'hz'), { arg band1freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1freq, band1freq.value); });
