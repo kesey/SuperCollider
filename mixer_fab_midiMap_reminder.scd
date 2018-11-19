@@ -36,7 +36,7 @@ SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, a
 	env = EnvGen.ar(Env.perc(0.001, 0.00001 * LFNoise1.kr(4).abs, 1, -4), t_trig, doneAction: 2);
 	noise = PinkNoise.ar(env);
 	sig = BPF.ar(noise, centerFreq.max(1), rq, amp).fold(-1, 1);
-	Out.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10))));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10)))); // OffsetOut write a signal to a bus with sample accurate timing
 }).add;
 
 SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, level = 1;
@@ -44,7 +44,7 @@ SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, level = 1;
 	env = EnvGen.ar(Env(#[0, 0.5, 0.4, 0], #[0, 0.2, 0.01], -5), t_trig, doneAction: 2);
 	sin = SinOsc.ar(0, (Sweep.ar(t_trig, 2pi * [52.8, 740]) + (pi/3)).wrap(-pi, pi), #[2, 0.05]).mean.tanh;
 	sig = sin * env;
-	Out.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10))));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, decaytimea = 1, drywet = 0.5, level = 0.2;
@@ -106,8 +106,8 @@ Pdef(\Bass,
 	)
 ).play();
 
-~reverb = Synth(\Reverb, [\in, ~aux1, \out, channel[2]], ~master, 'addBefore');
-~simpleDelay = Synth(\SimpleDelay, [\in, ~aux2, \out, channel[3]], ~master, 'addBefore');
+~reverb = s.bind { Synth(\Reverb, [\in, ~aux1, \out, channel[2]], ~master, 'addBefore') }; // s.bind consider server latency
+~simpleDelay = s.bind { Synth(\SimpleDelay, [\in, ~aux2, \out, channel[3]], ~master, 'addBefore') };
 )
 
 // Mixer actions
@@ -163,7 +163,7 @@ var channel, channelMaster, ccStart;
 ~ccStart = ~ccStart - 1;
 channel = IdentityDictionary.new;
 
-w = Window("Mixer",Rect(0, 0, 800, 725), scroll: true);
+w = Window("Mixer",Rect(0, 0, 850, 725), scroll: true);
 w.front;
 //w.alwaysOnTop_(true);
 w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);

@@ -93,7 +93,7 @@ SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, a
 	var noise, sig;
 	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
 	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
-	Out.ar(out, Pan2.ar(sig, pan, level));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, level)); // OffsetOut write a signal to a bus with sample accurate timing
 }).add;
 
 SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 = 0.5, amp2 = 0.6, lpfFreq = 103.82, hpfFreq = 2400, attack = 0.0001, decay = 0.4, release = 0.01, pan = 0, level = 1;
@@ -102,14 +102,14 @@ SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 =
 	lpf = LPF.ar(sin, lpfFreq.max(1));
 	hpf = HPF.ar(LPF.ar(WhiteNoise.ar(0.008), 12000), hpfFreq.max(1));
 	sig = (lpf + hpf) * EnvGen.kr(Env(#[0, 1, 0.6, 0], [attack, decay, release]), t_trig);
-	Out.ar(out, Pan2.ar(sig, pan, level));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
 SynthDef(\IkedaHiNoise, { arg out = 0, t_trig = 0, attack = 0.02, decay = 0.1, amp = 0.05, rq = 0.9, pan = 0, level = 10;
 	var noise, sig;
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
 	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq);
-	Out.ar(out, Pan2.ar(sig, pan, level));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
 SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, level = 1;
@@ -117,7 +117,7 @@ SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, level = 1;
 	env = EnvGen.ar(Env(#[0, 0.5, 0.4, 0], #[0, 0.2, 0.01], -5), t_trig, doneAction: 2);
 	sin = SinOsc.ar(0, (Sweep.ar(t_trig, 2pi * [52.8, 740]) + (pi/3)).wrap(-pi, pi), #[2, 0.05]).mean.tanh;
 	sig = (sin * env)!2;
-	Out.ar(out, Pan2.ar(sig, pan, level));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 )
 
@@ -192,10 +192,10 @@ SynthDef(\mytriggersynth,{ arg t_trig = 0;
 	var env;
 	//must have additional starting level in envelope, else no nodes to go back to
 	env = EnvGen.ar(Env(#[2, 2, 1], #[0.0, 0.5], 'exponential'), t_trig);
-	Out.ar(0, Pan2.ar(Resonz.ar(Saw.ar(env * 440), 1000, 0.1), 0.0));
+	OffsetOut.ar(0, Pan2.ar(Resonz.ar(Saw.ar(env * 440), 1000, 0.1), 0.0));
 }).add;
 
-a = Synth(\mytriggersynth);
+a = s.bind { Synth(\mytriggersynth) }; // s.bind consider server latency
 
 a.set(\t_trig, 1);	// if this wasn't an explicit t_<arg name> input, this wouldn't reset the envelope
 
@@ -210,13 +210,13 @@ b = Buffer.read(s,Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 SynthDef(\sample,{ arg out = 0, bufnum = 0, rate = 1, trigger = 1, startPos = 0, loop = 0, pan = 0, level = 1;
 	var sig;
 	sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum)*rate, trigger, BufFrames.ir(bufnum)*startPos, loop, doneAction: 2);
-	Out.ar(out, Pan2.ar(sig , pan, level));
+	OffsetOut.ar(out, Pan2.ar(sig , pan, level));
 }).add;
 
 )
-Synth(\sample, [\out, 0, \bufnum, b.bufnum]);
+s.bind { Synth(\sample, [\out, 0, \bufnum, b.bufnum]) };
 
-Synth(\sample, [\out, 0, \bufnum, b.bufnum, \rate, 0.5]); // play at half rate
+s.bind { Synth(\sample, [\out, 0, \bufnum, b.bufnum, \rate, 0.5]) }; // play at half rate
 
 /*****************************************************************************************************************************/
 
@@ -233,7 +233,7 @@ SynthDef(\kick, { arg out = 0, tu = 1, amp = 1, level = 1;
 	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
 	sig = sig * amp;
 	sig = sig.clip2(1);
-	Out.ar(out, Pan2.ar(sig, 0, level));
+	OffsetOut.ar(out, Pan2.ar(sig, 0, level));
 }).add;
 
 SynthDef(\sd, { | out = 0, amp = 1 |
@@ -241,14 +241,14 @@ SynthDef(\sd, { | out = 0, amp = 1 |
 	osc1 = WhiteNoise.ar;
 	osc2 = FSinOsc.ar(200);
 	env = EnvGen.kr(Env.perc(0, 0.05), doneAction: 2);
-	Out.ar(out, Pan2.ar(LPF.ar(Mix([osc1, osc2]), 12000), 0, env*amp));
+	OffsetOut.ar(out, Pan2.ar(LPF.ar(Mix([osc1, osc2]), 12000), 0, env*amp));
 }).add;
 
 SynthDef(\hat, { | out = 0, amp = 1 |
 	var osc1, env;
 	osc1 = WhiteNoise.ar;
 	env = EnvGen.kr(Env.perc(0, 0.01), doneAction: 2);
-	Out.ar(out, Pan2.ar(osc1, 0, env*amp));
+	OffsetOut.ar(out, Pan2.ar(osc1, 0, env*amp));
 }).add;
 
 )
@@ -451,7 +451,7 @@ MIDIIn.noteOff = { arg src,chan, midinote, velocity;
 };
 )
 
-// or quicker
+// or quicker and more recent
 (
 var notes, on, off;
 notes = Array.newClear(128);    // array has one slot per possible MIDI note
@@ -470,6 +470,7 @@ q = { on.free; off.free; };
 
 // MIDIFunc.polytouch // ?? polyphony ??
 
+// Midi out
 m = MIDIOut(0).latency_(Server.default.latency); //quick way to access device 0, port 0
 m.noteOn(1,60,127); //arguments: channel, note, velocity
 m.noteOff(1,60,0);
