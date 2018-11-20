@@ -95,7 +95,7 @@ Pdef(\Click,
 		\dur, Pdefn(\dur1), // Pwrand(#[2,1,\rest,2,1], #[1,3,2,2,3].normalizeSum, inf); // chooses values according to a list of probabilities/weights
 		\out, channel[0]
 	)
-).play(); // use the TempoClock default if .play(t) use the TempoClock twice as fast as the TempoClock default
+).play(); // use the TempoClock default, if .play(t) use the TempoClock twice as fast as the TempoClock default
 
 Pdef(\Bass,
 	Pbind(
@@ -182,12 +182,12 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 	channel[\channelView].decorator.nextLine;
 
 	// hpf
-	channel[(\hpfreq ++ i).asSymbol] = EZKnob(channel[\channelView], 112@70, 'hpfreq', ControlSpec(20, 20000, step: 1, default: 20, units: 'hz'), { arg hpfreq; currentEnvironment.at((\channel ++ i).asSymbol).set(\hpfreq, hpfreq.value); }, margin: 39@0);
+	channel[(\activeHpf ++ i).asSymbol] = false;
+	channel[(\hpfreq ++ i).asSymbol] = EZKnob(channel[\channelView], 112@70, 'hpfreq', ControlSpec(20, 20000, step: 1, default: 20, units: 'hz'), { arg hpfreq; currentEnvironment.at((\channel ++ i).asSymbol).set(\hpfreq, hpfreq.value); channel[(\activeHpf ++ i).asSymbol] = false; }, margin: 39@0);
 	channel[\channelView].decorator.nextLine;
 
 	// hpf midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeHpf ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 20, 20000);
@@ -197,18 +197,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeHpf ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeHpf ++ i).asSymbol] = true;
-				{ channel[(\hpfreq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\hpfreq, midiControl);
+					channel[(\hpfreq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " hpfreq cc number");
 
 	// band 1 freq
-	channel[(\band1freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq1', ControlSpec(20, 20000, step: 1, default: 80, units: 'hz'), { arg band1freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1freq, band1freq.value); });
+	channel[(\activeBand1Freq ++ i).asSymbol] = false;
+	channel[(\band1freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq1', ControlSpec(20, 20000, step: 1, default: 80, units: 'hz'), { arg band1freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1freq, band1freq.value); channel[(\activeBand1Freq ++ i).asSymbol] = false; });
 
 	// band 1 freq midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand1Freq ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 20, 20000);
@@ -218,18 +221,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand1Freq ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand1Freq ++ i).asSymbol] = true;
-				{ channel[(\band1freq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band1freq, midiControl);
+					channel[(\band1freq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1freq cc number");
 
 	// band 1 rq
-	channel[(\band1rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq1', ControlSpec(0, 1, step: 0.01, default: 1), { arg band1rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1rq, band1rq.value); });
+	channel[(\activeBand1Rq ++ i).asSymbol] = false;
+	channel[(\band1rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq1', ControlSpec(0, 1, step: 0.01, default: 1), { arg band1rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1rq, band1rq.value); channel[(\activeBand1Rq ++ i).asSymbol] = false; });
 
 	// band 1 rq midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand1Rq ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 1);
@@ -239,18 +245,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand1Rq ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand1Rq ++ i).asSymbol] = true;
-				{ channel[(\band1rq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band1rq, midiControl);
+					channel[(\band1rq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1rq cc number");
 
 	// band 1 db
-	channel[(\band1db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db1', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band1db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1db, band1db.value); });
+	channel[(\activeBand1Db ++ i).asSymbol] = false;
+	channel[(\band1db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db1', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band1db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band1db, band1db.value); channel[(\activeBand1Db ++ i).asSymbol] = false; });
 
 	// band 1 db midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand1Db ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 60);
@@ -260,18 +269,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand1Db ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand1Db ++ i).asSymbol] = true;
-				{ channel[(\band1db ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band1db, midiControl);
+					channel[(\band1db ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1db cc number");
 
 	// band 2 freq
-	channel[(\band2freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq2', ControlSpec(20, 20000, step: 1, default: 1200, units: 'hz'), { arg band2freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2freq, band2freq.value); });
+	channel[(\activeBand2Freq ++ i).asSymbol] = false;
+	channel[(\band2freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq2', ControlSpec(20, 20000, step: 1, default: 1200, units: 'hz'), { arg band2freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2freq, band2freq.value); channel[(\activeBand2Freq ++ i).asSymbol] = false; });
 
 	// band 2 freq midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand2Freq ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 20, 20000);
@@ -281,18 +293,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand2Freq ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand2Freq ++ i).asSymbol] = true;
-				{ channel[(\band2freq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band2freq, midiControl);
+					channel[(\band2freq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2freq cc number");
 
 	// band 2 rq
-	channel[(\band2rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq2', ControlSpec(0, 1, step: 0.01, default: 1), { arg band2rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2rq, band2rq.value); });
+	channel[(\activeBand2Rq ++ i).asSymbol] = false;
+	channel[(\band2rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq2', ControlSpec(0, 1, step: 0.01, default: 1), { arg band2rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2rq, band2rq.value); channel[(\activeBand2Rq ++ i).asSymbol] = false; });
 
 	// band 2 rq midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand2Rq ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 1);
@@ -302,18 +317,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand2Rq ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand2Rq ++ i).asSymbol] = true;
-				{ channel[(\band2rq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band2rq, midiControl);
+					channel[(\band2rq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2rq cc number");
 
 	// band 2 db
-	channel[(\band2db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db2', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band2db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2db, band2db.value); });
+	channel[(\activeBand2Db ++ i).asSymbol] = false;
+	channel[(\band2db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db2', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band2db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band2db, band2db.value); channel[(\activeBand2Db ++ i).asSymbol] = false; });
 
 	// band 2 db midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand2Db ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 60);
@@ -323,18 +341,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand2Db ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand2Db ++ i).asSymbol] = true;
-				{ channel[(\band2db ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band2db, midiControl);
+					channel[(\band2db ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2db cc number");
 
 	// band 3 freq
-	channel[(\band3freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq3', ControlSpec(20, 20000, step: 1, default: 8000, units: 'hz'), { arg band3freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3freq, band3freq.value); });
+	channel[(\activeBand3Freq ++ i).asSymbol] = false;
+	channel[(\band3freq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'freq3', ControlSpec(20, 20000, step: 1, default: 8000, units: 'hz'), { arg band3freq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3freq, band3freq.value); channel[(\activeBand3Freq ++ i).asSymbol] = false; });
 
 	// band 3 freq midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand3Freq ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 20, 20000);
@@ -344,18 +365,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand3Freq ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand3Freq ++ i).asSymbol] = true;
-				{ channel[(\band3freq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band3freq, midiControl);
+					channel[(\band3freq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3freq cc number");
 
 	// band 3 rq
-	channel[(\band3rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq3', ControlSpec(0, 1, step: 0.01, default: 1), { arg band3rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3rq, band3rq.value); });
+	channel[(\activeBand3Rq ++ i).asSymbol] = false;
+	channel[(\band3rq ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'rq3', ControlSpec(0, 1, step: 0.01, default: 1), { arg band3rq; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3rq, band3rq.value); channel[(\activeBand3Rq ++ i).asSymbol] = false; });
 
 	// band 3 rq midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand3Rq ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 1);
@@ -365,18 +389,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand3Rq ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand3Rq ++ i).asSymbol] = true;
-				{ channel[(\band3rq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band3rq, midiControl);
+					channel[(\band3rq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3rq cc number");
 
 	// band 3 db
-	channel[(\band3db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db3', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band3db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3db, band3db.value); });
+	channel[(\activeBand3Db ++ i).asSymbol] = false;
+	channel[(\band3db ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'db3', ControlSpec(0, 60, step: 1, default: 0, units: 'db'), { arg band3db; currentEnvironment.at((\channel ++ i).asSymbol).set(\band3db, band3db.value); channel[(\activeBand3Db ++ i).asSymbol] = false; });
 
 	// band 3 db midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeBand3Db ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 60);
@@ -386,19 +413,22 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeBand3Db ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeBand3Db ++ i).asSymbol] = true;
-				{ channel[(\band3db ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\band3db, midiControl);
+					channel[(\band3db ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3db cc number");
 
 	// lpf
-	channel[(\lpfreq ++ i).asSymbol] = EZKnob(channel[\channelView], 112@70, 'lpfreq', ControlSpec(20, 20000, step: 1, default: 20000, units: 'hz'), { arg lpfreq; currentEnvironment.at((\channel ++ i).asSymbol).set(\lpfreq, lpfreq.value); }, margin: 39@0);
+	channel[(\activeLpf ++ i).asSymbol] = false;
+	channel[(\lpfreq ++ i).asSymbol] = EZKnob(channel[\channelView], 112@70, 'lpfreq', ControlSpec(20, 20000, step: 1, default: 20000, units: 'hz'), { arg lpfreq; currentEnvironment.at((\channel ++ i).asSymbol).set(\lpfreq, lpfreq.value); channel[(\activeLpf ++ i).asSymbol] = false; }, margin: 39@0);
 	channel[\channelView].decorator.nextLine;
 
 	// lpf midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeLpf ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 20, 20000);
@@ -408,18 +438,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeLpf ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeLpf ++ i).asSymbol] = true;
-				{ channel[(\lpfreq ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\lpfreq, midiControl);
+					channel[(\lpfreq ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " lpfreq cc number");
 
 	// aux 1
-	channel[(\aux1 ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux1', ControlSpec(0, 1, step: 0.01, default: 0), { arg aux1; currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend1, aux1.value); });
+	channel[(\activeAux1 ++ i).asSymbol] = false;
+	channel[(\aux1 ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux1', ControlSpec(0, 1, step: 0.01, default: 0), { arg aux1; currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend1, aux1.value); channel[(\activeAux1 ++ i).asSymbol] = false; });
 
 	// aux 1 midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeAux1 ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 1);
@@ -429,7 +462,10 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeAux1 ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeAux1 ++ i).asSymbol] = true;
-				{ channel[(\aux1 ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend1, midiControl);
+					channel[(\aux1 ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
@@ -440,11 +476,11 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 	    .align_(\center);
 
 	// aux 2
-	channel[(\aux2 ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux2', ControlSpec(0, 1, step: 0.01, default: 0), { arg aux2; currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend2, aux2.value); });
+	channel[(\activeAux2 ++ i).asSymbol] = false;
+	channel[(\aux2 ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux2', ControlSpec(0, 1, step: 0.01, default: 0), { arg aux2; currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend2, aux2.value); channel[(\activeAux2 ++ i).asSymbol] = false; });
 
 	// aux 2 midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeAux2 ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 1);
@@ -454,7 +490,10 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeAux2 ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeAux2 ++ i).asSymbol] = true;
-				{ channel[(\aux2 ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\auxsend2, midiControl);
+					channel[(\aux2 ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
@@ -473,12 +512,12 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 	(~ccStart).debug("Channel " ++ i ++ " mute cc number");
 
 	// pan
-	channel[(\pan ++ i).asSymbol] = EZSlider(channel[\channelView], 112@60, 'pan', ControlSpec(-1, 1, step: 0.01, default: 0), { arg pan; currentEnvironment.at((\channel ++ i).asSymbol).set(\pan, pan.value); }, layout: 'vert');
+	channel[(\activePan ++ i).asSymbol] = false;
+	channel[(\pan ++ i).asSymbol] = EZSlider(channel[\channelView], 112@60, 'pan', ControlSpec(-1, 1, step: 0.01, default: 0), { arg pan; currentEnvironment.at((\channel ++ i).asSymbol).set(\pan, pan.value); channel[(\activePan ++ i).asSymbol] = false; }, layout: 'vert');
 	channel[\channelView].decorator.nextLine;
 
 	// pan midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activePan ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, -1, 1);
@@ -488,18 +527,21 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activePan ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activePan ++ i).asSymbol] = true;
-				{ channel[(\pan ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\pan, midiControl);
+					channel[(\pan ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
 	(~ccStart).debug("Channel " ++ i ++ " pan cc number");
 
 	// level
-	channel[(\level ++ i).asSymbol] = EZSlider(channel[\channelView], 112@160, 'level', ControlSpec(0, 1, step: 0.01, default: 0.5), { arg level; currentEnvironment.at((\channel ++ i).asSymbol).set(\level, level.value); }, layout: 'vert', margin: 39@0);
+	channel[(\activeLevel ++ i).asSymbol] = false;
+	channel[(\level ++ i).asSymbol] = EZSlider(channel[\channelView], 112@160, 'level', ControlSpec(0, 1, step: 0.01, default: 0.5), { arg level; currentEnvironment.at((\channel ++ i).asSymbol).set(\level, level.value); channel[(\activeLevel ++ i).asSymbol] = false; }, layout: 'vert', margin: 39@0);
 
 	// level midi map
 	~ccStart = ~ccStart + 1;
-	channel[(\activeLevel ++ i).asSymbol] = false;
 	MIDIFunc.cc({ arg val, num, chan, src;
 		var guiControl, midiControl, treshold;
 		midiControl = val.linlin(0, 127, 0, 1);
@@ -509,7 +551,10 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			(channel[(\activeLevel ++ i).asSymbol] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
 			{
 				channel[(\activeLevel ++ i).asSymbol] = true;
-				{ channel[(\level ++ i).asSymbol].valueAction_(midiControl); }.defer;
+				{
+					currentEnvironment.at((\channel ++ i).asSymbol).set(\level, midiControl);
+					channel[(\level ++ i).asSymbol].value_(midiControl);
+				}.defer;
 			}
 		);
 	}, ~ccStart, 0, 0);
