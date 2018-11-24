@@ -320,7 +320,7 @@ Pdef(\kix,
 Pdef(\snares,
 	Pbind(
 		\instrument, \sd,
-		\amp, 2, //Pseq(#[1,0.15], inf),
+		\amp, Pdefn(\amp1), //Pseq(#[1,0.15], inf),
 		\dur, 4 //Pseq(#[4,5], inf)
 	)
 ).play();
@@ -328,19 +328,34 @@ Pdef(\snares,
 Pdef(\hats,
 	Pbind(
 		\instrument, \hat,
-		\amp, Pseq(#[1,0.15,1], inf),
-		\dur, 0.25//,
-		//\timingOffset, 2.5
+		[\freq, \amp],
+		Pseq([
+			[440,0.4],
+			[330,0.1],
+			Pfuncn({
+				[550.rand, 0.8.rand]
+			}, 1)
+		], inf),
+		\dur,
+		Pfunc({ arg event;
+			event.postln;
+			if(event.freq > 350, {
+				"here".postln;
+				rrand(0.1,0.5);
+			}, 0.05);
+		}),
+		\legato, Pkey(\amp)/*,
+		\timingOffset, 2.5*/
 	)
 ).play();
 
 )
 
-Pdef(\kix).quant_(4);
+Pdef(\kix).quant_([4]);
 Pdef(\kix).play(); // use the TempoClock default
 Pdef(\kix).stop;
 Pdef(\snares).play(t); // use the TempoClock twice as fast as the TempoClock default
-Pdef(\snares).quant_(8);
+Pdef(\snares).quant_([8]);
 Pdef(\snares).stop;
 Pdef(\snares).play;
 Pdef(\snares).pause;
@@ -437,6 +452,44 @@ p = Penvir((), Ptpar([
 )
 
 p.stop;
+
+/*******************************************************************multiple instruments Pbind**************************************************/
+
+Event.addEventType(\pari, {
+    var instr = ~instrument;
+    ~type = \note;
+    if(instr.isArray and:  { instr.isString.not }) { // just to make sure
+        instr.do { |each|
+            ~instrument = each;
+            currentEnvironment.play;
+        }
+    } {
+        currentEnvironment.play;
+    }
+});
+
+(
+SynthDef(\nickinstr, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
+       var z;
+           z = LPF.ar(
+               Mix.ar(LFSaw.ar(freq*[0.99,1,1.01],0.0,amp)),
+               XLine.kr(5000, 1000, 1.5))
+           * EnvGen.kr(Env.new([0,1,0],[0.01,0.01],\lin,1), gate, doneAction:2);
+           Out.ar(out, Pan2.ar(z*0.045, -1));
+       }).add;
+)
+
+
+(
+Pbind(
+    \type, \pari,
+    \dur, 1.25,
+    \midinote, Prand([0,5,0,7,4,0,0]+60,inf),
+    \amp, Prand([0.125,0.2,0.25],inf),
+    \instrument, [\nickinstr,\default],
+    \pan, 1
+).play
+)
 
 /********************************************************************midi************************************************************************/
 
