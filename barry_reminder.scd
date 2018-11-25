@@ -455,10 +455,11 @@ p.stop;
 
 /*******************************************************************multiple instruments Pbind**************************************************/
 
-Event.addEventType(\pari, {
-    var instr = ~instrument;
+Event.addEventType(\multi, {
+    var instr;
+	instr = ~instrument;
     ~type = \note;
-    if(instr.isArray and:  { instr.isString.not }) { // just to make sure
+    if(instr.isArray) {
         instr.do { |each|
             ~instrument = each;
             currentEnvironment.play;
@@ -479,18 +480,31 @@ SynthDef(\nickinstr, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
        }).add;
 )
 
-
 (
 Pbind(
-    \type, \pari,
+    \type, \multi,
     \dur, 1.25,
     \midinote, Prand([0,5,0,7,4,0,0]+60,inf),
     \amp, Prand([0.125,0.2,0.25],inf),
-    \instrument, [\nickinstr,\default],
+    \instrument, [\nickinstr, \default],
     \pan, 1
-).play
+).trace.play
 )
 
+// a safer way ?
+(
+~commonParam = Pbind(
+	\dur, 1.25,
+    \midinote, Prand([0,5,0,7,4,0,0]+60,inf),
+    \amp, Prand([0.125,0.2,0.25],inf),
+	\pan, 1
+);
+
+Ppar([
+	Pchain(~commonParam, Pbind(\instrument, \nickinstr)),
+	Pchain(~commonParam, Pbind(\instrument, \default))
+]).play;
+)
 /********************************************************************midi************************************************************************/
 
 ( // unlimited midi polyphony
@@ -519,7 +533,7 @@ MIDIIn.noteOff = { arg src,chan, midinote, velocity;
 };
 )
 
-// or quicker and more recent
+// or quicker and more recent way
 (
 var notes, on, off;
 notes = Array.newClear(128);    // array has one slot per possible MIDI note
