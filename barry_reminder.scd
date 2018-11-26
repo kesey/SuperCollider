@@ -491,20 +491,6 @@ Pbind(
 ).trace.play
 )
 
-// a safer way ?
-(
-~commonParam = Pbind(
-	\dur, 1.25,
-    \midinote, Prand([0,5,0,7,4,0,0]+60,inf),
-    \amp, Prand([0.125,0.2,0.25],inf),
-	\pan, 1
-);
-
-Ppar([
-	Pchain(~commonParam, Pbind(\instrument, \nickinstr)),
-	Pchain(~commonParam, Pbind(\instrument, \default))
-]).play;
-)
 /********************************************************************midi************************************************************************/
 
 ( // unlimited midi polyphony
