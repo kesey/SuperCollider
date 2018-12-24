@@ -71,6 +71,7 @@ ServerQuit.removeAll;
 };
 
 ~startRec = {
+	s.recChannels = 2;
 	s.recSampleFormat = "int24"; // 24 bit
 	s.recHeaderFormat = "wav";
 	s.prepareForRecord("~/path/name/session.wav"); // ~path ++ "session.wav"
