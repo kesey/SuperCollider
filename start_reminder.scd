@@ -7,6 +7,10 @@ a.nextN(20);
 )
 
 ( // general set up
+// 0. OSC config
+//NetAddr.localAddr; // retrieve the current IP and port
+//OSCFunc.trace(true); // Turn posting on
+//OSCFunc.trace(false); // Turn posting off
 // 1. midi config
 MIDIClient.init; // post a list of available devices
 // MIDIClient.sources; // list avalaible midi sources
@@ -67,8 +71,10 @@ ServerQuit.removeAll;
 };
 
 ~startRec = {
+	s.recSampleFormat = "int24"; // 24 bit
 	s.recHeaderFormat = "wav";
 	s.prepareForRecord("~/path/name/session.wav"); // ~path ++ "session.wav"
+	// thisProcess.platform.recordingsDir; // verify your recording dir
 	s.record;
 };
 

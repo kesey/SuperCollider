@@ -32,11 +32,11 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 /**********************************************************************Sounds & Fx***************************************************************/
 
 SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, amp = 25, pan = 0, level = 1;
-	var env, noise, sig;
-	env = EnvGen.ar(Env.perc(0.001, 0.00001 * LFNoise1.kr(4).abs, 1, -4), t_trig, doneAction: 2);
-	noise = PinkNoise.ar(env);
-	sig = BPF.ar(noise, centerFreq.max(1), rq, amp).fold(-1, 1);
-	OffsetOut.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10)))); // OffsetOut write a signal to a bus with sample accurate timing
+	var noise, sig;
+ 	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
+ 	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
+ 	DetectSilence.ar(sig, 0.001, doneAction:2);
+ 	OffsetOut.ar(out, Pan2.ar(sig, pan, level)); // OffsetOut write a signal to a bus with sample accurate timing
 }).add;
 
 SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, level = 1;
