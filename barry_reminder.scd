@@ -31,6 +31,23 @@ SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, de
 	XOut.ar(out, drywet, temp * level);
 }).add;
 
+SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay = 0.1, combDecay = 15, allPassMaxDelay = 0.050, allPassDecay = 1;
+	var sig, pre, delay;
+	sig = Mix.ar(Array.fill(10, { Resonz.ar(Dust.ar(0.2, 50), 200 + 3000.0.rand, 0.003)}) );
+	//sig = In.ar(in, 2);
+	pre = DelayN.ar(sig, preDelay); // reverb predelay time
+	delay = Mix.ar(Array.fill(7,{
+		CombL.ar(pre, maxCombDelay, LFNoise1.kr(0.1.rand, 0.04, 0.05), combDecay);
+	}));
+	4.do({
+		delay = AllpassN.ar(delay, allPassMaxDelay, [0.050.rand, 0.050.rand], allPassDecay);
+	});
+    Out.ar(
+        out,
+        sig + (0.2 * delay)
+    );
+}).add;
+
 SynthDef(\Phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5, level = 1;
 	var input, effect;
 	input = In.ar(in, 2);
