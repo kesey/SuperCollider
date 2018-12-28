@@ -73,7 +73,7 @@ ServerQuit.removeAll;
 ~startRec = {
 	s.recChannels = 2;
 	s.recSampleFormat = "int24"; // 24 bit
-	s.recHeaderFormat = "wav";
+	s.recHeaderFormat = "aiff";
 	s.prepareForRecord("~/path/name/session.wav"); // ~path ++ "session.wav"
 	// thisProcess.platform.recordingsDir; // verify your recording dir
 	s.record;
