@@ -92,7 +92,7 @@ Pdef(\Click,
 	Pbind(
 		\instrument, \IkedaClick,
 		\amp, Pdefn(\amp1).dbamp, // 0.2.coin; // probability of true: 20%
-		\dur, Pdefn(\dur1), // Pwrand(#[2,1,\rest,2,1], #[1,3,2,2,3].normalizeSum, inf); // chooses values according to a list of probabilities/weights
+		\dur, Pdefn(\dur1), // Pwrand(#[2,1,\rest,2,Rest()], #[1,3,2,2,3].normalizeSum, inf); // chooses values according to a list of probabilities/weights
 		\out, channel[0]
 	)
 ).play(); // use the TempoClock default, if .play(t) use the TempoClock twice as fast as the TempoClock default
