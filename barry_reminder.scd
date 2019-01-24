@@ -155,6 +155,20 @@ i = Synth(\IkedaBass);
 i.set(\t_trig, 1);
 )
 
+// Use of proxy and fadeTime:
+(
+SynthDef("test", { arg gate=1, out, fadeTime=1;
+    Out.ar(out,
+        Formant.ar(Rand(20,40), 600, 10, 0.2)
+        * EnvGen.kr(Env.asr(fadeTime,1,fadeTime), gate, doneAction: Done.freeSelf)
+    )
+}).send(s);
+)
+
+~out = \test;
+~out.fadeTime = 3;
+~out.xset(\out, 0);
+
 /*****************************************************************************************************************************/
 
 /**************************************************GUI************************************************************************/
