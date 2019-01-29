@@ -1,16 +1,10 @@
-(
-// visualize stream
-var a;
-a = Pseries(4, Prand(#[-1, 1], inf), 10);
-a = a.asStream;
-a.nextN(20);
-)
-
 ( // general set up
+
 // 0. OSC config
 //NetAddr.localAddr; // retrieve the current IP and port
 //OSCFunc.trace(true); // Turn posting on
 //OSCFunc.trace(false); // Turn posting off
+
 // 1. midi config
 MIDIClient.init; // post a list of available devices
 // MIDIClient.sources; // list avalaible midi sources
@@ -18,12 +12,6 @@ MIDIClient.init; // post a list of available devices
 MIDIIn.connectAll; // connect to all attached input sources
 // MIDIClient.destinations; // list avalaible midi destinations
 // ~midiOut = MIDIOut(0).latency_(Server.default.latency); //quick way to access device 0, port 0
-// m.midiClock; // ??
-// m.noteOn(1,60,127); //arguments: channel, note, velocity
-// m.noteOff(1,60,0);
-// m.control(/*chan*/, ctlNum: 7, val: 64); // control change
-// m.program(/*chan*/, num: 1); // program change
-// m.sysex(/*packet*/); // packet is a Int8Array
 
 // 2. server config
 Server.default = s = Server.local;

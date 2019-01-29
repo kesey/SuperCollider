@@ -1,3 +1,11 @@
+(
+// visualize stream
+var a;
+a = Prand([ 0.1, 0.1, [0.1, -0.1] ], inf);
+a = a.asStream;
+a.nextN(20);
+)
+
 /**************************************************FX*************************************************************************/
 
 (
@@ -121,7 +129,7 @@ SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, a
  	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
  	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
  	DetectSilence.ar(sig, 0.001, doneAction:2);
- 	OffsetOut.ar(out, Pan2.ar(sig, pan, level)); // OffsetOut write a signal to a bus with sample accurate timing
+ 	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }, [0,0,4,5]).add; // define a lag time of 4 for center frequency and 5 for rq
 
 SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 = 0.5, amp2 = 0.6, lpfFreq = 103.82, hpfFreq = 2400, attack = 0.0001, decay = 0.4, release = 0.01, pan = 0, level = 1;
@@ -157,7 +165,7 @@ i.set(\t_trig, 1);
 
 // Use of proxy and fadeTime:
 (
-SynthDef("test", { arg gate=1, out, fadeTime=1;
+SynthDef("test", { arg gate = 1, out, fadeTime = 1;
     Out.ar(out,
         Formant.ar(Rand(20,40), 600, 10, 0.2)
         * EnvGen.kr(Env.asr(fadeTime,1,fadeTime), gate, doneAction: Done.freeSelf)
@@ -405,6 +413,16 @@ Pdef(\snares).resume; // play since where we paused
 Pdef(\hats).stop;
 Pbindef(\snares,\dur,Pseq(#[2, 3], inf),\amp,2);
 
+// recursion ( = reinstanciation) over variable levels, use it with random style synthDef
+(
+Pbind(
+    \type, \phrase,
+    \instrument, \snares,
+    \degree, Pshuf([2, 4, 3], 4),
+    \recursionLevel, Prand([0, 1, 2, 3],inf)
+).play
+)
+
 /*********************************************************test******************************************************************/
 
 // Share data between Pdef
@@ -588,6 +606,15 @@ m.control(/*chan*/, ctlNum: 7, val: 64); // control change
 m.program(/*chan*/, num: 1); // program change
 m.sysex(/*packet*/); // packet is a Int8Array
 m.midiClock; // ??
+
+/*
+~organPort = MIDIIn.findPort("QuNexus", "Port 1"); // only get messages from organ
+
+~organOn = MIDIFunc.noteOn({ |velo, key, chan, srcID|
+        "organ source = ".post; srcID.asHexString.postln;
+        // process data
+}, srcID: ~organPort.uid);
+*/
 
 /******************************************************************signal follow*****************************************************************/
 
