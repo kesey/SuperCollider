@@ -164,6 +164,7 @@ i.set(\t_trig, 1);
 )
 
 // Use of proxy and fadeTime:
+p = ProxySpace.push(s);
 (
 SynthDef("test", { arg gate = 1, out, fadeTime = 1;
     Out.ar(out,
@@ -174,8 +175,19 @@ SynthDef("test", { arg gate = 1, out, fadeTime = 1;
 )
 
 ~out = \test;
+~out.play;
 ~out.fadeTime = 3;
 ~out.xset(\out, 0);
+~out.free;
+p.clear;
+
+// Same thing, other method use EnvGate which have a fadeTime argument
+a = { LPF.ar(Saw.ar(200), 600) * EnvGate.new }.play;
+a.set(\fadeTime, 2);
+a.release;
+
+// the same as:
+a.set(\gate, 0);
 
 /*****************************************************************************************************************************/
 
