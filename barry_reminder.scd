@@ -269,16 +269,16 @@ a.set(\t_trig, 1);	// if this wasn't an explicit t_<arg name> input, this wouldn
 
 b = Buffer.read(s,Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
-SynthDef(\sample,{ arg out = 0, bufnum = 0, rate = 1, trigger = 1, startPos = 0, loop = 0, pan = 0, level = 1;
+SynthDef(\sampler,{ arg out = 0, buffer = 0, rate = 1, trigger = 1, startPos = 0, loop = 0, pan = 0, level = 1;
 	var sig;
-	sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum)*rate, trigger, BufFrames.ir(bufnum)*startPos, loop, doneAction: 2) * EnvGen.kr(Env.linen(0.001, BufDur.kr(bufnum), 0.1));
+	sig = PlayBuf.ar(b.numChannels, buffer.bufnum, BufRateScale.kr(buffer.bufnum) * rate, trigger, BufFrames.ir(buffer.bufnum)*startPos, loop, doneAction: 2) * EnvGen.kr(Env.linen(0.001, BufDur.kr(buffer.bufnum), 0.1));
 	OffsetOut.ar(out, Pan2.ar(sig , pan, level));
 }).add;
 
 )
-s.bind { Synth(\sample, [\out, 0, \bufnum, b.bufnum]) };
+s.bind { Synth(\sampler, [\out, 0, \buffer, b]) };
 
-s.bind { Synth(\sample, [\out, 0, \bufnum, b.bufnum, \rate, 0.5]) }; // play at half rate
+s.bind { Synth(\sampler, [\out, 0, \buffer, b, \rate, 0.5]) }; // play at half rate
 
 /*****************************************************************************************************************************/
 
