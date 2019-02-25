@@ -10,6 +10,8 @@ Server.default = s = Server.local = Server.scsynth;
 // s.options.maxLogins = 2; // 2 users on the same server
 /**************************************/
 // s.options.devices; // list avalaible audio devices MacOS only
+// o = ServerOptions.new; // get devices on Windows
+// o.device;
 s.options.inDevice_("Built-in Microph");
 s.options.outDevice_("Built-in Output");
 // s.options.device_("name your sound card");
