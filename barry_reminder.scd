@@ -143,7 +143,7 @@ SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, a
 	var noise, sig;
  	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
  	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
- 	DetectSilence.ar(sig, 0.001, doneAction:2);
+ 	DetectSilence.ar(sig, 0.00001, doneAction:2);
  	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }, [0,0,4,5]).add; // define a lag time of 4 for center frequency and 5 for rq
 
@@ -160,15 +160,16 @@ SynthDef(\IkedaHiNoise, { arg out = 0, t_trig = 0, attack = 0.02, decay = 0.1, a
 	var noise, sig;
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
 	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq);
+	DetectSilence.ar(sig, 0.001, doneAction:2);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
-SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, level = 1;
+SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, amp = 1;
 	var env, sin, sig;
 	env = EnvGen.ar(Env(#[0, 0.5, 0.4, 0], #[0, 0.2, 0.01], -5), t_trig, doneAction: 2);
 	sin = SinOsc.ar(0, (Sweep.ar(t_trig, 2pi * [52.8, 740]) + (pi/3)).wrap(-pi, pi), #[2, 0.05]).mean.tanh;
 	sig = (sin * env)!2;
-	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 )
 
