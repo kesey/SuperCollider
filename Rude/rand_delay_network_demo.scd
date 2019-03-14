@@ -27,25 +27,66 @@ SynthDef(\snapkick, { |out = 0, pan = 0, amp = 0.3|
 
 ~bus = Bus.audio(s, 2); // make an audio bus
 
-RandDelayNetwork(\default).make(\rdn1, "4--", ~bus); // generate new grah each time this line is run.
-	// \rdn1 is the Ndef name, 
+RandDelayNetwork(\default).make(\rdn1, "5-K8CM-BKGC", ~bus); // generate new grah each time this line is run.
+	// \rdn1 is the Ndef name,
 	// "4--" is the seed code used to generate the graph, here 4 mean grow the graph four times. since there is no code provided, it is generated randomly
 
 RandDelayNetwork(\default).code; // this give the code of the last generated graph, for example : "4-P404-9N9U"
 
-Ndef(\rdn1).edit; // edit the args of the Ndef in real time. important params are fb (feedback factor), delay, delay2, distamp, fbdistamp. 
+Ndef(\rdn1).edit; // edit the args of the Ndef in real time. important params are fb (feedback factor), delay, delay2, distamp, fbdistamp.
 	// shift and pitchmix should be 0 to produce stable sound
 	// fbdistmix should be like 0.95 to let some unsatured sound in feedback
 
 
 // test a kick sent to the fx
 (
-Pdef(\zed, 
+Pdef(\zed,
 	Pbind(
 		\instrument, \snapkick,
-		\dur, 1,
-		\amp, 0.1,
-		\out, ~bus,
+		\dur, Pseq([1,3/2], inf),
+		\amp, 0.7,
+		\out, ~bus
+	),
+).play;
+Pdef(\bit,
+	Pbind(
+		\instrument, \IkedaBreath,
+		\dur, Pseq([3/2,3/4], inf),
+		\amp, 1,
+		\out, ~bus
+	),
+).play;
+Pdef(\nib,
+	Pbind(
+		\instrument, \IkedaHiNoise,
+		\dur, Pseq([1/4,1/8,1/2], inf),
+		\amp, 0.06,
+		\out, ~bus
+	),
+).play;
+Pdef(\fes,
+	Pbind(
+		\instrument, \IkedaBass,
+		\dur, Pseq([3/4,1], inf),
+		\amp, 0.8,
+		\out, ~bus
+	),
+).play;
+Pdef(\cli,
+	Pbind(
+		\instrument, \IkedaClick,
+		\dur, Pseq([1/8,1/4], inf),
+		\amp, Pseq([1,0.5,0.8,0.3,0.9]*8, inf),
+		\out, ~bus
 	),
 ).play;
 );
+
+Pdef(\nib).pause;
+Pdef(\nib).resume;
+
+Pdef(\zed).pause;
+Pdef(\zed).resume;
+
+Pdef(\cli).pause;
+Pdef(\cli).resume;
