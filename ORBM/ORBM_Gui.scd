@@ -2,7 +2,8 @@
 
 ///////////////////////////////////////  Mixer Gui
 
-var channel, channelMaster, ccStart;
+var channel, channelMaster, ccStart,
+arguments, samplerCcStart, synthWindow, button, knob, active;
 
 ~ccStart = 21; // start mapping midi cc from here
 ~ccStart = ~ccStart - 1;
@@ -48,7 +49,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " hpfreq cc number");
 
 	// band 1 freq
@@ -72,7 +73,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1freq cc number");
 
 	// band 1 rq
@@ -96,7 +97,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1rq cc number");
 
 	// band 1 db
@@ -120,7 +121,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1db cc number");
 
 	// band 2 freq
@@ -144,7 +145,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2freq cc number");
 
 	// band 2 rq
@@ -168,7 +169,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2rq cc number");
 
 	// band 2 db
@@ -192,7 +193,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2db cc number");
 
 	// band 3 freq
@@ -216,7 +217,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3freq cc number");
 
 	// band 3 rq
@@ -240,7 +241,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3rq cc number");
 
 	// band 3 db
@@ -264,7 +265,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3db cc number");
 
 	// lpf
@@ -289,7 +290,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " lpfreq cc number");
 
 	// aux 1
@@ -313,7 +314,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " aux1 cc number");
 
 	StaticText(channel[\channelView], 35@65)
@@ -341,7 +342,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " aux2 cc number");
 
 	// mute
@@ -353,7 +354,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 		var midiControl;
 		midiControl = val.linlin(0, 127, 0, 1);
 		{ channel[(\mute ++ i).asSymbol].valueAction_(midiControl); }.defer;
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " mute cc number");
 
 	// pan
@@ -378,7 +379,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " pan cc number");
 
 	// level
@@ -402,7 +403,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " level cc number");
 };
 
@@ -427,4 +428,87 @@ channel[\lpfreqMaster] = EZKnob(channelMaster, 112@70, 'lpfreq', ControlSpec(20,
 
 // level
 channel[\levelMaster] = EZSlider(channelMaster, 112@160, 'level', ControlSpec(0, 1, step: 0.01, default: 0.5), { arg level; ~master.set(\level, level.value); }, layout: 'vert', margin: 39@0).setColors(stringColor: Color.white);
+
+///////////////////////////////////////  SynthDef Gui
+
+x = Window("SynthDef",Rect(0, 0, 850, 725), scroll: true);
+x.front;
+x.view.decorator = FlowLayout(x.view.bounds, 3@3, 3@3);
+
+////////////////////  Sampler
+if (~sampler.notNil,
+	{
+	arguments = ~samplerSynthDef.allControlNames;
+
+ 	samplerCcStart = 9;
+
+ 	synthWindow = CompositeView(x, (arguments.size * 30)@(arguments.size * 10));
+ 	synthWindow.background_(Color.white);
+ 	synthWindow.decorator_(FlowLayout(synthWindow.bounds, 3@3, 3@3));
+
+	// SynthDef name
+ 	StaticText(synthWindow, 100@10)
+	    .string_(~samplerSynthDef.name)
+	    .stringColor_(Color.black)
+ 	    .align_(\center);
+ 	synthWindow.decorator.nextLine;
+
+	button = Array.newClear;
+	knob = Array.newClear;
+	active = Array.newClear;
+
+ 	},
+	{
+ 		arguments = 0;
+    }
+);
+
+arguments.do({
+	arg control, i;
+	var caseFind;
+	caseFind = false;
+
+	case
+	{"trigger trig gate t_trig t_gate loop".contains(control.name.asString) }
+	{
+		"button gui".postln;
+		/*button[i] = Button(synthWindow, Rect(10,110,112,35)).states_([["Trig", Color.black, Color.white],["stop", Color.white, Color.grey]]).action = { arg gate; ~sampler.set(control.name.asSymbol, gate.value;) };
+
+		// button midi map
+		samplerCcStart = samplerCcStart + 1;
+		MIDIFunc.cc({ arg val, num, chan, src;
+			var midiControl;
+			midiControl = val.linlin(0, 127, 0, 1);
+			{ button[i].valueAction_(midiControl); }.defer;
+		}, samplerCcStart, 0);
+		(samplerCcStart).debug("sampler" ++ control.name.asString ++ " cc number");*/
+		caseFind = true;
+	}
+	{caseFind.not}
+	{
+		"knob gui".postln;
+		/*active[i] = false;
+		knob[i] = EZKnob(synthWindow, 35@70, control.name.asString, ControlSpec(0, 1, step: 0.01, default: control.defaultValue), { arg control; ~sampler.set(control.name.asSymbol, control.value); active[i] = false; });
+
+		samplerCcStart = samplerCcStart + 1;
+		MIDIFunc.cc({ arg val, num, chan, src;
+			var guiControl, midiControl, treshold;
+			midiControl = val.linlin(0, 127, 0, 1);
+			guiControl = knob[i].value;
+			treshold = 0.1;
+			if ( // soft takeover
+				(active[i] or: ((midiControl > (guiControl - treshold)) and: (midiControl < (guiControl + treshold)))),
+				{
+					active[i] = true;
+					{
+						~sampler.set(control.name.asSymbol, midiControl);
+						knob[i].value_(midiControl);
+					}.defer;
+				}
+			);
+		}, samplerCcStart, 0);
+		(samplerCcStart).debug("sampler" ++ control.name.asString ++ " cc number");*/
+	};
+});
+
 )

@@ -18,7 +18,6 @@ SynthDef(\ChannelStrip, { arg in = 0, out = 0, pan = 0, hpfreq = 20, band1freq =
 	sig = sig * mute; // Mute
 	Out.ar(out, Balance2.ar(sig[0], sig[1], pan, level.curvelin(0, 1, 0, 1, log(10)))); // curvelin(blabla) to have a logarithmic scale
 }).add;
-//~channelStrip.allControlNames.size.postln;
 
 SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level = 0.5;
 	var input, sig;
@@ -26,6 +25,7 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
 	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
 	sig = sig * level.curvelin(0, 1, 0, 1, log(10));
+	sig = Limiter.ar(sig);
 	Out.ar(out, sig);
 	Out.ar(out+2, sig);
 }).add;
@@ -187,22 +187,7 @@ SynthDef(\kick, { arg out = 0, tu = 1, amp = 1, level = 1;
 	Out.ar(out, Pan2.ar(sig, 0, level));
 }).add;
 
-SynthDef("kick", {
-	arg out=0,tu = 1,amp=1;
-	var env0, env1, env1m, sig;
-	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.3, 0], [0.01, 0.5, 0.26], [-4, -2, -4]), doneAction:2);
-	env1 = EnvGen.ar(Env.new([120, 43, 29], [0.03, 0.29], [-4, -5]));
-	env1m = env1.midicps;
-	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
-	sig = sig + WhiteNoise.ar(1);
-	sig = LPF.ar(sig, env1m*1.5, env0);
-	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
-	sig = sig * amp;
-	sig = sig.clip2(1);
-	Out.ar(out, sig);
-}).send(s);
-
-SynthDef("kickhi", {
+SynthDef(\kickhi, {
 	arg out=0,tu = 1;
 	var env0, env1, env1m, sig;
 	env0 =  EnvGen.ar(Env.new([0.5, 0.1, 0.01, 0.01,0], [0.01, 0.5, 1.26,0.1], [-4, -2, -4]), doneAction:2);
@@ -215,7 +200,7 @@ SynthDef("kickhi", {
 	sig = sig * 1.2;
 	sig = sig.clip2(1);
 	Out.ar(out, sig);
-}).send(s);
+}).add;
 
 SynthDef(\kick2,{arg out=0,gate = 1 ,freq=60,tu = 1,amp=1,atf = 80, rel =1;
 	var env = EnvGen.ar(Env.perc(0,rel),gate,doneAction:2);
@@ -302,12 +287,12 @@ OffsetOut.ar(out, son*level).tanh;
 //OffsetOut.ar(snd, Mono(son)*level).tanh;
 }).add;
 
-SynthDef(\kick808,{arg rel=1,tu=1,amp=0.5;
-	var env = EnvGen.ar(Env([0,1,0],[0,rel],-8),doneAction:2);
+SynthDef(\kick808,{arg rel = 1, tu = 1, amp = 0.5, pan = 0, t_trig = 1;
+	var env = EnvGen.ar(Env([0,1,0],[0,rel],-8), t_trig, doneAction:2);
 	var enf  = EnvGen.ar(Env([1000,20,20],[0.001,0.001,0.001],-4));
 	var sig = SinOsc.ar(tu*(enf+40))*env;
 	sig = sig + LPF.ar(SinOsc.ar(SinOsc.ar(100,0,50,100*tu),0,0.2)*env,1000);
-	Out.ar(0,sig*env*amp);
+	Out.ar(0, Pan2.ar(sig * env, pan, amp));
 }).add;
 
 SynthDef(\kick808new,{arg out=0,rel=1,tu=2,amp=0.5;
@@ -556,7 +541,7 @@ SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, a
  	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
  	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
  	DetectSilence.ar(sig, 0.0001, doneAction:2);
- 	Out.ar(out, Pan2.ar(sig, pan, level)); // OffsetOut write a signal to a bus with sample accurate timing
+ 	Out.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
 SynthDef(\hatY,{arg gate = 1, amp=1, out=0,rel=0.1;
@@ -755,21 +740,20 @@ SynthDef(\cosc,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,freq=512;
 
 ///////////////////////////////////////  Sampler
 
-SynthDef(\samplerStereo,{ arg out = 0, buffer = 0, rate = 1, trigger = 1, startPos = 0, loop = 0, pan = 0, amp = 1;
-	var sig;
-	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, trigger, BufFrames.ir(buffer)*startPos, loop, doneAction: 2) * EnvGen.kr(Env.linen(0.001, BufDur.kr(buffer), 0.1));
-	Out.ar(out, Pan2.ar(sig , pan, amp));
-}).add;
-
-SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, trigger = 1, startPos = 0, loop = 0, pan = 0, amp = 1;
-	var sig;
-	sig = PlayBuf.ar(1, buffer, BufRateScale.kr(buffer) * rate, trigger, BufFrames.ir(buffer)*startPos, loop, doneAction: 2) * EnvGen.kr(Env.linen(0.001, BufDur.kr(buffer), 0.1));
-	Out.ar(out, Pan2.ar(sig , pan, amp));
+~samplerSynthDef = SynthDef(\sampler,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: 2);
+	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.ir(buffer)*startPos, loop, doneAction: 2) * env;
+	if (buffer.numChannels < 2,
+		{ sig = Pan2.ar(sig ! 2, pan, amp); },
+		{ sig = Balance2.ar(sig[0], sig[1], pan, amp) }
+	);
+	Out.ar(out, sig);
 }).add;
 
 ///////////////////////////////////////  Input
 
-SynthDef(\InputSig, { arg out = 0, pan = 0, hpfreq = 20, band1freq = 80, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 8000, band3rq = 1, band3db = 0, lpfreq = 20000, amp = 0.5, in = 0;
+SynthDef(\inputSig, { arg out = 0, in = 0, pan = 0, hpfreq = 20, band1freq = 80, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 8000, band3rq = 1, band3db = 0, lpfreq = 20000, gate = 1, amp = 0.5, attack = 0.5, release = 1;
 	var input, sig;
 	input = SoundIn.ar(in);
 	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
@@ -777,6 +761,7 @@ SynthDef(\InputSig, { arg out = 0, pan = 0, hpfreq = 20, band1freq = 80, band1rq
 	sig = BPeakEQ.ar(sig, Lag2.kr(band2freq.max(20).min(20000), 0.5), band2rq, band2db); // Band 2
 	sig = BPeakEQ.ar(sig, Lag2.kr(band3freq.max(20).min(20000), 0.5), band3rq, band3db); // Band 3
 	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
+	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: 2);
 	Out.ar(out, Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
@@ -876,7 +861,7 @@ SynthDef(\bass3,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,tu=1.54;
     Out.ar(out,sig*amp*env);
 }).add;
 
-SynthDef(\bass,{arg out=0,gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, rel =1;
+SynthDef(\bass,{arg out=0, gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, rel =1;
     var env = EnvGen.ar(Env.adsr(0.05,0,1,rel),gate,doneAction:2);
     var frequ = EnvGen.ar(Env([freq+1000,freq-100],[0.05,0.1]));
     var sig = LFSaw.ar(LFSaw.ar(frequ-100,0,frequ-200,frequ*tu),0,env);
@@ -890,4 +875,13 @@ SynthDef(\bass,{arg out=0,gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, rel
     sig = Compander.ar(sig,In.ar(0,1),0.05,1,0.1,0.01,0.1);
     Out.ar(out,sig * amp);
 }).add;
+
+SynthDef(\sinBass,{arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5;
+	var freqEnv, env, sig;
+	freqEnv = EnvGen.kr(Env.new([envFreq1, envFreq2, envFreq3, envFreq4, envFreq5, envFreq6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve, loopNode: loopNode));
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: 2);
+	sig = LPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
+	Out.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

@@ -203,7 +203,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " hpfreq cc number");
 
 	// band 1 freq
@@ -227,7 +227,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1freq cc number");
 
 	// band 1 rq
@@ -251,7 +251,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1rq cc number");
 
 	// band 1 db
@@ -275,7 +275,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band1db cc number");
 
 	// band 2 freq
@@ -299,7 +299,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2freq cc number");
 
 	// band 2 rq
@@ -323,7 +323,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2rq cc number");
 
 	// band 2 db
@@ -347,7 +347,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band2db cc number");
 
 	// band 3 freq
@@ -371,7 +371,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3freq cc number");
 
 	// band 3 rq
@@ -395,7 +395,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3rq cc number");
 
 	// band 3 db
@@ -419,7 +419,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " band3db cc number");
 
 	// lpf
@@ -444,7 +444,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " lpfreq cc number");
 
 	// aux 1
@@ -468,7 +468,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " aux1 cc number");
 
 	StaticText(channel[\channelView], 35@65)
@@ -496,7 +496,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " aux2 cc number");
 
 	// mute
@@ -508,7 +508,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 		var midiControl;
 		midiControl = val.linlin(0, 127, 0, 1);
 		{ channel[(\mute ++ i).asSymbol].valueAction_(midiControl); }.defer;
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " mute cc number");
 
 	// pan
@@ -533,7 +533,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " pan cc number");
 
 	// level
@@ -557,7 +557,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0, 0);
+	}, ~ccStart, 0);
 	(~ccStart).debug("Channel " ++ i ++ " level cc number");
 };
 
