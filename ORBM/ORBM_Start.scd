@@ -53,58 +53,7 @@ MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first de
 
 ////////////////////////////////// 5. define specific functions
 
-~makeBuffers = { // create a dictionary with folders names under the Audio folder in the first key and sample number in the next key
-	b = Dictionary.new;
-	PathName(~path ++ "Audio").entries.do{
-		arg subfolder;
-		b.add(
-			subfolder.folderName.asSymbol ->
-			Array.fill(
-				subfolder.entries.size,
-				{
-					arg i;
-					Buffer.read(s, subfolder.entries[i].fullPath);
-				}
-			)
-		);
-	};
-};
-// b[\Bowed_Empty_Sweep_Slow][0].play; // use it in a SynthDef like this: s.bind { Synth(\sampler, [\out, 0, \buffer, b[\Bowed_Empty_Sweep_Slow][0].bufnum]) };
-
-~swingify = Prout({ |ev| // use it with a Pchain in a Pind to add swing
-    var now, nextTime = 0, thisShouldSwing, nextShouldSwing = false, adjust;
-    while { ev.notNil } {
-        // current time is what was "next" last time
-        now = nextTime;
-        nextTime = now + ev.delta;
-        thisShouldSwing = nextShouldSwing;
-        nextShouldSwing = ((nextTime absdif: nextTime.round(ev[\swingBase])) <= (ev[\swingThreshold] ? 0)) and: {
-            (nextTime / ev[\swingBase]).round.asInteger.odd
-        };
-        adjust = ev[\swingBase] * ev[\swingAmount];
-        // an odd number here means we're on an off-beat
-        if(thisShouldSwing) {
-            ev[\timingOffset] = (ev[\timingOffset] ? 0) + adjust;
-            // if next note will not swing, this note needs to be shortened
-            if(nextShouldSwing.not) {
-                ev[\sustain] = ev.use { ~sustain.value } - adjust;
-            };
-        } {
-            // if next note will swing, this note needs to be lengthened
-            if(nextShouldSwing) {
-                ev[\sustain] = ev.use { ~sustain.value } + adjust;
-            };
-        };
-        ev = ev.yield;
-    };
-});
-
-~cleanup = {
-	s.newBusAllocators;
-	s.freeAll;
-	Buffer.freeAll;
-	Window.closeAll;
-};
+this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Functions.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 

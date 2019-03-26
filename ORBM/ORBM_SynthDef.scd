@@ -740,14 +740,19 @@ SynthDef(\cosc,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,freq=512;
 
 ///////////////////////////////////////  Sampler
 
-~samplerSynthDef = SynthDef(\sampler,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1;
+~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: 2);
-	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.ir(buffer)*startPos, loop, doneAction: 2) * env;
-	if (buffer.numChannels < 2,
-		{ sig = Pan2.ar(sig ! 2, pan, amp); },
-		{ sig = Balance2.ar(sig[0], sig[1], pan, amp) }
-	);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate);
+	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.ir(buffer)*startPos, loop) * env;
+	sig = Balance2.ar(sig[0], sig[1], pan, amp);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate);
+	sig = PlayBuf.ar(1, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.ir(buffer)*startPos, loop) * env;
+	sig = Pan2.ar(sig, pan, amp);
 	Out.ar(out, sig);
 }).add;
 
@@ -761,7 +766,7 @@ SynthDef(\inputSig, { arg out = 0, in = 0, pan = 0, hpfreq = 20, band1freq = 80,
 	sig = BPeakEQ.ar(sig, Lag2.kr(band2freq.max(20).min(20000), 0.5), band2rq, band2db); // Band 2
 	sig = BPeakEQ.ar(sig, Lag2.kr(band3freq.max(20).min(20000), 0.5), band3rq, band3db); // Band 3
 	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
-	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: 2);
+	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate);
 	Out.ar(out, Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
@@ -876,10 +881,10 @@ SynthDef(\bass,{arg out=0, gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, re
     Out.ar(out,sig * amp);
 }).add;
 
-SynthDef(\sinBass,{arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5;
+~sinBassSynthDef = SynthDef(\sinBass,{arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5;
 	var freqEnv, env, sig;
 	freqEnv = EnvGen.kr(Env.new([envFreq1, envFreq2, envFreq3, envFreq4, envFreq5, envFreq6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve, loopNode: loopNode));
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: 2);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate/*, doneAction: 2*/);
 	sig = LPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
 	Out.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
