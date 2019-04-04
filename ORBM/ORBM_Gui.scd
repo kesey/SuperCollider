@@ -275,11 +275,11 @@ channelMaster.decorator.nextLine;
 
 // hpf
 channel[\hpfreqMaster] = EZKnob(channelMaster, 120@70, 'hpfreq', ControlSpec(20, 20000, step: 1, default: 20, units: 'hz'), { arg hpfreq; ~master.set(\hpfreq, hpfreq.value); }, margin: 39@0).setColors(stringColor: Color.white);
-	channelMaster.decorator.nextLine;
+channelMaster.decorator.nextLine;
 
 // lpf
 channel[\lpfreqMaster] = EZKnob(channelMaster, 124@70, 'lpfreq', ControlSpec(20, 20000, step: 1, default: 20000, units: 'hz'), { arg lpfreq; ~master.set(\lpfreq, lpfreq.value); }, margin: 39@0).setColors(stringColor: Color.white);
-	channelMaster.decorator.nextLine;
+channelMaster.decorator.nextLine;
 
 // level
 channel[\levelMaster] = EZSlider(channelMaster, 110@160, 'level', ControlSpec(0, 1, step: 0.01, default: 0.5), { arg level; ~master.set(\level, level.value); }, layout: 'vert', margin: 39@0).setColors(stringColor: Color.white);
@@ -290,8 +290,8 @@ x = Window("SynthDef",Rect(0, 0, 1200, 725), scroll: true);
 x.front;
 x.view.decorator = FlowLayout(x.view.bounds, 3@3, 3@3);
 
-~autoGui.value(x, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+~autoGui.value(x, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
-~autoGui.value(x, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+~autoGui.value(x, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
 )

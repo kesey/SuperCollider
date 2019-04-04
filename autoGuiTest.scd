@@ -1,60 +1,28 @@
 (
-///////////////////////////////////////  Functions
+MIDIClient.init; // post a list of available devices
 
-~makeBuffers = { // create a dictionary with folders names under the Audio folder in the first key and sample number in the next key
-	b = Dictionary.new;
-	PathName(~path ++ "Audio").entries.do{
-		arg subfolder;
-		b.add(
-			subfolder.folderName.asSymbol ->
-			Array.fill(
-				subfolder.entries.size,
-				{
-					arg i;
-					Buffer.read(s, subfolder.entries[i].fullPath);
-				}
-			)
-		);
-	};
-};
-// b[\Bowed_Empty_Sweep_Slow][0].play; // use it in a SynthDef like this: s.bind { Synth(\sampler, [\out, 0, \buffer, b[\Bowed_Empty_Sweep_Slow][0].bufnum]) };
+// MIDIClient.sources; // list avalaible midi sources
+// MIDIIn.connectAll; // connect to all attached input sources
+MIDIIn.connect(0, MIDIClient.sources[0]);
 
-~swingify = Prout({ |ev| // use it with a Pchain in a Pind to add swing
-    var now, nextTime = 0, thisShouldSwing, nextShouldSwing = false, adjust;
-    while { ev.notNil } {
-        // current time is what was "next" last time
-        now = nextTime;
-        nextTime = now + ev.delta;
-        thisShouldSwing = nextShouldSwing;
-        nextShouldSwing = ((nextTime absdif: nextTime.round(ev[\swingBase])) <= (ev[\swingThreshold] ? 0)) and: {
-            (nextTime / ev[\swingBase]).round.asInteger.odd
-        };
-        adjust = ev[\swingBase] * ev[\swingAmount];
-        // an odd number here means we're on an off-beat
-        if(thisShouldSwing) {
-            ev[\timingOffset] = (ev[\timingOffset] ? 0) + adjust;
-            // if next note will not swing, this note needs to be shortened
-            if(nextShouldSwing.not) {
-                ev[\sustain] = ev.use { ~sustain.value } - adjust;
-            };
-        } {
-            // if next note will swing, this note needs to be lengthened
-            if(nextShouldSwing) {
-                ev[\sustain] = ev.use { ~sustain.value } + adjust;
-            };
-        };
-        ev = ev.yield;
-    };
-});
+~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
+	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.kr(buffer)*startPos, loop, doneAction) * env;
+	sig = Balance2.ar(sig[0], sig[1], pan, amp.curvelin(0, 1, 0, 1, log(10)));
+	Out.ar(out, sig);
+}).add;
 
-~cleanup = {
-	currentEnvironment.removeAll;
-	Buffer.freeAll;
-	Window.closeAll;
-	s.newBusAllocators;
-	s.freeAll;
-};
+~sinBassSynthDef = SynthDef(\sinBass,{arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
+	var freqEnv, env, sig;
+	freqEnv = EnvGen.kr(Env.new([envFreq1, envFreq2, envFreq3, envFreq4, envFreq5, envFreq6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve, loopNode: loopNode));
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
+	sig = LPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
+	Out.ar(out, Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10))));
+}).add;
+)
 
+(
 // automatic GUI creation and midi mapping
 ~autoGui = { arg parentWindow = nil, synthDef = nil, instance = nil, ccStart = 10, backGroundColor = Color.white, specDict = Dictionary.new;
 	var arguments, synthWindow, list, slider, button, knob, active, controlType, controlSpec, midiMap, pdefName;
@@ -92,10 +60,12 @@
 			arg control, i;
 			var caseFind;
 			caseFind = false;
+			if (control.defaultValue.notNil, {
+				specDict.add("default" -> ["knob", ControlSpec(0, 1, step: 0.01, default: control.defaultValue), true]);
+			});
 
 			if (specDict.includesKey(control.name.asString),
 				{
-
 					controlType = specDict.at(control.name.asString)[0].value.asString.toLower;
 					if (specDict.at(control.name.asString)[1].notNil, { controlSpec = specDict.at(control.name.asString)[1].value; });
 					if (specDict.at(control.name.asString)[2].notNil, { midiMap = specDict.at(control.name.asString)[2].value; });
@@ -221,9 +191,69 @@
 				});
 			};
 		});
+		if (instance.isPattern, {
+			// removes all the children of the view and destroys them then remove the composite view
+			Button(synthWindow, Rect(10,110,20,20)).states_([["X", Color.white, Color.red]]).action = { synthWindow.removeAll; synthWindow.remove; /*parentWindow.view.decorator.update;*/ };
+		});
 	}, {
 		"autoGui wrong arguments".postln;
 	});
 };
+b = Buffer.read(s, "/Users/Fabien/SuperCollider/ORBM/Audio/Bowed_Empty_Sweep_Slow/waterharp_fx_empty_sweep_slow_01.wav");
+
+~samplerStereo = Synth(\samplerStereo, [\out, 0, \gate, 0, \buffer, b.bufnum, \doneAction, 0]);
+~sinBass = Synth(\sinBass, [\out, 0, \gate, 0, \doneAction, 0]);
+
+w = Window("GUI_TEST",Rect(0, 0, 690, 300), scroll: true);
+w.front;
+//w.alwaysOnTop_(true);
+w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
+
+// auto Gui
+~autoGui.value(w, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["buffer", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+
+~autoGui.value(w, ~sinBassSynthDef, ~sinBass, 93, Color.yellow, Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loopNode", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "amp", ["knob", ControlSpec(0, 10, step: 0.01, default: 1), true]]));
 
 )
+
+(
+Pdef(\unit1,
+	Pbind(
+		\instrument, \samplerStereo,
+		\dur, 1,
+		\amp, 0.7,
+		\function, Pfunc({ arg event;
+			if (event.at(\instrument) != ~prevInstrUnit1, {
+				{ ~autoGui.value(w, ~samplerStereoSynthDef, Pdef(\unit1), 103, Color.white, Dictionary.newFrom(List["buffer", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["none"], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: 1), true]])); }.defer;
+				~prevInstrUnit1 = event.at(\instrument);
+			});
+			0;
+		}),
+		\out, 0
+	)
+).play;
+)
+
+(
+~pattern1 = Pbind(
+	\instrument, \sinBass,
+	\dur, 1.5,
+	\function, Pfunc({ arg event;
+		if (event.at(\instrument) != ~prevInstrUnit1, {
+			{ ~autoGui.value(w, ~sinBassSynthDef, Pdef(\unit1), 113, Color.white, Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "loopNode", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "gate", ["none"], "amp", ["knob", ControlSpec(0, 10, step: 0.01, default: 1), true]])); }.defer;
+			~prevInstrUnit1 = event.at(\instrument);
+		});
+		0;
+	}),
+	\out, 0
+);
+
+Pdef(\unit1, ~pattern1);
+)
+
+
+Pdef(\unit1, \dur, 0.5);
+Pdef(\unit1).set(\amp, 0.1);
+Pbindef(\unit1, \amp, 0.1);
+Pbindef(\unit1, \amp, 0.7);
+

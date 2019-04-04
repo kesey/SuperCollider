@@ -48,7 +48,7 @@ SynthDef(\Chorus, { arg in = 0, out = 0, lpfreq = 6000, rq = 1, drywet = 0.5, le
 		maxdelaytime = rrand(0.01,0.03);
 		DelayC.ar(input, maxdelaytime, LFNoise1.kr(Rand(5,10),0.01,0.02));
 	});
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect * level.curvelin(0, 1, 0, 1, log(10)));
 }).add;
 
 SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, decaytimea = 1, drywet = 0.5, level = 0.2;
@@ -59,7 +59,7 @@ SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, de
 	temp = DelayN.ar(input, 0.1, predelaytime);
 	temp = Mix.fill(numc, { CombL.ar(temp, 0.1, rrand(0.01, 0.1), decaytimec) });
 	numa.do({ temp = AllpassN.ar(temp, 0.051, [rrand(0.01, 0.05), rrand(0.01, 0.05)], decaytimea) });
-	XOut.ar(out, drywet, temp * level);
+	XOut.ar(out, drywet, temp * level.curvelin(0, 1, 0, 1, log(10)));
 }).add;
 
 SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay = 0.1, combDecay = 15, allPassMaxDelay = 0.05, allPassDecay = 1;
@@ -83,7 +83,7 @@ SynthDef(\Phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5, level = 1;
 	var input, effect;
 	input = In.ar(in, 2);
 	effect = AllpassN.ar(input, 0.02, SinOsc.kr(freq, 0, 0.01, 0.01));  // max delay of 20msec
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect * level.curvelin(0, 1, 0, 1, log(10)));
 }).add;
 
 SynthDef(\Flanging, {arg in = 0, out = 0, flangefreq = 0.1, fdback = 0.1, drywet = 0.5, level = 1;
@@ -92,28 +92,28 @@ SynthDef(\Flanging, {arg in = 0, out = 0, flangefreq = 0.1, fdback = 0.1, drywet
 	input = input + LocalIn.ar(2); // add some feedback
 	effect = DelayN.ar(input, 0.02, SinOsc.kr(flangefreq, 0, 0.005, 0.005)); // max delay of 20msec
 	LocalOut.ar(fdback * effect);
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect * level.curvelin(0, 1, 0, 1, log(10)));
 }).add;
 
 SynthDef(\DistoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
 	var input, effect;
 	input = In.ar(in, 2);
 	effect = InsideOut.ar(input);
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect * level.curvelin(0, 1, 0, 1, log(10)));
 }).add;
 
 SynthDef(\DistoCrossOver, { arg in = 0, out = 0, amp = 0.5, smooth = 0.5, drywet = 0.5, level = 1;
 	var input, effect;
 	input = In.ar(in, 2);
 	effect = CrossoverDistortion.ar(input , amp, smooth);
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect * level.curvelin(0, 1, 0, 1, log(10)));
 }).add;
 
 SynthDef(\Compression, {arg in = 0, out = 0, gain = 1.5, threshold = 0.5, drywet = 0.5, level = 1;
 	var input, effect;
 	input = In.ar(in, 2);
 	effect = CompanderD.ar(gain * input, threshold, 1, 0.5);
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect * level.curvelin(0, 1, 0, 1, log(10)));
 }).add;
 
 SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
@@ -125,7 +125,7 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 
 ///////////////////////////////////////  Kick
 
-SynthDef(\snapkick, { |out = 0, pan = 0, amp = 0.3|
+~snapKickSynthDef = SynthDef(\snapkick, { |out = 0, pan = 0, amp = 0.3|
 	var body, bodyFreq, bodyAmp;
 	var pop, popFreq, popAmp;
 	var click, clickAmp;
@@ -147,7 +147,7 @@ SynthDef(\snapkick, { |out = 0, pan = 0, amp = 0.3|
 	snd = body + pop + click;
 	snd = snd.tanh;
 
-	Out.ar(out, Pan2.ar(snd, pan, amp));
+	Out.ar(out, Pan2.ar(snd, pan, amp.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, amp = 1;
@@ -155,7 +155,7 @@ SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, amp = 1;
 	env = EnvGen.ar(Env(#[0, 0.5, 0.4, 0], #[0, 0.2, 0.01], -5), t_trig, doneAction: 2);
 	sin = SinOsc.ar(0, (Sweep.ar(t_trig, 2pi * [52.8, 740]) + (pi/3)).wrap(-pi, pi), #[2, 0.05]).mean.tanh;
 	sig = (sin * env)!2;
-	Out.ar(out, Pan2.ar(sig, pan, amp));
+	Out.ar(out, Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 SynthDef(\gabberkick, {
@@ -184,7 +184,7 @@ SynthDef(\kick, { arg out = 0, tu = 1, amp = 1, level = 1;
 	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
 	sig = sig * amp;
 	sig = sig.clip2(1);
-	Out.ar(out, Pan2.ar(sig, 0, level));
+	Out.ar(out, Pan2.ar(sig, 0, level.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 SynthDef(\kickhi, {
@@ -405,7 +405,7 @@ SynthDef(\snare2new, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;
     Out.ar(out, sig*amp);
 }).add;
 
-SynthDef(\junglesnare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200,kracter = 10;
+SynthDef(\jungleSnare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200,kracter = 10;
 	var sig;
 	var env = EnvGen.ar(Env([1,0,1,0],[0,0.004,0.05]),gate,doneAction:2);
 	var enf = EnvGen.ar(Env([1600,5600,800,250],[0.001,0.001,0.001],-4));
@@ -533,7 +533,7 @@ SynthDef(\IkedaHiNoise, { arg out = 0, t_trig = 0, attack = 0.02, decay = 0.1, a
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
 	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq);
 	DetectSilence.ar(sig, 0.001, doneAction:2);
-	Out.ar(out, Pan2.ar(sig, pan, level));
+	Out.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, amp = 25, pan = 0, level = 1;
@@ -541,7 +541,7 @@ SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, a
  	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
  	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
  	DetectSilence.ar(sig, 0.0001, doneAction:2);
- 	Out.ar(out, Pan2.ar(sig, pan, level));
+ 	Out.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 SynthDef(\hatY,{arg gate = 1, amp=1, out=0,rel=0.1;
@@ -652,7 +652,7 @@ SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 =
 	lpf = LPF.ar(sin, lpfFreq.max(1));
 	hpf = HPF.ar(LPF.ar(WhiteNoise.ar(0.008), 12000), hpfFreq.max(1));
 	sig = (lpf + hpf) * EnvGen.kr(Env(#[0, 1, 0.6, 0], [attack, decay, release]), t_trig, doneAction:2); // # makes a totally fixed (non-dynamic) Array and is slightly cheaper, especially where you're not going to change the Array once you make it
-	Out.ar(out, Pan2.ar(sig, pan, level));
+	Out.ar(out, Pan2.ar(sig, pan, level.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 SynthDef(\noise2,{arg out = 0,rel  = 0.01,a=4;
@@ -673,9 +673,10 @@ var sig = CuspN.ar(
 	Out.ar(out,sig*env0);
 }).add;
 
-SynthDef(\noise2new,{arg out = 0,rel  = 1,a=0.2,pan=0,del1=10,del2=20;
-var env0 =  EnvGen.ar(Env.new([0.1, 1, 0.3, 0], [0.01, rel], [-4, -2, -4]), doneAction:2);
-var sig = CuspN.ar(
+SynthDef(\noise2new,{arg out = 0, rel = 1, a = 0.2, pan = 0, del1 = 10, del2 = 20;
+	var env, sig;
+	env =  EnvGen.ar(Env.new([0.1, 1, 0.3, 0], [0.01, rel], [-4, -2, -4]), doneAction:2);
+	sig = CuspN.ar(
         SampleRate.ir/a,
         LFNoise2.kr([4,4],1.5,1.5),
         LFNoise2.kr([0.2,0.2],1.5,1.5),
@@ -684,11 +685,11 @@ var sig = CuspN.ar(
     );
     sig = HPF.ar(sig,1000);
     sig = Limiter.ar(sig,0.4);
-    sig =    [DelayL.ar(sig,0.1,del1/44100) ,DelayL.ar(sig,0.1,del2/44100)];
+    sig = [DelayL.ar(sig,0.1,del1/44100) ,DelayL.ar(sig,0.1,del2/44100)];
     //sig = PitchShift.ar(sig,0.2,1*a);
     sig = Compander.ar(sig,In.ar(0,1),0.01,1,0.01,0.01,0.1);
-    sig=  sig.tanh;
-    Out.ar(4,sig*env0);
+    sig = sig.tanh;
+    Out.ar(4, sig * env);
 }).add;
 
 SynthDef(\noise,{arg out =0,rel  = 0.25,a=4;
@@ -740,25 +741,25 @@ SynthDef(\cosc,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,freq=512;
 
 ///////////////////////////////////////  Sampler
 
-~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1;
+~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1, doneAction = 2;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate);
-	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.ir(buffer)*startPos, loop) * env;
-	sig = Balance2.ar(sig[0], sig[1], pan, amp);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
+	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.kr(buffer)*startPos, loop, doneAction) * env;
+	sig = Balance2.ar(sig[0], sig[1], pan, amp.curvelin(0, 1, 0, 1, log(10)));
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1;
+SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1, doneAction = 2;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate);
-	sig = PlayBuf.ar(1, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.ir(buffer)*startPos, loop) * env;
-	sig = Pan2.ar(sig, pan, amp);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
+	sig = PlayBuf.ar(1, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.kr(buffer)*startPos, loop, doneAction) * env;
+	sig = Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10)));
 	Out.ar(out, sig);
 }).add;
 
 ///////////////////////////////////////  Input
 
-SynthDef(\inputSig, { arg out = 0, in = 0, pan = 0, hpfreq = 20, band1freq = 80, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 8000, band3rq = 1, band3db = 0, lpfreq = 20000, gate = 1, amp = 0.5, attack = 0.5, release = 1;
+SynthDef(\inputSig, { arg out = 0, in = 0, pan = 0, hpfreq = 20, band1freq = 80, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 8000, band3rq = 1, band3db = 0, lpfreq = 20000, gate = 1, amp = 0.5, attack = 0.5, release = 1, doneAction = 2;
 	var input, sig;
 	input = SoundIn.ar(in);
 	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
@@ -766,7 +767,7 @@ SynthDef(\inputSig, { arg out = 0, in = 0, pan = 0, hpfreq = 20, band1freq = 80,
 	sig = BPeakEQ.ar(sig, Lag2.kr(band2freq.max(20).min(20000), 0.5), band2rq, band2db); // Band 2
 	sig = BPeakEQ.ar(sig, Lag2.kr(band3freq.max(20).min(20000), 0.5), band3rq, band3db); // Band 3
 	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
-	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate);
+	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
 	Out.ar(out, Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
@@ -881,12 +882,12 @@ SynthDef(\bass,{arg out=0, gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, re
     Out.ar(out,sig * amp);
 }).add;
 
-~sinBassSynthDef = SynthDef(\sinBass,{arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5;
+~sinBassSynthDef = SynthDef(\sinBass,{arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
 	var freqEnv, env, sig;
 	freqEnv = EnvGen.kr(Env.new([envFreq1, envFreq2, envFreq3, envFreq4, envFreq5, envFreq6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve, loopNode: loopNode));
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate/*, doneAction: 2*/);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
 	sig = LPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
-	Out.ar(out, Pan2.ar(sig, pan, amp));
+	Out.ar(out, Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10))));
 }).add;
 
 )
