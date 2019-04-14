@@ -1,5 +1,7 @@
 ( // general set up
 
+///////////////////////////////////////  Start
+
 ////////////////////////////////// 1. server config
 
 // Server.supernova; // Switches the server program to supernova. Check ParGroup how to make use of multicore hardware with the supernova server.
@@ -50,10 +52,11 @@ MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first de
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
+~synthWindow = Dictionary.new;
 
 ////////////////////////////////// 5. define specific functions
 
-this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Functions.scd");
+this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Function.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 
