@@ -25,6 +25,6 @@ masterBus = Bus.audio(s, 2);
 s.bind { Synth(\Reverb, [\in, ~aux1, \out, ~channelBus[2]], ~master, 'addBefore') }; // s.bind consider server latency
 s.bind { Synth(\SimpleDelay, [\in, ~aux2, \out, ~channelBus[3]], ~master, 'addBefore') };
 
-s.meter; // level meter
+// s.meter; // level meter
 
 )

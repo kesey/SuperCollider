@@ -1,4 +1,5 @@
 (
+
 ///////////////////////////////////////  SynthDef
 
 ~aux1 = Bus.audio(s, 2);
@@ -126,7 +127,7 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 
 ///////////////////////////////////////  Kick
 
-~snapKickSynthDef = SynthDef(\snapkick, { |out = 0, pan = 0, amp = 0.3/*, gate = 1*/|
+~snapKickSynthDef = SynthDef(\snapkick, { |out = 0, pan = 0, amp = 0.3|
 	var body, bodyFreq, bodyAmp;
 	var pop, popFreq, popAmp;
 	var click, clickAmp;
@@ -134,15 +135,15 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 
 	// body starts midrange, quickly drops down to low freqs, and trails off
 	bodyFreq = EnvGen.ar(Env([261, 120, 51], [0.035, 0.08], curve: \exp));
-	bodyAmp = EnvGen.ar(Env.linen(0.005, 0.1, 0.3), /*gate,*/ doneAction: 2);
+	bodyAmp = EnvGen.ar(Env.linen(0.005, 0.1, 0.3), doneAction: 2);
 	body = SinOsc.ar(bodyFreq) * bodyAmp;
 	// pop sweeps over the midrange
 	popFreq = XLine.kr(750, 261, 0.02);
-	popAmp = EnvGen.ar(Env.linen(0.001, 0.02, 0.001)/*, gate*/) * 0.15;
+	popAmp = EnvGen.ar(Env.linen(0.001, 0.02, 0.001)) * 0.15;
 	pop = SinOsc.ar(popFreq) * popAmp;
 	// click is spectrally rich, covering the high-freq range
 	// you can use Formant, FM, noise, whatever
-	clickAmp = EnvGen.ar(Env.perc(0.001, 0.01)/*, gate*/) * 0.15;
+	clickAmp = EnvGen.ar(Env.perc(0.001, 0.01)) * 0.15;
 	click = LPF.ar(Formant.ar(910, 4760, 2110), 3140) * clickAmp;
 
 	snd = body + pop + click;
@@ -529,10 +530,10 @@ SynthDef(\hat, { | out = 0, amp = 1 |
 	OffsetOut.ar(out, Pan2.ar(osc1, 0, env*amp));
 }).add;
 
-SynthDef(\IkedaHiNoise, { arg out = 0, t_trig = 0, attack = 0.02, decay = 0.1, amp = 0.05, rq = 0.9, pan = 0, level = 10;
+~ikedaHiNoiseSynthDef = SynthDef(\IkedaHiNoise, { arg out = 0, t_trig = 0, attack = 0.02, decay = 0.1, amp = 0.05, rq = 0.9, pan = 0, level = 10;
 	var noise, sig;
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
-	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq);
+	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq.max(0.001));
 	DetectSilence.ar(sig, 0.001, doneAction:2);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
@@ -647,7 +648,7 @@ SynthDef(\clapping, {arg out = 0,t_trig=1, amp=0.5, filterfreq=120, rq=0.1;
 
 ///////////////////////////////////////  Noise
 
-SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 = 0.5, amp2 = 0.6, lpfFreq = 103.82, hpfFreq = 2400, attack = 0.0001, decay = 0.4, release = 0.01, pan = 0, level = 1;
+~ikedaBreathSynthDef = SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 = 0.5, amp2 = 0.6, lpfFreq = 103.82, hpfFreq = 2400, attack = 0.0001, decay = 0.4, release = 0.01, pan = 0, level = 1;
 	var sin, lpf, hpf, sig;
 	sin = SinOsc.ar(note1.midicps, 0, amp1) + SinOsc.ar(note2.midicps, 0, amp2);
 	lpf = LPF.ar(sin, lpfFreq.max(1));
@@ -883,12 +884,12 @@ SynthDef(\bass,{arg out=0, gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, re
     OffsetOut.ar(out,sig * amp);
 }).add;
 
-~sinBassSynthDef = SynthDef(\sinBass,{arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
+~sinBassSynthDef = SynthDef(\sinBass, { arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
 	var freqEnv, env, sig;
 	freqEnv = EnvGen.kr(Env.new([envFreq1, envFreq2, envFreq3, envFreq4, envFreq5, envFreq6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve, loopNode: loopNode));
 	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
 	sig = LPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
-	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+	OffsetOut.ar(out, Pan2.ar(sig, pan, Lag.kr(amp, 0.5)));
 }).add;
 
 )

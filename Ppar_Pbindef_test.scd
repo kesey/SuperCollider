@@ -1,4 +1,5 @@
 (
+s.boot;
 SynthDef(\bass, { arg out = 0, t_trig = 0, pan = 0, amp = 1;
 	var env, sin, sig;
 	env = EnvGen.ar(Env(#[0, 0.5, 0.4, 0], #[0, 0.2, 0.01], -5), t_trig, doneAction: 2);
@@ -16,13 +17,13 @@ SynthDef(\hiNoise, { arg out = 0, t_trig = 0, attack = 0.02, decay = 0.1, amp = 
 }).add;
 )
 
-// in the example above no problem when change trig value
+// in the example below (simple nesting) no problem when change \type value
 (
 
 Pdef(\unit1,
 	Pbind(
 		\instrument, \hiNoise,
-		\dur, 0.5,
+		\dur, 0.25,
 		\amp, 0.06
 	)
 ).play;
@@ -34,19 +35,32 @@ Pdef(\unit2,
 	\amp, 0.8
 )
 ).play;
-
 )
 
-Pbindef(\unit2, \trig, 0);
-Pbindef(\unit2, \trig, 1);
+Pbindef(\unit2, \type, \rest); // mute
+Pbindef(\unit2, \type, \note); // unmute
 
-
-// in the example above changing trig value create an offset on \bass
 (
+Pdef(\unit1).stop;
+Pdef(\unit2).stop;
+)
 
-//p = Ppar([
+// in the example below (complex nesting) changing \type value break the synchro between the two synth
+(
+~unit3 = Penvir((pdefName: "unit3Name", prevInstr: "unit3Instr"), Pdef(\unit3,
+	Pbind(
+		\instrument, \hiNoise,
+		\dur, 0.25,
+		\amp, 0.06,
+		\function, Pfunc({
+			~pdefName.debug("pdefName");
+			~prevInstr.debug("prevInstr");
+			0;
+		})
+	)
+).quant_(0));
 
-Penvir((pdefName: \unit3, prevInstr: nil), Pdef(\unit3,
+~unit4 = Penvir((pdefName: "unit4Name", prevInstr: "unit4Instr"), Pdef(\unit4,
 	Pbind(
 		\instrument, \bass,
 		\dur, Pseq([1, 0.5], inf),
@@ -57,26 +71,12 @@ Penvir((pdefName: \unit3, prevInstr: nil), Pdef(\unit3,
 			0;
 		})
 	)
-)).play;
+).quant_(0));
 
-Penvir((pdefName: \unit4, prevInstr: nil), Pdef(\unit4,
-	Pbind(
-		\instrument, \hiNoise,
-		\dur, 0.5,
-		\amp, 0.06,
-		\decay, 10,
-		\function, Pfunc({
-			~pdefName.debug("pdefName");
-			~prevInstr.debug("prevInstr");
-			0;
-		})
-	)
-)).play;
-
-//]);
+p = Ppar([~unit3, ~unit4], inf).play;
 )
 
-Pbindef(\unit3, \amp, 0);
-Pbindef(\unit3, \amp, 1);
-Pbindef(\unit4, \amp, 0);
-Pbindef(\unit4, \amp, 1);
+p.stop;
+
+Pbindef(\unit4, \type, \rest).quant_(0);
+Pbindef(\unit4, \type, \note).quant_(0);

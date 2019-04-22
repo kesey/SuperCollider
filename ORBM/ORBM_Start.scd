@@ -52,6 +52,7 @@ MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first de
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
+~globalQant = 0;
 ~synthWindow = Dictionary.new;
 
 ////////////////////////////////// 5. define specific functions
@@ -77,8 +78,15 @@ s.serverRunning.not.if({ s.boot });
 s.waitForBoot({
 	"boot complete".postln;
 	s.newBusAllocators;
-	s.plotTree; // node tree
+	// s.plotTree; // node tree
 	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_SynthDef.scd");
+	s.sync;
+	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Routing.scd");
+	s.sync;
+	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Pattern.scd");
+	s.sync;
+	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Song.scd");
+	s.sync;
 });
 
 )

@@ -1,7 +1,10 @@
 (
 // visualize stream
 var a;
-a = Prand([ 0.1, 0.1, [0.1, -0.1] ], inf);
+a = Ppatlace([
+        Pseq([0, 1, 2, 3, 4, 5, 6], inf),
+        Pseq([00, 11, 22, 33, 44, 55, 66], inf),
+    ], inf);
 a = a.asStream;
 a.nextN(20);
 )

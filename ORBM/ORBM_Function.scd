@@ -1,4 +1,5 @@
 (
+
 ///////////////////////////////////////  Function
 
 ~makeBuffers = { // create a dictionary with folders names under the Audio folder in the first key and sample number in the next key
@@ -61,6 +62,20 @@
 		synthView = synthWindow.at(synthWindowKey);
 		synthView.removeAll; // removes all children
 		synthView.remove; // remove the composite view
+	});
+};
+
+// persist Pdef mute state at pattern change
+~changePattern = { arg pdef, pattern;
+	var pdefNameSymbol, pdefNameString;
+	pdefNameSymbol = pdef.key;
+	pdefNameString = pdefNameSymbol.asString;
+
+	if (~activePdefMute.at(pdefNameString), {
+		Pdef(pdefNameSymbol, pattern).quant_(1);
+		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQant);
+	}, {
+		Pdef(pdefNameSymbol, pattern).quant_(1);
 	});
 };
 
@@ -139,7 +154,7 @@
 			{
 				// list creation
 				active.put(("list" ++ i ++ "Active").asString, false);
-				list.put(("list" ++ i).asString, EZListView(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("list" ++ i ++ "Active").asString, false); }));
+				list.put(("list" ++ i).asString, EZListView(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("list" ++ i ++ "Active").asString, false); }));
 
 				if (midiMap, { // list midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -152,7 +167,7 @@
 								(active.at(("list" ++ i ++ "Active").asString) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 								{
 									active.put(("list" ++ i ++ "Active").asString, true);
-									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl); }, { instance.set(controlNameSymb, midiControl); });
+									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQant); }, { instance.set(controlNameSymb, midiControl); });
 									list.at(("list" ++ i).asString).value_(midiControl);
 								}
 							);
@@ -168,7 +183,7 @@
 			{
 				// slider creation
 				active.put(("slider" ++ i ++ "Active").asString, false);
-				slider.put(("slider" ++ i).asString, EZSlider(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("slider" ++ i ++ "Active").asString, false); }, layout: \vert, gap: 6@6));
+				slider.put(("slider" ++ i).asString, EZSlider(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("slider" ++ i ++ "Active").asString, false); }, layout: \vert, gap: 6@6));
 
 				if (midiMap, { // slider midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -183,7 +198,7 @@
 							{
 								active.put(("slider" ++ i ++ "Active").asString, true);
 								{
-									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl); }, { instance.set(controlNameSymb, midiControl); });
+									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQant); }, { instance.set(controlNameSymb, midiControl); });
 									slider.at(("slider" ++ i).asString).value_(midiControl);
 								}.defer;
 							}
@@ -198,7 +213,7 @@
 			{ /*"trigger trig gate t_trig t_gate loop mute start stop on off".contains(controlName) or: */controlType == "button" and: caseFind.not } // in this case create button
 			{
 				// button creation
-				button.put(("button" ++ i).asString, Button(synthWindow, Rect(10,110,40,25)).states_([[controlName, Color.black, Color.white],["stop", Color.white, Color.grey]]).action = { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value); }, { instance.set(controlNameSymb, guiControl.value); }); });
+				button.put(("button" ++ i).asString, Button(synthWindow, Rect(10,110,40,25)).states_([[controlName, Color.black, Color.white],["stop", Color.white, Color.grey]]).action = { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQant); }, { instance.set(controlNameSymb, guiControl.value); }); });
 
 				if (midiMap, { // button midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -218,7 +233,7 @@
 			{
 				// knob creation
 				active.put(("knob" ++ i ++ "Active").asString, false);
-				knob.put(("knob" ++ i).asString, EZKnob(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("knob" ++ i ++ "Active").asString, false); }));
+				knob.put(("knob" ++ i).asString, EZKnob(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("knob" ++ i ++ "Active").asString, false); }));
 
 				if (midiMap, { // knob midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -233,7 +248,7 @@
 							{
 								active.put(("knob" ++ i ++ "Active").asString, true);
 								{
-									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl); }, { instance.set(controlNameSymb, midiControl); });
+									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQant); }, { instance.set(controlNameSymb, midiControl); });
 									knob.at(("knob" ++ i).asString).value_(midiControl);
 								}.defer;
 							}

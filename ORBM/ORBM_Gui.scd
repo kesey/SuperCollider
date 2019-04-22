@@ -5,7 +5,7 @@
 ///////////////////////////////////////  Mixer
 
 var channel, channelMaster, ccStart,
-arguments, synthCcStart, synthWindow, button, knob, active, pdefGuiView, pdefNumber;
+arguments, synthCcStart, synthWindow, button, knob, active, pdefGuiView, pdefNumber, ccStartPdMute;
 
 ~ccStart = 21; // start mapping midi cc from here
 ~ccStart = ~ccStart.max(0).min(127); // limit ccStart
@@ -291,11 +291,19 @@ x.front;
 
 ~autoGui.value(x, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
-~autoGui.value(x, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+~autoGui.value(x, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
-///////////////////////////////////////  Pdef Gui
+///////////////////////////////////////  Pdef Mute Gui
 
-pdefNumber = Pdef.all; //p.list.size; // if p is a Ppar
+pdefNumber = Pdef.all.size; // p.list.size; // if p is a Ppar
+ccStartPdMute = 1;
+
+~activePdefMute = Dictionary.new;
+
+pdefNumber.do({ arg i;
+	i = i + 1;
+	~activePdefMute.put("unit" ++ i, false);
+});
 
 pdefGuiView = CompositeView(bounds: (pdefNumber * 62)@110)
 .minHeight_(115)
@@ -304,15 +312,14 @@ pdefGuiView = CompositeView(bounds: (pdefNumber * 62)@110)
 
 pdefGuiView.layout = HLayout();
 
-// Mute
+// Pdef Mute
 pdefNumber.do({ arg i;
  	var mute, pdefName;
 
  	mute = Dictionary.new;
  	pdefName = ("unit" ++ (i + 1)).asString;
 
-	mute.put(("mute" ++ i).asString, Button().minHeight_(60).states_([["mute " ++ pdefName, Color.black, Color.white],["unmute " ++ pdefName, Color.white, Color.new255(48, 48, 48)]]).action = { arg guiControl;
-		var type; if(guiControl.value > 0, {type = \rest; }, { type = \note; }); Pbindef(pdefName.asSymbol, \type, type); });
+	mute.put(("mute" ++ i).asString, Button().minHeight_(60).states_([["mute " ++ pdefName, Color.black, Color.white],["unmute " ++ pdefName, Color.white, Color.new255(48, 48, 48)]]).action = { arg guiControl; var type, state; if(guiControl.value > 0, { type = \rest; state = true; }, { type = \note; state = false; }); Pbindef(pdefName.asSymbol, \type, type).quant_(~globalQant); ~activePdefMute.put(pdefName, state); });
 
  	// button midi map
  	MIDIFunc.cc({ arg val, num, chan, src;
@@ -321,9 +328,9 @@ pdefNumber.do({ arg i;
  		{
  			mute.at(("mute" ++ i).asString).valueAction_(midiControl);
  		}.defer;
- 	}, ~ccStart, 0);
- 	(~ccStart).debug("mute " ++ pdefName ++ " cc number");
- 	~ccStart = ~ccStart + 1;
+ 	}, ccStartPdMute, 0);
+ 	(ccStartPdMute).debug(pdefName ++ " mute cc number");
+ 	ccStartPdMute = ccStartPdMute + 1;
 
  	pdefGuiView.layout.add(mute.at(("mute" ++ i).asString));
 });
