@@ -27,7 +27,7 @@
 SynthDef(\recorder, { arg out=0, amp=0.1, gate=1, pan=0, freq=200, bufnum;
 	var sig;
 	var sig1;
-	sig = InFeedback.ar(\inbus.kr(BusDef(\zero, \audio)), 2); 
+	sig = InFeedback.ar(\inbus.kr(BusDef(\zero, \audio)), 2);
 	sig.poll;
 	sig1 = EnvGen.ar(Env.adsr(0.01,0,1,0.01),gate,doneAction:0);
 	RecordBuf.ar(sig, bufnum, offset:0, recLevel:1, preLevel:\prelevel.kr(0), run:1, loop:0, trigger:1, doneAction:2);
@@ -115,7 +115,7 @@ SynthDef(\playersec_looper, { arg out=0, amp=0.1, gate=1, pan=0, freq=200, bufnu
 
 (
 	~t = 185/1/60; TempoClock.default.tempo = ~t;
-Pdef(\amen, 
+Pdef(\amen,
 	Pbind(
 			\instrument, \playersec_looper,
 			\bufnum, BufDef(\amen),
@@ -148,7 +148,7 @@ Pdef(\amen,
 /////////////////////////////////////////
 
 (
-Pdef(\sample, 
+Pdef(\sample,
 	Ppar([
 		Pbind(
 			\instrument, \playersec,
@@ -198,9 +198,9 @@ Pdef(\sample,
 			],inf) +0.3,
 			\legato, 0.6,
 			\isRest, Pseq([
-				1,0,1,0, 1,0,1,0, 
-				0,1,1,1, 1,0,1,1, 
-				1,0,1,0, 1,0,1,0, 
+				1,0,1,0, 1,0,1,0,
+				0,1,1,1, 1,0,1,1,
+				1,0,1,0, 1,0,1,0,
 				1,0,1,1, 0,1,1,0,
 			],inf).coin.not,
 			\speed, 4.0,
@@ -246,7 +246,7 @@ SynthDef(\playersec_osczig, { arg out=0, amp=0.1, gate=1, pan=0, freq=200, bufnu
 
 
 (
-Pdef(\glitch, 
+Pdef(\glitch,
 	Ppar([
 		Pbind(
 			\instrument, \playersec_osczig,
@@ -266,7 +266,7 @@ Pdef(\glitch,
 			\gain, 1/2,
 			\amp, 0.1,
 		);
-		
+
 	])
 ).play;
 )
@@ -297,7 +297,7 @@ SynthDef(\playersec_osczig_stereo, { arg out=0, amp=0.1, gate=1, pan=0, freq=200
 
 
 (
-Pdef(\glitch, 
+Pdef(\glitch,
 	Ppar([
 		Pbind(
 			\instrument, \playersec_osczig_stereo,
@@ -323,7 +323,7 @@ Pdef(\glitch,
 			\gain, 1/2,
 			\amp, 0.1,
 		);
-		
+
 	])
 ).play;
 )
@@ -359,7 +359,7 @@ SynthDef(\oscsampler3, { arg out=0, amp=0.1, gate=1, pan=0, freq=200, bufnum, po
 	ou = Splay.ar(ou, spread, amp, pan);
 
 	ou = ou * EnvGen.ar(\adsr.kr(Env.adsr(0.01,0.1,0.8,0.1)),gate,doneAction:2);
-	
+
 	Out.ar(out, ou);
 }, metadata:(specs:(
 	finepos: ControlSpec(-0.001,0.001,\lin, 0, 1),
@@ -393,7 +393,7 @@ Ndef(\lfo3).put(1, \set -> Pbind(
 	\dur, 1,
 ));
 
-Pdef(\sample, 
+Pdef(\sample,
 	Pbind(
 		\instrument, \oscsampler3,
 		\freq, 700,
@@ -472,14 +472,14 @@ Pdef(\sample,
 		\amp, 0.2,
 		\bufnum, ~buf,
 
-	) 
+	)
 ).play;
 )
 
 (
-Pdef(\sample, Pdef(\zed, 
+Pdef(\sample, Pdef(\zed,
 	Ppar([
-		
+
 	Pbind(
 		\instrument, \oscsampler3,
 		\pos, 1.208,
@@ -505,15 +505,15 @@ Pdef(\sample, Pdef(\zed,
 		\amp, 0.1,
 			\bufnum, BufDef('voices/feynman.flac'),
 
-	) 
+	)
 	])
 )).play;
 )
 
 (
-Pdef(\sample, Pdef(\zed, 
+Pdef(\sample, Pdef(\zed,
 	Ppar([
-		
+
 	Pbind(
 		\instrument, \oscsampler3,
 		\pos, 1.208,
@@ -540,7 +540,7 @@ Pdef(\sample, Pdef(\zed,
 		\amp, 0.1,
 			\bufnum, BufDef('voices/feynman.flac'),
 
-	) 
+	)
 	])
 )).play;
 )
@@ -549,7 +549,7 @@ Pdef(\sample, Pdef(\zed,
 
 (
 Ndef(\sample, { arg amp=0.5, pan=0, freq=200, mbufnum,
-						gdur=12, trate=100, time_stretch=1, pos=0, pitch_stretch = 1, 
+						gdur=12, trate=100, time_stretch=1, pos=0, pitch_stretch = 1,
 						randframes=0.01, randrate=1, doneAction=2, finepos=0,
 						release=0.2;
 	var ou;
@@ -625,11 +625,11 @@ Ndef(\sample, { arg amp=0.5, pan=0, freq=200, mbufnum,
 			\ffreq, 200 + Pwhite(0.0,100),
 			\amp, 89.0 * Pkey(\amp),
 
-		)).play	 
+		)).play
 		)
 
 ///////////////////////////
-/// racle perc 
+/// racle perc
 
 (
 
@@ -740,7 +740,7 @@ Pdef(\part).reset;
 )
 
 (
-Pdef(\part, Pdef(\plop, 
+Pdef(\part, Pdef(\plop,
 	Ppar([
 		Pmono(\simplegran,
 			\freq, 200,
@@ -765,7 +765,7 @@ Pdef(\part, Pdef(\plop,
 
 
 (
-Pdef(\demo, Pdef(\demomo, 
+Pdef(\demo, Pdef(\demomo,
 	Ppar([
 		Pbind(
 			\instrument, \playersec,

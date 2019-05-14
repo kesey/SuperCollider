@@ -18,7 +18,7 @@ Pdef(\demo).reset;
 );
 
 (
-Pdef(\demo, Pdef(\demomo, 
+Pdef(\demo, Pdef(\demomo,
 	Ppar([
 		Pmono(
 			 \acidtry,
@@ -30,7 +30,7 @@ Pdef(\demo, Pdef(\demomo,
 			\dur, 1/8,
 			\amp, 0.1,
 		),
-		
+
 	])
 )).play;
 )
@@ -56,17 +56,17 @@ SynthDef(\acidtry2, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 
 // good!
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pbind(
 			\instrument, \acidtry2,
 			\note, Pseq([
 				3,-4,2,-3,
 			],inf),
-			\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
+			/*\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
 			\ffrel, ~pmodenv.(Pseq([0.41,0.2,0.1,0.4],inf), 8),
 			\ffscale, ~pmodenv.(Pseq([700,2000,100],inf), 3),
-			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),
+			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),*/
 			\oct, Pseq([
 				1/2,1/4,3/5,7/9,4/7,
 			],inf),
@@ -81,17 +81,17 @@ Pdef(\demo, Pdef(\xdemo,
 )
 
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pbind(
 			\instrument, \acidtry2,
 			\note, Pseq([
 				3,-4,2,-3,
 			],inf),
-			\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
+			/*\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
 			\ffrel, ~pmodenv.(Pseq([0.41,0.2,0.1,0.4],inf), 8),
 			\ffscale, ~pmodenv.(Pseq([9700,2000,100,12000,8000],inf), 3),
-			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),
+			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),*/
 			\oct, Pseq([
 				1/2,1/4,3/5,7/9,4/7,
 			],inf),
@@ -106,7 +106,7 @@ Pdef(\demo, Pdef(\xdemo,
 )
 
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pbind(
 			\instrument, \acidtry2,
@@ -120,8 +120,8 @@ Pdef(\demo, Pdef(\xdemo,
 				0.1,0.6,
 				0.01,0.3,
 			],inf),
-			\ffscale, ~pmodenv.(Pseq([9700,2000,100,1200,8000],inf), 1/4),
-			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 3/4),
+			/*\ffscale, ~pmodenv.(Pseq([9700,2000,100,1200,8000],inf), 1/4),
+			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 3/4),*/
 			\oct, Pseq([
 				Pseq([
 					1/2,3/4,
@@ -156,17 +156,17 @@ SynthDef(\trigacidtry2, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 );
 
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pmono(
 			 \trigacidtry2,
 			\note, Pseq([
 				0,2,5,1,
 			],inf),
-			\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
+			/*\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
 			\ffrel, ~pmodenv.(Pseq([0.41,0.2,0.1,0.4],inf), 8),
 			\ffscale, ~pmodenv.(Pseq([700,2000,100],inf), 3),
-			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),
+			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),*/
 			\xtrig, 1,
 			\distgain, 0.9,
 			\octave, 3,
@@ -179,23 +179,23 @@ Pdef(\demo, Pdef(\xdemo,
 )
 
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pmono(
 			 \trigacidtry2,
 			\note, Pseq([
 				0,2,5,1,
 			],inf),
-			\wave, ~pmodenv.(Prand([0.41,1,0.1,0.8],inf), 8),
+			/*\wave, ~pmodenv.(Prand([0.41,1,0.1,0.8],inf), 8),
 			\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
 			\ffrel, ~pmodenv.(Pseq([0.41,0.2,0.1,0.4],inf), 8),
 			\ffscale, ~pmodenv.(Pseq([10000,700,2000,100],inf), 3),
-			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),
+			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),*/
 			\oct, Pseq([
 				0.1,0.5,0.7,
 			],inf),
 			\xtrig, 1,
-			\rq, ~pmodenv.(Pseq([0.1,0.02,0.31],inf), 2.9),
+			//\rq, ~pmodenv.(Pseq([0.1,0.02,0.31],inf), 2.9),
 			\distgain, 0.9,
 			\octave, 4,
 			\legaot, 0.1,
@@ -207,27 +207,27 @@ Pdef(\demo, Pdef(\xdemo,
 )
 
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pmono(
 			 \trigacidtry2,
 			\note, Pseq([
 				0,2,5,1,
 			],inf),
-			\wave, ~pmodenv.(Prand([0.41,1,0.1,0.8],inf), 8),
-			\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),
+			/*\wave, ~pmodenv.(Prand([0.41,1,0.1,0.8],inf), 8),
+			\ffat, ~pmodenv.(Prand([0.41,0.2,0.1,0.4]/13,inf), 8),*/
 			\ffrel, Pseq([
 				0.01,0.5,
 			],inf),
 			\ffscale, Pseq([
 				10000,3000,
 			],inf),
-			\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),
+			//\lpfr, ~pmodenv.(Pseq([1,1/2,2,1/4],inf), 7),
 			\oct, Pseq([
 				0.1,0.5,0.7,
 			],inf),
 			\xtrig, 1,
-			\rq, ~pmodenv.(Pseq([0.1,0.02,0.31],inf), 2.9),
+			//\rq, ~pmodenv.(Pseq([0.1,0.02,0.31],inf), 2.9),
 			\distgain, 0.9,
 			\octave, 4,
 			\legaot, 0.1,
@@ -239,7 +239,7 @@ Pdef(\demo, Pdef(\xdemo,
 )
 
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pmono(
 			 \trigacidtry2,
@@ -308,7 +308,7 @@ Pdef(\demo).reset;
 );
 
 (
-Pdef(\demo, Pdef(\xdemo, 
+Pdef(\demo, Pdef(\xdemo,
 	Ppar([
 		Pmono(
 			 \trigacidtry3,

@@ -79,6 +79,16 @@
 	});
 };
 
+// use it with SynthDef sync on a clock like sync delay
+~updateTempo = { arg synth, tempoClock;
+	var updater;
+	updater = SimpleController(tempoClock).put(\tempo, {
+		synth.set(\tempoClock, tempoClock.tempo);
+	})
+	// clean up garbage when the clock is stopped
+	.put(\stop, { updater.remove; });
+};
+
 // automatic GUI creation and midi mapping
 ~autoGui = { arg parentWindow = nil, synthDef = nil, instance = nil, ccStart = 10, backGroundColor = Color.white, specDict = Dictionary.new;
 	var arguments, synthWindow, list, slider, button, knob, active, synthDefName, pdefName;
