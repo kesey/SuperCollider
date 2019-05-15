@@ -35,7 +35,7 @@ s.serverRunning.if({
 		~defaultPattern5
 	).quant_(~globalQant));
 
-	/*~unit6 = Penvir((pdefName: \unit6, prevInstr: nil), Pdef(\unit6,
+	~unit6 = Penvir((pdefName: \unit6, prevInstr: nil), Pdef(\unit6,
 		~defaultPattern6
 	).quant_(~globalQant));
 
@@ -45,7 +45,7 @@ s.serverRunning.if({
 
 	~unit8 = Penvir((pdefName: \unit8, prevInstr: nil), Pdef(\unit8,
 		~defaultPattern8
-	).quant_(~globalQant));*/
+	).quant_(~globalQant));
 
 	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Gui.scd"); // Pdef need to exist before executing ORBM_Gui.scd
 
@@ -53,7 +53,7 @@ s.serverRunning.if({
 
 )
 
-p = Ppar([~unit1, ~unit2, ~unit3, ~unit4, ~unit5], inf).play;
+p = Ppar([~unit1, ~unit2, ~unit3, ~unit4, ~unit5, ~unit6, ~unit7, ~unit8], inf).play;
 p.stop;
 
 ~song2.play;
@@ -63,6 +63,8 @@ p.stop;
 ~song2.reset;
 
 ///////////////////////////////////////  Playground
+
+
 
 (
 

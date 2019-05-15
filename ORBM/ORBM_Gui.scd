@@ -285,17 +285,21 @@ channel[\levelMaster] = EZSlider(channelMaster, 110@160, 'level', ControlSpec(0,
 
 ///////////////////////////////////////  SynthDef Gui
 
-x = Window("SynthDef", Rect(0, 0, 1200, 725), scroll: true);
+x = Window("SynthDef", Rect(0, 0, 1200, 725));
 x.layout = VLayout();
 x.front;
 
-~autoGui.value(x, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+v = ScrollView(x, x.view.bounds);
+v.canvas = View();
+v.canvas.layout = VLayout();
 
-~autoGui.value(x, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
-///////////////////////////////////////  Pdef Mute Gui
+~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
-pdefNumber = Pdef.all.size; // p.list.size; // if p is a Ppar
+////////////////////  Pdef Mute Gui
+
+pdefNumber = Pdef.all.size; // or p.list.size; // if p is a Ppar
 ccStartPdMute = 1;
 
 ~activePdefMute = Dictionary.new;
@@ -306,8 +310,9 @@ pdefNumber.do({ arg i;
 });
 
 pdefGuiView = CompositeView(bounds: (pdefNumber * 62)@110)
+.scroll(autoScrolls: true)
 .minHeight_(115)
-.minWidth_(730)
+.minWidth_(780)
 .background_(Color.grey);
 
 pdefGuiView.layout = HLayout();
@@ -335,6 +340,20 @@ pdefNumber.do({ arg i;
  	pdefGuiView.layout.add(mute.at(("mute" ++ i).asString));
 });
 
-x.layout.add(pdefGuiView);
+v.canvas.layout.insert(pdefGuiView);
+
+///////////////////////////////////////  Fx Gui
+
+y = Window("Fx", Rect(0, 0, 600, 320));
+y.layout = VLayout();
+y.front;
+
+u = ScrollView(y, y.view.bounds);
+u.canvas = View();
+u.canvas.layout = VLayout();
+
+~autoGui.value(u, ~reverbSynthDef, ~reverb, 0, Color.new255(209, 238, 238), Dictionary.newFrom(List["predelaytime", ["slider", ControlSpec(0, 10, step: 0.001, default: 0.048), true], "decaytimec", ["slider", ControlSpec(0, 10, step: 0.01, default: 5), true], "decaytimea", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true]]));
+
+~autoGui.value(u, ~simpleDelaySynthDef, ~simpleDelay, 122, Color.new255(238, 238, 209), Dictionary.newFrom(List["delaytime", ["slider", ControlSpec(0, 4, step: 0.01, default: 0), true]]));
 
 )

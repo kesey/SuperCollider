@@ -270,7 +270,7 @@
 			};
 		});
 
-		parentWindow.layout.add(synthWindow);
+		parentWindow.canvas.layout.insert(synthWindow);
 
 		if (instance.isSymbol, {
 			// removes all the children of the view and destroys them then remove the composite view

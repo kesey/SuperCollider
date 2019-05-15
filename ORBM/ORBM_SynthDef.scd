@@ -7,7 +7,7 @@
 
 ///////////////////////////////////////  Mixer
 
-SynthDef(\ChannelStrip, { arg in = 0, out = 0, pan = 0, hpfreq = 20, band1freq = 80, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 8000, band3rq = 1, band3db = 0, lpfreq = 20000, mute = 1, auxsend1 = 0, auxsend2 = 0, level = 0.5;
+SynthDef(\ChannelStrip, { arg in = 0, out = 0, pan = 0, hpfreq = 20, band1freq = 8000, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 80, band3rq = 1, band3db = 0, lpfreq = 20000, mute = 1, auxsend1 = 0, auxsend2 = 0, level = 0.5;
 	var input, sig;
 	input = InFeedback.ar(in, 2);
 	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
@@ -32,9 +32,9 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 	Out.ar(out+2, sig);
 }).add;
 
-///////////////////////////////////////  FX
+///////////////////////////////////////  Fx
 
-SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
+~simpleDelaySynthDef = SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 	var input, effect;
 	input = In.ar(in, 2);
 	effect = DelayN.ar(input, 1, delaytime);
@@ -53,7 +53,7 @@ SynthDef(\Chorus, { arg in = 0, out = 0, lpfreq = 6000, rq = 1, drywet = 0.5, le
 	XOut.ar(out, drywet, effect * level);
 }).add;
 
-SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, decaytimea = 1, drywet = 0.5, level = 0.2;
+~reverbSynthDef = SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, decaytimea = 1, drywet = 0.5, level = 0.2;
 	var input, numc, numa, temp;
 	input = In.ar(in, 2);
 	numc = 4; // number of comb delays
@@ -236,8 +236,7 @@ SynthDef(\kick, { arg out = 0, tu = 1, amp = 1, level = 1;
 	OffsetOut.ar(out, Pan2.ar(sig, 0, level));
 }).add;
 
-SynthDef(\kickhi, {
-	arg out=0,tu = 1;
+SynthDef(\kickhi, { arg out = 0, tu = 1, pan = 0, amp = 1;
 	var env0, env1, env1m, sig;
 	env0 =  EnvGen.ar(Env.new([0.5, 0.1, 0.01, 0.01,0], [0.01, 0.5, 1.26,0.1], [-4, -2, -4]), doneAction:2);
 	env1 = EnvGen.ar(Env.new([122, 30, 33,28], [0.05, 0.29,1], [-4, -5]));
@@ -248,6 +247,7 @@ SynthDef(\kickhi, {
 	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
 	sig = sig * 1.2;
 	sig = sig.clip2(1);
+	sig = Pan2.ar(sig, pan, amp);
 	OffsetOut.ar(out, sig);
 }).add;
 
@@ -293,12 +293,14 @@ SynthDef(\kicknoise,{arg out=0, amp=0.5;
 	OffsetOut.ar(out,sig*amp);
 }).add;
 
-SynthDef(\t1kick,{arg out=0,rel = 0.6,pitch=1 ,amp =1 ,snd;
-	var enva = EnvGen.ar(Env([0.01,1,0],[0.001,rel]),doneAction:2);
-	var envf = EnvGen.ar(Env([800,50],[0.005,1]));
-	var sig = SinOsc.ar(envf,0,enva);
+~t1kickSynthDef = SynthDef(\t1kick,{arg out = 0, rel = 0.6, amp = 1, pan = 0;
+	var enva, envf, sig;
+	enva = EnvGen.ar(Env([0.01,1,0],[0.001, rel]), doneAction:2);
+	envf = EnvGen.ar(Env([800,50],[0.005,1]));
+	sig = SinOsc.ar(envf,0,enva);
+	sig = Pan2.ar(sig, pan, amp);
 	//sig = HPF.ar(sig*enva,30);
-	OffsetOut.ar(out,sig*amp);
+	OffsetOut.ar(out, sig);
 }).add;
 
 SynthDef(\t1kick2,{arg out = 0,snd=18,rel = 0.6,pitch=0.1 ,amp =1;
@@ -581,7 +583,7 @@ SynthDef(\hat, { | out = 0, amp = 1 |
 	var noise, sig;
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
 	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq.max(0.001));
-	DetectSilence.ar(sig, 0.001, doneAction:2);
+	DetectSilence.ar(sig, 0.01, doneAction:2);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
