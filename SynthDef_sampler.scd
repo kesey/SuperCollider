@@ -30,7 +30,7 @@ SynthDef(\playerbeat, { arg out=0, amp=0.1, gate=1, pan=0, freq=200, bufnum, spe
 SynthDef(\recorder, { arg out=0, amp=0.1, gate=1, pan=0, freq=200, bufnum;
 	var sig;
 	sig = InFeedback.ar(\inbus.kr(0), 2);
-	//sig.poll;
+	sig.poll;
 	RecordBuf.ar(sig, bufnum, offset:0, recLevel:1, preLevel:\prelevel.kr(0), run:1, loop:0, trigger:1, doneAction:2);
 	sig = Pan2.ar(sig, pan, amp);
 	Out.ar(out, sig);
@@ -46,7 +46,6 @@ SynthDef(\playersec_looper, { arg out=0, amp=0.1, gate=1, pan=0, freq=200, bufnu
 	Out.ar(out, sig * \gain.kr(1));
 }).add;
 
-(
 SynthDef(\simplegran, { arg out=0, mix=0.5, gain=1, gate=1, mbufnum=0, pitch_stretch=1, pos=0, gdur=0.1, pan;
 	var sig;
 	var clk;
