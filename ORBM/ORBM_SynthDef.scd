@@ -17,7 +17,7 @@ SynthDef(\ChannelStrip, { arg in = 0, out = 0, pan = 0, hpfreq = 20, band1freq =
 	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
 	Out.ar(~aux1, sig * auxsend1); // Aux 1 pre fader / pre mute / post eq
 	Out.ar(~aux2, sig * auxsend2); // Aux 2 pre fader / pre mute / post eq
-	sig = sig * mute; // Mute
+	sig = sig * Lag2.kr(mute, 0.2); // Mute
 	Out.ar(out, Balance2.ar(sig[0], sig[1], pan, level.curvelin(0, 1, 0, 1, log(10)))); // curvelin(blabla) to have a logarithmic scale
 }).add;
 
@@ -37,7 +37,7 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 ~simpleDelaySynthDef = SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 	var input, effect;
 	input = In.ar(in, 2);
-	effect = DelayN.ar(input, 1, delaytime);
+	effect = DelayN.ar(input, 4, delaytime);
 	//Out.ar(0, effect); // Mix with the data already present on the corresponding bus
 	ReplaceOut.ar(out, effect); // overwriting previous data on the corresponding bus
 }).add;
@@ -251,15 +251,15 @@ SynthDef(\kickhi, { arg out = 0, tu = 1, pan = 0, amp = 1;
 	OffsetOut.ar(out, sig);
 }).add;
 
-SynthDef(\kick2,{arg out=0,gate = 1 ,freq=60,tu = 1,amp=1,atf = 80, rel =1;
+SynthDef(\kick2,{arg out = 0, gate = 1 ,freq = 60, tu = 1, amp = 1, atf = 80, rel =1, pan = 1;
 	var env = EnvGen.ar(Env.perc(0,rel),gate,doneAction:2);
 	var frequ = EnvGen.ar(Env([freq-30,freq,60],[0.001,0.01]));
 	var sig = SinOsc.ar(frequ*tu,0,env);
-	sig = LPF.ar(sig,100);
-	OffsetOut.ar(out,sig * amp);
+	sig = Pan2.ar(LPF.ar(sig,100), pan, amp);
+	OffsetOut.ar(out, sig);
 }).add;
 
-SynthDef(\kick2new,{arg out=0,gate = 1 ,freq=60,tu = 1,amp=1,atf = 80, rel =1;
+SynthDef(\kick2new,{arg out = 0, gate = 1, freq = 60, tu = 1, atf = 80, rel =1, amp = 1, pan = 1;
     var env = EnvGen.ar(Env.perc(0,rel),gate,doneAction:2);
     var frequ = EnvGen.ar(Env([freq+1100,freq,31.4],[0.002,0.1]));
     var sig = SinOsc.ar(frequ*tu,0,env);
@@ -268,8 +268,9 @@ SynthDef(\kick2new,{arg out=0,gate = 1 ,freq=60,tu = 1,amp=1,atf = 80, rel =1;
     sig = BPeakEQ.ar(sig,800,10,-12);
     sig = Limiter.ar(sig,0.5);
     //Out.ar(6,[DelayL.ar(sig*(-1),0.1,SinOsc.kr(-0.1,0,0.05,0.1)),sig]);
-    //sig = LPF.ar(sig,100);
-    OffsetOut.ar(out,sig * amp);
+	sig = LPF.ar(sig,100);
+	sig = Pan2.ar(sig, pan, amp);
+    OffsetOut.ar(out, sig);
 }).add;
 
 SynthDef(\kick3,{arg out=0,amp=1,gate = 1, tu = 1, rel =3,freq=60;
@@ -293,7 +294,7 @@ SynthDef(\kicknoise,{arg out=0, amp=0.5;
 	OffsetOut.ar(out,sig*amp);
 }).add;
 
-~t1kickSynthDef = SynthDef(\t1kick,{arg out = 0, rel = 0.6, amp = 1, pan = 0;
+~t1kickSynthDef = SynthDef(\t1kick,{arg out = 0, rel = 0, amp = 1, pan = 0;
 	var enva, envf, sig;
 	enva = EnvGen.ar(Env([0.01,1,0],[0.001, rel]), doneAction:2);
 	envf = EnvGen.ar(Env([800,50],[0.005,1]));
@@ -375,8 +376,6 @@ son4 = LFTri.ar(env1m,0, oamp, 1,1.4);
 son = SelectX.ar(ochoose,[son,son2,son3,son4]);
 	son = Pan2.ar(son,pan);
 son = LeakDC.ar(son,dc,30);
-
-//son = son ;
 
 son = LPF.ar(son+ WhiteNoise.ar(1*noise), env1m*fratio, env0);
 
@@ -583,7 +582,7 @@ SynthDef(\hat, { | out = 0, amp = 1 |
 	var noise, sig;
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
 	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq.max(0.001));
-	DetectSilence.ar(sig, 0.01, doneAction:2);
+	DetectSilence.ar(sig, 0.001, doneAction:2);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
