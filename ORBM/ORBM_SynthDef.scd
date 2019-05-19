@@ -287,11 +287,12 @@ SynthDef(\kick3new,{arg out=0,amp=1,gate = 1, tu = 1, rel =3,freq=60;
     OffsetOut.ar(out,sig * amp);
 }).add;
 
-SynthDef(\kicknoise,{arg out=0, amp=0.5;
-	var env = EnvGen.ar(Env([0,1,0],[0.01,1]),doneAction:2);
+SynthDef(\kicknoise,{arg out = 0, amp = 0.5, pan = 0;
+	var env = EnvGen.ar(Env([0,1,0],[0.01, 0.1]), doneAction: 2);
 	var freq =EnvGen.ar(Env([20000,100,30],[0.005,1]));
 	var sig =  SinOsc.ar(freq,0,env)+(WhiteNoise.ar(1)*env);
-	OffsetOut.ar(out,sig*amp);
+	sig = Pan2.ar(sig, pan, amp);
+	OffsetOut.ar(out, sig);
 }).add;
 
 ~t1kickSynthDef = SynthDef(\t1kick,{arg out = 0, rel = 0, amp = 1, pan = 0;
@@ -304,14 +305,15 @@ SynthDef(\kicknoise,{arg out=0, amp=0.5;
 	OffsetOut.ar(out, sig);
 }).add;
 
-SynthDef(\t1kick2,{arg out = 0,snd=18,rel = 0.6,pitch=0.1 ,amp =1;
+SynthDef(\t1kick2,{arg out = 0, snd = 18, rel = 0.6, pitch = 0.1 , amp = 1, pan = 1;
 	var enva = EnvGen.ar(Env([1,1,0],[rel,0.2]),doneAction:2);
 	var envf = EnvGen.ar(Env([10000,20,00,4],[0.002,0.1,1,1]));
 	var sig = SinOsc.ar(envf+50*pitch,0,enva);
 	//sig = PitchShift.ar(sig,0.001,pitch,0.1);
 	sig = sig.distort;
 	sig = HPF.ar(FreeVerb.ar(sig,1,1),100)+sig;
-	OffsetOut.ar(out,sig*amp*enva);
+	sig = Pan2.ar(sig, pan, amp*enva);
+	OffsetOut.ar(out, sig);
 	//Out.ar(snd,sig*amp*enva);
 }).add;
 

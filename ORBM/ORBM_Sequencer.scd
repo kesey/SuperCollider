@@ -6,10 +6,6 @@ this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Star
 
 s.serverRunning.if({
 
-	n = 60; // Tempo in beat per minutes
-	TempoClock.default.tempo = n / 60; // TempoClock by default in beat per seconds
-	t = TempoClock((n * 2) / 60); // Another TempoClock twice as fast as the TempoClock default
-
 	~unit1 = Penvir((pdefName: \unit1, prevInstr: nil), Pdef(\unit1,
 		~defaultPattern1
 	).quant_(~globalQant));

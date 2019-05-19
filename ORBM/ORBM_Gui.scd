@@ -293,7 +293,7 @@ v = ScrollView(x, x.view.bounds);
 v.canvas = View();
 v.canvas.layout = VLayout();
 
-~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0, 24, step: 0.001, default: 0.04), true], "startPos", ["slider", ControlSpec(0, 24, step: 0.01, default: 0.07), true]]));
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, wrap: 'exp', step: 0.01, default: 10), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0, 24, step: 0.01, default: 0.21), true], "startPos", ["slider", ControlSpec(0, 24, step: 0.01, default: 0.07), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]]));
 
 ~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 3.95), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
@@ -352,7 +352,7 @@ u = ScrollView(y, y.view.bounds);
 u.canvas = View();
 u.canvas.layout = VLayout();
 
-~autoGui.value(u, ~reverbSynthDef, ~reverb, 110, Color.new255(209, 238, 238), Dictionary.newFrom(List["predelaytime", ["slider", ControlSpec(0, 10, step: 0.001, default: 7.63), true], "decaytimec", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "decaytimea", ["slider", ControlSpec(0, 10, step: 0.01, default: 5.79), true], "level", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
+~autoGui.value(u, ~reverbSynthDef, ~reverb, 110, Color.new255(209, 238, 238), Dictionary.newFrom(List["predelaytime", ["slider", ControlSpec(0, 10, step: 0.01, default: 7.63), true], "decaytimec", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "decaytimea", ["slider", ControlSpec(0, 10, step: 0.01, default: 5.79), true], "level", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
 
 ~autoGui.value(u, ~simpleDelaySynthDef, ~simpleDelay, 115, Color.new255(238, 238, 209), Dictionary.newFrom(List["delaytime", ["slider", ControlSpec(0, 4, step: 0.01, default: 1.36), true]]));
 
