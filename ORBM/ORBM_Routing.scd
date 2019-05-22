@@ -28,6 +28,7 @@ s.bind { ~samplerStereo = Synth(\samplerStereo, [\out, ~channelBus[1], \gate, 0,
 s.bind { ~sinBass = Synth(\sinBass, [\out, ~channelBus[0], \gate, 0, \amp, 3.95, \doneAction, 0], synthGroup) };
 s.bind { ~reverb = Synth(\Reverb, [\in, ~aux1, \out, ~channelBus[2], \drywet, 1, \level, 0.75, \decaytimea, 5.79, \decaytimec, 0, \predelaytime, 7.63], fxGroup) };
 s.bind { ~simpleDelay = Synth(\SimpleDelay, [\in, ~aux2, \out, ~channelBus[3], \delaytime, 1.36], fxGroup) };
+//~updateTempo.value(~simpleDelay, TempoClock.default);
 
 // s.meter; // level meter
 

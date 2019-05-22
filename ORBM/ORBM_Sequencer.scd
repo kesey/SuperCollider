@@ -63,10 +63,16 @@ g.reset;
 Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQant);
 Pdef(\unit1, ~defaultPattern1).quant_(~globalQant);
 
-Pdef(\unit1).source.at(\type).postln; // ???
-
 (
+var type;
 
+Pdef(\unit1).source.pairs.keysValuesDo({
+	arg key, value;
+	if(key == \type, {
+		type = value.asStream.next;
+	});
+});
 
+type.postln;
 
 )

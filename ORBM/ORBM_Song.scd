@@ -15,15 +15,7 @@ TempoClock.default.tempo = n / 60; // TempoClock by default in beat per seconds
 	~changePattern.value(Pdef(\unit7), ~defaultPattern7);
 	~changePattern.value(Pdef(\unit8), ~defaultPattern8);
 	16.0.wait;
-	~changePattern.value(Pdef(\unit1), ~pattern1);
-	~changePattern.value(Pdef(\unit2), ~pattern2);
-	12.0.wait;
-	~changePattern.value(Pdef(\unit1), ~pattern2);
-	~changePattern.value(Pdef(\unit2), ~pattern1);
-	16.0.wait;
-	//TempoClock.default.sched(4, { TempoClock.default.tempo = 118 / 60 });
-	~changePattern.value(Pdef(\unit1), ~pattern1);
-	~changePattern.value(Pdef(\unit2), ~pattern2);
+	Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)]/2, inf)).quant_(~globalQant);
 }, TempoClock.default);
 
 ~song2 = Task.new({
