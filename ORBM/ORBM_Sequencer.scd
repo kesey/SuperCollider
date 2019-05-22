@@ -6,61 +6,64 @@ this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Star
 
 s.serverRunning.if({
 
-	~unit1 = Penvir((pdefName: \unit1, prevInstr: nil), Pdef(\unit1,
-		~defaultPattern1
-	).quant_(~globalQant));
+	~pdefNumber = 8; // number of pdef or unit
+	~pdefNumber = ~pdefNumber.max(1).min(12); // limit number of pdef
 
-	~unit2 = Penvir((pdefName: \unit2, prevInstr: nil), Pdef(\unit2,
-		/*Pchain(
-		~swingify,*/
-		~defaultPattern2
-		/*,
-		(swingBase: 0.8, swingAmount: 0, swingThreshold: 0.2)
-		)*/
-	).quant_(~globalQant));
+	~sequencer = Dictionary.new;
 
-	~unit3 = Penvir((pdefName: \unit3, prevInstr: nil), Pdef(\unit3,
-		~defaultPattern3
-	).quant_(~globalQant));
+	~pdefNumber.do({ // sequencer creation with pdefNumber of unit
+		arg i;
+		var name;
+		name = ("unit" ++ (i + 1)).asSymbol;
+		~sequencer.put(name,
+			Penvir(
+				(pdefName: name, prevInstr: nil),
+				Pdef(name).quant_(~globalQant)
+			)
+		);
+	});
 
-	~unit4 = Penvir((pdefName: \unit4, prevInstr: nil), Pdef(\unit4,
-		~defaultPattern4
-	).quant_(~globalQant));
+	p = Ppar(~listUnits.value(~sequencer), inf).play(TempoClock.default, quant: ~globalQant); // play all unit in parallel
 
-	~unit5 = Penvir((pdefName: \unit5, prevInstr: nil), Pdef(\unit5,
-		~defaultPattern5
-	).quant_(~globalQant));
-
-	~unit6 = Penvir((pdefName: \unit6, prevInstr: nil), Pdef(\unit6,
-		~defaultPattern6
-	).quant_(~globalQant));
-
-	~unit7 = Penvir((pdefName: \unit7, prevInstr: nil), Pdef(\unit7,
-		~defaultPattern7
-	).quant_(~globalQant));
-
-	~unit8 = Penvir((pdefName: \unit8, prevInstr: nil), Pdef(\unit8,
-		~defaultPattern8
-	).quant_(~globalQant));
-
-	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Gui.scd"); // Pdef need to exist before executing ORBM_Gui.scd
+	this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
 
 });
 
 )
 
-p = Ppar([~unit1, ~unit2, ~unit3, ~unit4, ~unit5, ~unit6, ~unit7, ~unit8], inf).play;
+// Sequencer transport
+
+p.play(TempoClock.default, quant: ~globalQant);
 p.stop;
 
-~song2.play;
-~song2.pause;
-~song2.resume;
-~song2.stop;
-~song2.reset;
+(
+p.reset;
+~synthWindow.keysValuesDo({
+	arg key, value;
+	if(key.contains("unit");, {
+		value.removeAll;
+		value.remove;
+	});
+});
+)
+
+// Song transport
+(
+g = ~defaultSong; // ~song2;
+g.play;
+)
+
+g.pause;
+g.resume;
+g.stop;
+g.reset;
 
 ///////////////////////////////////////  Playground
 
+Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQant);
+Pdef(\unit1, ~defaultPattern1).quant_(~globalQant);
 
+Pdef(\unit1).source.at(\type).postln; // ???
 
 (
 
