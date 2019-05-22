@@ -5,7 +5,7 @@
 ///////////////////////////////////////  Mixer
 
 var channel, channelMaster, ccStart,
-arguments, synthCcStart, synthWindow, button, knob, active, pdefGuiView, pdefNumber, ccStartPdMute;
+arguments, synthCcStart, synthWindow, button, knob, active, pdefGuiView, ccStartPdMute;
 
 ~ccStart = 21; // start mapping midi cc from here
 ~ccStart = ~ccStart.max(0).min(127); // limit ccStart
@@ -285,41 +285,41 @@ channel[\levelMaster] = EZSlider(channelMaster, 110@160, 'level', ControlSpec(0,
 
 ///////////////////////////////////////  SynthDef Gui
 
-x = Window("SynthDef", Rect(0, 0, 1200, 725), scroll: true);
+x = Window("SynthDef", Rect(0, 0, 1200, 725));
 x.layout = VLayout();
 x.front;
 
-~autoGui.value(x, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+v = ScrollView(x, x.view.bounds);
+v.canvas = View();
+v.canvas.layout = VLayout();
 
-~autoGui.value(x, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, warp: 'exp', step: 0.01, default: 10), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true], "startPos", ["slider", ControlSpec(0, 24, step: 0.01, default: 0.07), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]]));
 
-///////////////////////////////////////  Pdef Mute Gui
+~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 3.95), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
-pdefNumber = Pdef.all.size; // p.list.size; // if p is a Ppar
+////////////////////  Pdef Mute Gui
+
 ccStartPdMute = 1;
 
 ~activePdefMute = Dictionary.new;
 
-pdefNumber.do({ arg i;
-	i = i + 1;
-	~activePdefMute.put("unit" ++ i, false);
-});
-
-pdefGuiView = CompositeView(bounds: (pdefNumber * 62)@110)
+pdefGuiView = CompositeView(bounds: (~pdefNumber * 62)@110)
+.scroll(autoScrolls: true)
 .minHeight_(115)
-.minWidth_(730)
+.minWidth_(780)
 .background_(Color.grey);
 
 pdefGuiView.layout = HLayout();
 
 // Pdef Mute
-pdefNumber.do({ arg i;
+~pdefNumber.do({ arg i;
  	var mute, pdefName;
 
  	mute = Dictionary.new;
  	pdefName = ("unit" ++ (i + 1)).asString;
+	~activePdefMute.put(pdefName, false);
 
-	mute.put(("mute" ++ i).asString, Button().minHeight_(60).states_([["mute " ++ pdefName, Color.black, Color.white],["unmute " ++ pdefName, Color.white, Color.new255(48, 48, 48)]]).action = { arg guiControl; var type, state; if(guiControl.value > 0, { type = \rest; state = true; }, { type = \note; state = false; }); Pbindef(pdefName.asSymbol, \type, type).quant_(~globalQant); ~activePdefMute.put(pdefName, state); });
+	mute.put(("mute" ++ i).asString, Button().minHeight_(60).states_([["mute " ++ pdefName, Color.black, Color.white],["unmute " ++ pdefName, Color.white, Color.new255(48, 48, 48)]]).action = { arg guiControl; var type, state; if(guiControl.value > 0, { type = \rest; state = true; }, { type = \note; state = false; }); if(Pdef(pdefName.asSymbol).source.notNil, { Pbindef(pdefName.asSymbol, \type, type).quant_(~globalQant); }); ~activePdefMute.put(pdefName, state); });
 
  	// button midi map
  	MIDIFunc.cc({ arg val, num, chan, src;
@@ -335,6 +335,20 @@ pdefNumber.do({ arg i;
  	pdefGuiView.layout.add(mute.at(("mute" ++ i).asString));
 });
 
-x.layout.add(pdefGuiView);
+v.canvas.layout.insert(pdefGuiView);
+
+///////////////////////////////////////  Fx Gui
+
+y = Window("Fx", Rect(350, 220, 600, 320));
+y.layout = VLayout();
+y.front;
+
+u = ScrollView(y, y.view.bounds);
+u.canvas = View();
+u.canvas.layout = VLayout();
+
+~autoGui.value(u, ~reverbSynthDef, ~reverb, 110, Color.new255(209, 238, 238), Dictionary.newFrom(List["predelaytime", ["slider", ControlSpec(0, 10, step: 0.01, default: 7.63), true], "decaytimec", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "decaytimea", ["slider", ControlSpec(0, 10, step: 0.01, default: 5.79), true], "level", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
+
+~autoGui.value(u, ~simpleDelaySynthDef, ~simpleDelay, 115, Color.new255(238, 238, 209), Dictionary.newFrom(List["delaytime", ["slider", ControlSpec(0, 4, step: 0.01, default: 1.36), true]]));
 
 )

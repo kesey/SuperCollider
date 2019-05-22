@@ -23,6 +23,7 @@ s.options.numInputBusChannels_(3);
 s.options.numOutputBusChannels_(4);
 
 // o.memSize_(2.pow(20)); // real time memory size (used by delay like CombN)
+// s.options.memSize_(2.pow(20));
 
 // rec options
 s.options.recChannels = 2;
@@ -34,9 +35,9 @@ s.options.dump; // visualise server options
 
 ////////////////////////////////// 2. OSC config
 
-//NetAddr.localAddr; // retrieve the current IP and port
-//OSCFunc.trace(true); // Turn posting on
-//OSCFunc.trace(false); // Turn posting off
+// NetAddr.localAddr; // retrieve the current IP and port
+// OSCFunc.trace(true); // Turn posting on
+// OSCFunc.trace(false); // Turn posting off
 
 ////////////////////////////////// 3. midi config
 
@@ -57,7 +58,7 @@ MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first de
 
 ////////////////////////////////// 5. define specific functions
 
-this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Function.scd");
+this.executeFile(~path ++ "ORBM_Function.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 
@@ -79,13 +80,13 @@ s.waitForBoot({
 	"boot complete".postln;
 	s.newBusAllocators;
 	// s.plotTree; // node tree
-	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_SynthDef.scd");
+	this.executeFile(~path ++ "ORBM_SynthDef.scd");
 	s.sync;
-	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Routing.scd");
+	this.executeFile(~path ++ "ORBM_Routing.scd");
 	s.sync;
-	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Pattern.scd");
+	this.executeFile(~path ++ "ORBM_Pattern.scd");
 	s.sync;
-	this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Song.scd");
+	this.executeFile(~path ++ "ORBM_Song.scd");
 	s.sync;
 });
 
