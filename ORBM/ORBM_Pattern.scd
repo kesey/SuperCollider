@@ -129,7 +129,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 	\out, ~channelBus[0]
 );
 
-~pattern1 = Pbind(
+~pattern1 = Pbind( // use PbindProxy to persist live changes
 	\instrument, \samplerStereo,
 	\buffer, b[\Bowed_Empty_Sweep_Slow][1].bufnum,
 	\dur, Pdefn(\durSnapkick),
@@ -147,7 +147,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 			instance = ~pdefName.asSymbol;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~samplerStereoSynthDef, instance, 110, Color.white, Dictionary.newFrom(List["buffer", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["none"], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: 0.7), true], "startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: 0.07), true], "rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: 0.04), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true]]));
+				~autoGui.value(v, ~samplerStereoSynthDef, instance, 116, Color.white, Dictionary.newFrom(List["buffer", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["none"], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: 0.7), true], "startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: 0.07), true], "rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: 0.04), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true]]));
 			}.defer;
 			~prevInstr = currentInstr;
 		});
@@ -168,7 +168,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 			instance = ~pdefName.asSymbol;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~sinBassSynthDef, instance, 117, Color.white, Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "loopNode", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "gate", ["none"], "amp", ["knob", ControlSpec(0, 10, step: 0.01, default: 2.6), true]]));
+				~autoGui.value(v, ~sinBassSynthDef, instance, 123, Color.white, Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "loopNode", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "gate", ["none"], "amp", ["knob", ControlSpec(0, 10, step: 0.01, default: 2.6), true]]));
 			}.defer;
 			~prevInstr = currentInstr;
 		});

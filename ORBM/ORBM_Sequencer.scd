@@ -32,7 +32,6 @@ s.serverRunning.if({
 )
 
 // Sequencer transport
-
 p.play(TempoClock.default, quant: ~globalQant);
 p.stop;
 
@@ -47,9 +46,13 @@ p.reset;
 });
 )
 
+(
+
+)
+
 // Song transport
 (
-g = ~defaultSong; // ~song2;
+g = ~song2; // ~defaultSong;
 g.play;
 )
 
@@ -62,17 +65,11 @@ g.reset;
 
 Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQant);
 Pdef(\unit1, ~defaultPattern1).quant_(~globalQant);
+Pbindef(\unit1).source.at(\type).source;
+//Pbindef(\unit1).source.patternpairs.asEvent.at(\type);
 
 (
-var type;
 
-Pdef(\unit1).source.pairs.keysValuesDo({
-	arg key, value;
-	if(key == \type, {
-		type = value.asStream.next;
-	});
-});
 
-type.postln;
 
 )

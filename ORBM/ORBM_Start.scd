@@ -31,6 +31,7 @@ s.options.recSampleFormat = "int24"; // 24 bit
 s.options.recHeaderFormat = "aiff";
 
 s.options.dump; // visualise server options
+// s.dumpOSC;
 // GUI.current; // Test which GUI library you are using by default
 
 ////////////////////////////////// 2. OSC config
@@ -55,6 +56,7 @@ MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first de
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
 ~globalQant = 0;
 ~synthWindow = Dictionary.new;
+~patternType = Dictionary.new;
 
 ////////////////////////////////// 5. define specific functions
 

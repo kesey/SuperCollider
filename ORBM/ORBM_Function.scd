@@ -53,6 +53,7 @@
 	var pdefNameSymbol, pdefNameString;
 	pdefNameSymbol = pdef.key;
 	pdefNameString = pdefNameSymbol.asString;
+	~patternType.put(pdefNameString, pattern.patternpairs.asEvent.at(\type));
 
 	if (~activePdefMute.at(pdefNameString), {
 		Pdef(pdefNameSymbol, pattern).quant_(1);
