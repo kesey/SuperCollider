@@ -18,7 +18,7 @@ ServerQuit.removeAll;
 // o.device; // get devices on Windows
 s.options.inDevice_("Fireface UCX (23732051)");
 s.options.outDevice_("Fireface UCX (23732051)");
-// s.options.device_("name your sound card");
+// s.options.device_("name your sound card"); // connect in & out
 s.options.numInputBusChannels_(3);
 s.options.numOutputBusChannels_(4);
 
@@ -42,11 +42,11 @@ s.options.dump; // visualise server options
 
 ////////////////////////////////// 3. midi config
 
-MIDIClient.init; // post a list of available devices
+MIDIClient.init; // post a list of available devices and initialize midi
 
 // MIDIClient.sources; // list avalaible midi sources
 // MIDIIn.connectAll; // connect to all attached input sources
-MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect
+MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect;
 
 // MIDIClient.destinations; // list avalaible midi destinations
 ~midiOut = MIDIOut.new(2).latency_(s.latency); // 2 for MIDIClient.destinations[2]
@@ -54,7 +54,7 @@ MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first de
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
-~globalQant = 0;
+~globalQuant = 1;
 ~synthWindow = Dictionary.new;
 ~patternType = Dictionary.new;
 
