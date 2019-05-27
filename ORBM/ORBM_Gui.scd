@@ -293,7 +293,7 @@ v = ScrollView(x, x.view.bounds);
 v.canvas = View();
 v.canvas.layout = VLayout();
 
-~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, warp: 'exp', step: 0.01, default: 10), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true], "startPos", ["slider", ControlSpec(0, 24, step: 0.01, default: 0.07), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]]));
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 10), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true], "startPos", ["slider", ControlSpec(0, 24, step: 0.01, default: 0.07), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]]));
 
 ~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 3.95), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
@@ -340,7 +340,7 @@ pdefGuiView.layout = HLayout();
 				}
 			);
 			if(Pdef(pdefNameSymbol).source.notNil,
-				{ Pbindef(pdefNameSymbol, \type, type).quant_(~globalQant); }
+				{ Pbindef(pdefNameSymbol, \type, type).quant_(0); }
 			);
 			~activePdefMute.put(pdefNameString, state);
 		}

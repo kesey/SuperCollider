@@ -54,7 +54,7 @@ MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first de
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
-~globalQant = 0;
+~globalQuant = 1;
 ~synthWindow = Dictionary.new;
 ~patternType = Dictionary.new;
 
