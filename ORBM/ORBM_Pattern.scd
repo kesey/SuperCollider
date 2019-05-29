@@ -3,10 +3,10 @@
 ///////////////////////////////////////  Pattern
 
 Pdefn(\durSnapkick, Pseq([1,Pwrand([0.5, 0.75], [0.3, 0.7].normalizeSum, 1),3/2], inf)).quant_(~globalQuant);
-Pdefn(\durIkedaBreath, Pseq([3/2,3/4], inf)).quant_(~globalQuant);
+Pdefn(\durIkedaBreath, Pseq([3/2, 0.75, 1], inf)).quant_(~globalQuant);
 Pdefn(\durIkedaNoise, Pseq([3/4, 3/24, 3/12, 3/8, 3/12, 3/24], inf)).quant_(~globalQuant);
-Pdefn(\durIkedaBass, Pseq([3/4,1], inf)).quant_(~globalQuant);
-Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
+Pdefn(\durIkedaBass, Pseq([3/4, Rest(0.75), Pwrand([1, 0.5], [0.4, 0.6].normalizeSum, 1)], inf)).quant_(~globalQuant);
+Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~defaultPattern1 = Pbind(
 	\instrument, \snapkick,

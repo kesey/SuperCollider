@@ -39,7 +39,7 @@ p.stop;
 p.reset;
 ~synthWindow.keysValuesDo({
 	arg key, value;
-	if(key.contains("unit");, {
+	if(key.contains("unit"), {
 		value.removeAll;
 		value.remove;
 	});
