@@ -4,11 +4,15 @@
 
 ///////////////////////////////////////  Mixer
 
-var channel, channelMaster, ccStart,
-arguments, synthCcStart, synthWindow, button, knob, active, pdefGuiView, ccStartPdMute;
+var channel, channelMaster, ccStart, mixerMidiChan,
+arguments, synthCcStart, synthWindow, button, knob, active, pdefGuiView, ccStartPdMute, pdMidiChan;
 
 ~ccStart = 21; // start mapping midi cc from here
-~ccStart = ~ccStart.max(0).min(127); // limit ccStart
+~ccStart = ~ccStart.max(1).min(127); // limit ccStart
+
+mixerMidiChan = 0; // 0 for midi channel 1
+mixerMidiChan = mixerMidiChan.max(0).min(15);
+(mixerMidiChan).debug("mixer midi channel");
 
 channel = IdentityDictionary.new;
 
@@ -53,8 +57,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0);
-	(~ccStart).debug("Channel " ++ i ++ " lpfreq cc number");
+	}, ~ccStart, mixerMidiChan);
+	(~ccStart).debug("channel " ++ i ++ " lpfreq cc number");
 	~ccStart = ~ccStart + 1;
 
 	3.do({
@@ -87,8 +91,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 					}.defer;
 				}
 			);
-		}, ~ccStart, 0);
-		(~ccStart).debug("Channel " ++ i ++ " band" ++ j ++ "freq cc number");
+		}, ~ccStart, mixerMidiChan);
+		(~ccStart).debug("channel " ++ i ++ " band" ++ j ++ "freq cc number");
 		~ccStart = ~ccStart + 1;
 
 		// rq
@@ -111,8 +115,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 					}.defer;
 				}
 			);
-		}, ~ccStart, 0);
-		(~ccStart).debug("Channel " ++ i ++ " band" ++ j ++ "rq cc number");
+		}, ~ccStart, mixerMidiChan);
+		(~ccStart).debug("channel " ++ i ++ " band" ++ j ++ "rq cc number");
 		~ccStart = ~ccStart + 1;
 
 		// db
@@ -135,8 +139,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 					}.defer;
 				}
 			);
-		}, ~ccStart, 0);
-		(~ccStart).debug("Channel " ++ i ++ " band" ++ j ++ "db cc number");
+		}, ~ccStart, mixerMidiChan);
+		(~ccStart).debug("channel " ++ i ++ " band" ++ j ++ "db cc number");
 		~ccStart = ~ccStart + 1;
 	});
 
@@ -161,8 +165,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0);
-	(~ccStart).debug("Channel " ++ i ++ " hpfreq cc number");
+	}, ~ccStart, mixerMidiChan);
+	(~ccStart).debug("channel " ++ i ++ " hpfreq cc number");
 	~ccStart = ~ccStart + 1;
 
 	2.do({
@@ -188,8 +192,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 					}.defer;
 				}
 			);
-		}, ~ccStart, 0);
-		(~ccStart).debug("Channel " ++ i ++ " aux" ++ j ++ " cc number");
+		}, ~ccStart, mixerMidiChan);
+		(~ccStart).debug("channel " ++ i ++ " aux" ++ j ++ " cc number");
 		~ccStart = ~ccStart + 1;
 
 		if (j == 1, {
@@ -207,8 +211,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 		var midiControl;
 		midiControl = val.linlin(0, 127, 0, 1);
 		{ channel[(\mute ++ i).asSymbol].valueAction_(midiControl); }.defer;
-	}, ~ccStart, 0);
-	(~ccStart).debug("Channel " ++ i ++ " mute cc number");
+	}, ~ccStart, mixerMidiChan);
+	(~ccStart).debug("channel " ++ i ++ " mute cc number");
 	~ccStart = ~ccStart + 1;
 
 	// pan
@@ -232,8 +236,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0);
-	(~ccStart).debug("Channel " ++ i ++ " pan cc number");
+	}, ~ccStart, mixerMidiChan);
+	(~ccStart).debug("channel " ++ i ++ " pan cc number");
 	~ccStart = ~ccStart + 1;
 
 	// level
@@ -256,8 +260,8 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}.defer;
 			}
 		);
-	}, ~ccStart, 0);
-	(~ccStart).debug("Channel " ++ i ++ " level cc number");
+	}, ~ccStart, mixerMidiChan);
+	(~ccStart).debug("channel " ++ i ++ " level cc number");
 	~ccStart = ~ccStart + 1;
 };
 
@@ -293,13 +297,16 @@ v = ScrollView(x, x.view.bounds);
 v.canvas = View();
 v.canvas.layout = VLayout();
 
-~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, warp: 'exp', step: 0.01, default: 10), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true], "startPos", ["slider", ControlSpec(0, 24, step: 0.01, default: 0.07), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]]));
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, 0, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 10), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true], "startPos", ["slider", ControlSpec(0, 24, step: 0.01, default: 0.07), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 2), true], "amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]]));
 
-~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 3.95), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
+~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, 0, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 3.95), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true]]));
 
 ////////////////////  Pdef Mute Gui
 
 ccStartPdMute = 1;
+pdMidiChan = 0; // 0 for midi channel 1
+pdMidiChan = pdMidiChan.max(0).min(15);
+(pdMidiChan).debug("units midi channel");
 
 ~activePdefMute = Dictionary.new;
 
@@ -313,26 +320,51 @@ pdefGuiView.layout = HLayout();
 
 // Pdef Mute
 ~pdefNumber.do({ arg i;
- 	var mute, pdefName;
+	var mute, pdefNameString, pdefNameSymbol;
 
- 	mute = Dictionary.new;
- 	pdefName = ("unit" ++ (i + 1)).asString;
-	~activePdefMute.put(pdefName, false);
+	mute = Dictionary.new;
+	pdefNameString = ("unit" ++ (i + 1)).asString;
+	pdefNameSymbol = pdefNameString.asSymbol;
+	~activePdefMute.put(pdefNameString, false);
 
-	mute.put(("mute" ++ i).asString, Button().minHeight_(60).states_([["mute " ++ pdefName, Color.black, Color.white],["unmute " ++ pdefName, Color.white, Color.new255(48, 48, 48)]]).action = { arg guiControl; var type, state; if(guiControl.value > 0, { type = \rest; state = true; }, { type = \note; state = false; }); if(Pdef(pdefName.asSymbol).source.notNil, { Pbindef(pdefName.asSymbol, \type, type).quant_(~globalQant); }); ~activePdefMute.put(pdefName, state); });
+	mute.put(("mute" ++ i).asString,
+		Button()
+		.minHeight_(60)
+		.states_([
+			["mute " ++ pdefNameString, Color.black, Color.white],
+			["unmute " ++ pdefNameString, Color.white, Color.new255(48, 48, 48)]
+		])
+		.action = { arg guiControl;
+			var type, state;
+			if(guiControl.value > 0,
+				{
+					type = \rest;
+					state = true;
+				},
+				{
+					type= ~patternType.at(pdefNameString);
+					state = false;
+				}
+			);
+			if(Pdef(pdefNameSymbol).source.notNil,
+				{ Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant); }
+			);
+			~activePdefMute.put(pdefNameString, state);
+		}
+	);
 
- 	// button midi map
- 	MIDIFunc.cc({ arg val, num, chan, src;
- 		var midiControl;
- 		midiControl = val.linlin(0, 127, 0, 1);
- 		{
- 			mute.at(("mute" ++ i).asString).valueAction_(midiControl);
- 		}.defer;
- 	}, ccStartPdMute, 0);
- 	(ccStartPdMute).debug(pdefName ++ " mute cc number");
- 	ccStartPdMute = ccStartPdMute + 1;
+	// button midi map
+	MIDIFunc.cc({ arg val, num, chan, src;
+		var midiControl;
+		midiControl = val.linlin(0, 127, 0, 1);
+		{
+			mute.at(("mute" ++ i).asString).valueAction_(midiControl);
+		}.defer;
+	}, ccStartPdMute, pdMidiChan);
+	(ccStartPdMute).debug(pdefNameString ++ " mute cc number");
+	ccStartPdMute = ccStartPdMute + 1;
 
- 	pdefGuiView.layout.add(mute.at(("mute" ++ i).asString));
+	pdefGuiView.layout.add(mute.at(("mute" ++ i).asString));
 });
 
 v.canvas.layout.insert(pdefGuiView);
@@ -347,8 +379,8 @@ u = ScrollView(y, y.view.bounds);
 u.canvas = View();
 u.canvas.layout = VLayout();
 
-~autoGui.value(u, ~reverbSynthDef, ~reverb, 110, Color.new255(209, 238, 238), Dictionary.newFrom(List["predelaytime", ["slider", ControlSpec(0, 10, step: 0.01, default: 7.63), true], "decaytimec", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "decaytimea", ["slider", ControlSpec(0, 10, step: 0.01, default: 5.79), true], "level", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
+~autoGui.value(u, ~reverbSynthDef, ~reverb, 110, 0, Color.new255(209, 238, 238), Dictionary.newFrom(List["predelaytime", ["slider", ControlSpec(0, 10, step: 0.01, default: 7.63), true], "decaytimec", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "decaytimea", ["slider", ControlSpec(0, 10, step: 0.01, default: 5.79), true], "level", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
 
-~autoGui.value(u, ~simpleDelaySynthDef, ~simpleDelay, 115, Color.new255(238, 238, 209), Dictionary.newFrom(List["delaytime", ["slider", ControlSpec(0, 4, step: 0.01, default: 1.36), true]]));
+~autoGui.value(u, ~simpleDelaySynthDef, ~simpleDelay, 115, 1, Color.new255(238, 238, 209), Dictionary.newFrom(List["delaytime", ["slider", ControlSpec(0, 4, step: 0.01, default: 1.36), true]]));
 
 )

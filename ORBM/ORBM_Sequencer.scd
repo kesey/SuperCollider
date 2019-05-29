@@ -18,12 +18,12 @@ s.serverRunning.if({
 		~sequencer.put(name,
 			Penvir(
 				(pdefName: name, prevInstr: nil),
-				Pdef(name).quant_(~globalQant)
+				Pdef(name).quant_(~globalQuant)
 			)
 		);
 	});
 
-	p = Ppar(~listUnits.value(~sequencer), inf).play(TempoClock.default, quant: ~globalQant); // play all unit in parallel
+	p = Ppar(~listUnits.value(~sequencer), inf).play(t, quant: ~globalQuant); // play all unit in parallel
 
 	this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
 
@@ -32,19 +32,22 @@ s.serverRunning.if({
 )
 
 // Sequencer transport
-
-p.play(TempoClock.default, quant: ~globalQant);
+p.play(t, quant: ~globalQuant);
 p.stop;
 
 (
 p.reset;
 ~synthWindow.keysValuesDo({
 	arg key, value;
-	if(key.contains("unit");, {
+	if(key.contains("unit"), {
 		value.removeAll;
 		value.remove;
 	});
 });
+)
+
+(
+
 )
 
 // Song transport
@@ -60,20 +63,12 @@ g.reset;
 
 ///////////////////////////////////////  Playground
 
-Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQant);
-Pdef(\unit1, ~defaultPattern1).quant_(~globalQant);
+Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
+~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
 (
-var type;
 
-Pdef(\unit1).source.pairs.keysValuesDo({
-	arg key, value;
-	if(key == \type, {
-		type = value.asStream.next;
-	});
-});
 
-type.postln;
 
 )
 
