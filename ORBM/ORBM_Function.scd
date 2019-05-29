@@ -74,12 +74,15 @@
 };
 
 // automatic GUI creation and midi mapping
-~autoGui = { arg parentWindow = nil, synthDef = nil, instance = nil, ccStart = 10, backGroundColor = Color.white, specDict = Dictionary.new;
+~autoGui = { arg parentWindow = nil, synthDef = nil, instance = nil, ccStart = 10, midiChan = 0, backGroundColor = Color.white, specDict = Dictionary.new;
 	var arguments, synthWindow, list, slider, button, knob, active, synthDefName, pdefName;
 
 	if ((parentWindow.notNil and: synthDef.notNil and: instance.notNil), {
 		synthDefName = synthDef.name.asString;
 		arguments = synthDef.allControlNames;
+		midiChan = midiChan.max(0).min(15);
+		(midiChan).debug(synthDefName ++ " midi channel");
+
 		specDict.put("default", ["knob", ControlSpec(0, 1, step: 0.01, default: 0), true]);
 
 		if (instance.isSymbol, {
@@ -166,7 +169,7 @@
 								}
 							);
 						}.defer;
-					}, ccStart, 0);
+					}, ccStart, midiChan);
 					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
@@ -197,7 +200,7 @@
 								}.defer;
 							}
 						);
-					}, ccStart, 0);
+					}, ccStart, midiChan);
 					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
@@ -216,7 +219,7 @@
 						{
 							button.at(("button" ++ i).asString).valueAction_(midiControl);
 						}.defer;
-					}, ccStart, 0);
+					}, ccStart, midiChan);
 					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
@@ -247,7 +250,7 @@
 								}.defer;
 							}
 						);
-					}, ccStart, 0);
+					}, ccStart, midiChan);
 					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
