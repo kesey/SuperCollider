@@ -11,7 +11,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 ~defaultPattern1 = Pbind(
 	\instrument, \snapkick,
 	\dur, Pdefn(\durSnapkick),
-	\amp, 0.5,
+	\amp, 0.4,
 	\out, ~channelBus[0],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance;
@@ -33,7 +33,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 ~defaultPattern2 = Pbind(
 	\instrument, \IkedaBreath,
 	\dur, Pdefn(\durIkedaBreath),
-	\level, 1.5,
+	\level, 1,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance;
@@ -55,7 +55,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 ~defaultPattern3 = Pbind(
 	\instrument, \IkedaHiNoise,
 	\dur, Pdefn(\durIkedaNoise),
-	\amp, 0.02,
+	\amp, 0.014,
 	\pan , Pwhite(-1, 1, inf),
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
@@ -85,7 +85,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 ~defaultPattern5 = Pbind(
 	\instrument, \IkedaClick,
 	\dur, Pdefn(\durIkedaClick),
-	\amp, Pseq([1,0.5,0.8,0.3,0.9]*8, inf),
+	\amp, Pseq([1,0.5,0.8,0.3,0.9]*6, inf),
 	\pan , Pwhite(-1, 1, inf),
 	\out, ~channelBus[1]
 );
@@ -117,7 +117,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 ~defaultPattern7 = Pbind(
 	\instrument, \kick2,
 	\dur, Pseq([0.5, Pwrand([0.25, 0.5], [0.3, 0.7].normalizeSum, 1), Rest(0.5), 0.125], inf),
-	\amp, 0.8,
+	\amp, 1,
 	\out, ~channelBus[0]
 );
 
@@ -125,7 +125,7 @@ Pdefn(\durIkedaClick, Pseq([1/8,1/4], inf)).quant_(~globalQuant);
 	\instrument, \t1kick2,
 	\dur, Pseq([1.5, 0.125, 1], inf),
 	\rel, 0.2,
-	\amp, 0.3,
+	\amp, 0.35,
 	\out, ~channelBus[0]
 );
 

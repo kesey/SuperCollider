@@ -56,10 +56,10 @@
 	~patternType.put(pdefNameString, pattern.patternpairs.asEvent.at(\type));
 
 	if (~activePdefMute.at(pdefNameString), {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant + 1);
+		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant * 2);
 		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant);
 	}, {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant + 1);
+		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant * 2);
 	});
 };
 
