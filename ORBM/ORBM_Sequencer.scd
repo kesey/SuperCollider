@@ -76,3 +76,12 @@ Pdef(\unit1).source.pairs.keysValuesDo({
 type.postln;
 
 )
+
+
+p = Pdef(\myPdef,
+	Pbind(
+		\type, \note,
+		\degree, Pseq(#[0, 0, 4, 4, 5, 5, 4], inf),
+		\dur, 0.5
+	)
+).play;
