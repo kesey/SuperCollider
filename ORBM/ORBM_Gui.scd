@@ -12,7 +12,7 @@ arguments, synthCcStart, synthWindow, button, knob, active, pdefGuiView, ccStart
 
 mixerMidiChan = 0; // 0 for midi channel 1
 mixerMidiChan = mixerMidiChan.max(0).min(15);
-(mixerMidiChan).debug("Mixer midi channel");
+(mixerMidiChan).debug("mixer midi channel");
 
 channel = IdentityDictionary.new;
 
@@ -58,7 +58,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			}
 		);
 	}, ~ccStart, mixerMidiChan);
-	(~ccStart).debug("Channel " ++ i ++ " lpfreq cc number");
+	(~ccStart).debug("channel " ++ i ++ " lpfreq cc number");
 	~ccStart = ~ccStart + 1;
 
 	3.do({
@@ -92,7 +92,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}
 			);
 		}, ~ccStart, mixerMidiChan);
-		(~ccStart).debug("Channel " ++ i ++ " band" ++ j ++ "freq cc number");
+		(~ccStart).debug("channel " ++ i ++ " band" ++ j ++ "freq cc number");
 		~ccStart = ~ccStart + 1;
 
 		// rq
@@ -116,7 +116,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}
 			);
 		}, ~ccStart, mixerMidiChan);
-		(~ccStart).debug("Channel " ++ i ++ " band" ++ j ++ "rq cc number");
+		(~ccStart).debug("channel " ++ i ++ " band" ++ j ++ "rq cc number");
 		~ccStart = ~ccStart + 1;
 
 		// db
@@ -140,7 +140,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}
 			);
 		}, ~ccStart, mixerMidiChan);
-		(~ccStart).debug("Channel " ++ i ++ " band" ++ j ++ "db cc number");
+		(~ccStart).debug("channel " ++ i ++ " band" ++ j ++ "db cc number");
 		~ccStart = ~ccStart + 1;
 	});
 
@@ -166,7 +166,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			}
 		);
 	}, ~ccStart, mixerMidiChan);
-	(~ccStart).debug("Channel " ++ i ++ " hpfreq cc number");
+	(~ccStart).debug("channel " ++ i ++ " hpfreq cc number");
 	~ccStart = ~ccStart + 1;
 
 	2.do({
@@ -193,7 +193,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 				}
 			);
 		}, ~ccStart, mixerMidiChan);
-		(~ccStart).debug("Channel " ++ i ++ " aux" ++ j ++ " cc number");
+		(~ccStart).debug("channel " ++ i ++ " aux" ++ j ++ " cc number");
 		~ccStart = ~ccStart + 1;
 
 		if (j == 1, {
@@ -212,7 +212,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 		midiControl = val.linlin(0, 127, 0, 1);
 		{ channel[(\mute ++ i).asSymbol].valueAction_(midiControl); }.defer;
 	}, ~ccStart, mixerMidiChan);
-	(~ccStart).debug("Channel " ++ i ++ " mute cc number");
+	(~ccStart).debug("channel " ++ i ++ " mute cc number");
 	~ccStart = ~ccStart + 1;
 
 	// pan
@@ -237,7 +237,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			}
 		);
 	}, ~ccStart, mixerMidiChan);
-	(~ccStart).debug("Channel " ++ i ++ " pan cc number");
+	(~ccStart).debug("channel " ++ i ++ " pan cc number");
 	~ccStart = ~ccStart + 1;
 
 	// level
@@ -261,7 +261,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			}
 		);
 	}, ~ccStart, mixerMidiChan);
-	(~ccStart).debug("Channel " ++ i ++ " level cc number");
+	(~ccStart).debug("channel " ++ i ++ " level cc number");
 	~ccStart = ~ccStart + 1;
 };
 

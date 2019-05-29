@@ -16,6 +16,7 @@ t.tempo = n / 60; // TempoClock by default in beat per seconds
 	~changePattern.value(Pdef(\unit7), ~defaultPattern7);
 	~changePattern.value(Pdef(\unit8), ~defaultPattern8);
 	16.0.wait;
+	"unit4 change dur".postln;
 	Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)]/2, inf)).quant_(~globalQuant);
 }, t);
 
