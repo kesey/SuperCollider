@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////  Routing
 
-var masterBus, limiterBus, mixGroup, synthGroup, fxGroup;
+var masterBus, mixGroup, synthGroup, fxGroup;
 
 mixGroup = Group.new(s, \addToTail);
 synthGroup = Group.new(mixGroup, \addBefore);
@@ -27,8 +27,8 @@ s.bind { ~inputSoftPop = Synth(\InputSig, [\in, 2, \out, ~channelBus[1], \amp, 0
 s.bind { ~samplerStereo = Synth(\samplerStereo, [\out, ~channelBus[1], \gate, 0, \buffer, b[\Bowed_Empty_Sweep_Slow][15].bufnum, \startPos, 0.07, \rate, 0.21, \release, 2, \amp, 0.23, \attack, 10, \doneAction, 0], synthGroup) };
 s.bind { ~sinBass = Synth(\sinBass, [\out, ~channelBus[0], \gate, 0, \amp, 1.84, \doneAction, 0], synthGroup) };
 s.bind { ~reverb = Synth(\Reverb, [\in, ~aux1, \out, ~channelBus[2], \drywet, 1, \level, 0.75, \decaytimea, 5.79, \decaytimec, 0, \predelaytime, 7.63], fxGroup) };
-s.bind { ~simpleDelay = Synth(\SimpleDelay, [\in, ~aux2, \out, ~channelBus[3], \delaytime, 1.36], fxGroup) };
-//~updateTempo.value(~simpleDelay, TempoClock.default);
+s.bind { ~quadDelay = Synth(\quadDelay, [\in, ~aux2, \out, ~channelBus[3]], fxGroup) };
+~updateTempo.value(~quadDelay, TempoClock.default);
 
 // s.meter; // level meter
 

@@ -46,10 +46,14 @@ MIDIClient.init; // post a list of available devices
 
 // MIDIClient.sources; // list avalaible midi sources
 // MIDIIn.connectAll; // connect to all attached input sources
-MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect
+if (MIDIClient.sources[0].notNil, {
+	MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect
+});
 
 // MIDIClient.destinations; // list avalaible midi destinations
-~midiOut = MIDIOut.new(2).latency_(s.latency); // 2 for MIDIClient.destinations[2]
+if (MIDIClient.destinations[2].notNil, {
+	~midiOut = MIDIOut.new(2).latency_(s.latency); // 2 for MIDIClient.destinations[2]
+});
 
 ////////////////////////////////// 4. initialize global variables
 
