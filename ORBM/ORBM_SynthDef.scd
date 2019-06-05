@@ -943,11 +943,11 @@ SynthDef(\bass,{arg out=0, gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, re
     OffsetOut.ar(out,sig * amp);
 }).add;
 
-~sinBassSynthDef = SynthDef(\sinBass, { arg out = 0, gate = 1, amp = 1, curve = 0, loopNode = nil, attack = 0.01, release = 4, pan = 0, envLevel1 = 0, envLevel2 = 40, envLevel3 = 32, envLevel4 = 50, envLevel5 = 0, envLevel6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
+~sinBassSynthDef = SynthDef(\sinBass, { arg out = 0, gate = 1, amp = 1, curve = 0, loopNode = nil, attack = 0.2, release = 4, pan = 0, envLevel1 = 0, envLevel2 = 40, envLevel3 = 32, envLevel4 = 50, envLevel5 = 0, envLevel6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
 	var freqEnv, env, sig;
-	freqEnv = EnvGen.kr(Env.new([envLevel1, envLevel2, envLevel3, envLevel4, envLevel5, envLevel6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve, loopNode: loopNode));
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
-	sig = LPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
+	freqEnv = EnvGen.kr(Env([envLevel1, envLevel2, envLevel3, envLevel4, envLevel5, envLevel6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve), gate);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, doneAction: doneAction);
+	sig = HPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, Lag.kr(amp, 0.5)));
 }).add;
 

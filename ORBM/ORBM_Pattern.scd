@@ -187,7 +187,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~pattern2 = Pbind(
 	\instrument, \sinBass,
-	\amp, 2.6,
+	\amp, 1.84,
 	\dur, 1.5,//Pdefn(\durSnapkick),
 	\function, Pfunc({ arg event; // Pif ? or Plazy
 		var currentInstr, synthWindowKey, instance;
