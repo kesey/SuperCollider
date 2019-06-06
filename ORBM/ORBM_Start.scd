@@ -58,9 +58,11 @@ if (MIDIClient.destinations[2].notNil, {
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
-~globalQuant = 0.125; // avoid 0 here
+~globalQuant = 0.125;
+~globalQuant = ~globalQuant.max(0.0625); // avoid 0
 ~synthWindow = Dictionary.new;
 ~patternType = Dictionary.new;
+
 ////////////////////////////////// 5. define specific functions
 
 this.executeFile(~path ++ "ORBM_Function.scd");

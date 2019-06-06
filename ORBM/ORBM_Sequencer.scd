@@ -56,7 +56,17 @@ p.reset;
 
 // Song transport
 
-Tdef(\song, ~defaultSong).play(t, quant: 1);
+/*(
+g = ~defaultSong; // ~song2;
+g.play;
+)
+
+g.pause;
+g.resume;
+g.stop;
+g.reset;*/
+
+Tdef(\song, ~defaultSong).play;
 
 Tdef(\song).pause;
 Tdef(\song).resume;
@@ -68,7 +78,8 @@ Tdef(\song).reset;
 Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
 ~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
-Tdef(\song, ~song2).play(t, quant: 1);
+Tdef(\song, ~song2).play;
+~samplerStereo.set(\out, ~channelBus[0]);
 
 (
 

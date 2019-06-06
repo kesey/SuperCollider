@@ -133,22 +133,22 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 
 	// delay 1
 	time1 = Select.kr(\sync1.kr(0), [\delaytime1.kr(0.25), \division1.kr(2/3) / tempoClock]);
-	delay1 = XFadeDelay.ar(delay, time1, time1);
+	delay1 = XFadeDelay.ar(delay, 1, time1);
 	delay1 = Balance2.ar(delay1[0], delay1[1], \delaypan1.kr(0), \delayamp1.kr(1));
 
 	// delay 2
 	time2 = Select.kr(\sync2.kr(0), [\delaytime2.kr(0.4), \division2.kr(2/8) / tempoClock]);
-	delay2 = XFadeDelay.ar(delay, time2, time2);
+	delay2 = XFadeDelay.ar(delay, 1, time2);
 	delay2 = Balance2.ar(delay2[0], delay2[1], \delaypan2.kr(0), \delayamp2.kr(1));
 
 	// delay 3
 	time3 = Select.kr(\sync3.kr(0), [\delaytime3.kr(0.15), \division3.kr(3/6) / tempoClock]);
-	delay3 = XFadeDelay.ar(delay, time3, time3);
+	delay3 = XFadeDelay.ar(delay, 1, time3);
 	delay3 = Balance2.ar(delay3[0], delay3[1], \delaypan3.kr(0), \delayamp3.kr(1));
 
 	// delay 4
 	time4 = Select.kr(\sync4.kr(0), [\delaytime4.kr(0.3), \division4.kr(3/4) / tempoClock]);
-	delay4 = XFadeDelay.ar(delay, time4, time4);
+	delay4 = XFadeDelay.ar(delay, 1, time4);
 	delay4 = Balance2.ar(delay4[0], delay4[1], \delaypan4.kr(0), \delayamp4.kr(1));
 
 	sig =  Mix.ar([delay1, delay2, delay3, delay4]);
@@ -164,7 +164,7 @@ SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, d
 	delay = Mix.ar([input, LocalIn.ar(2)]);
 
 	time = Select.kr(sync, [\delaytime.kr(0.25), \division.kr(2/3) / \tempoClock.kr(TempoClock.default.tempo)]);
-	delay = XFadeDelay.ar(delay, time, time);
+	delay = XFadeDelay.ar(delay, 1, time);
 	delay = Balance2.ar(delay[0], delay[1], pan);
 
     LocalOut.ar(delay * feedBack);
