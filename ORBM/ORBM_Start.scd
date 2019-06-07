@@ -69,10 +69,14 @@ this.executeFile(~path ++ "ORBM_Function.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 
+ServerBoot.removeAll;
 ServerBoot.add({
 	~makeBuffers.value;
 });
 
+ServerTree.removeAll;
+
+ServerQuit.removeAll;
 ServerQuit.add({
 	~cleanup.value;
 });

@@ -2,11 +2,11 @@
 
 ///////////////////////////////////////  Song
 
-n = 60; // Tempo in beat per minutes
+/*n = 60; // Tempo in beat per minutes
 t = TempoClock.default;
-t.tempo = n / 60; // TempoClock by default in beat per seconds
+t.tempo = n / 60; // TempoClock by default in beat per seconds*/
 
-~defaultSong = Task.new({
+/*~defaultSong = Task.new({
 	"~defaultSong says hello world".postln;
 	~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 	~changePattern.value(Pdef(\unit2), ~defaultPattern2);
@@ -31,9 +31,9 @@ t.tempo = n / 60; // TempoClock by default in beat per seconds
 	//TempoClock.default.sched(4, { TempoClock.default.tempo = 118 / 60 });
 	~changePattern.value(Pdef(\unit1), ~pattern1);
 	~changePattern.value(Pdef(\unit2), ~pattern2);
-}, t);
+}, t);*/
 
-/*~defaultSong = {
+~defaultSong = {
 	loop {
 		"~defaultSong says hello world".postln;
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
@@ -64,6 +64,6 @@ t.tempo = n / 60; // TempoClock by default in beat per seconds
 		~changePattern.value(Pdef(\unit2), ~pattern2);
 		8.0.wait;
 	}
-};*/
+};
 
 )

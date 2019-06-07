@@ -6,6 +6,10 @@ this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Star
 
 s.serverRunning.if({
 
+	n = 60; // Tempo in beat per minutes
+	t = TempoClock.default;
+	t.tempo = n / 60; // TempoClock by default in beat per seconds
+
 	~pdefNumber = 8; // number of pdef or unit
 	~pdefNumber = ~pdefNumber.max(1).min(12); // limit number of pdef
 
@@ -49,29 +53,29 @@ p.reset;
 
 // Song transport
 
-(
+/*(
 g = ~defaultSong; // ~song2;
-g.play;
+g.play(quant: ~globalQuant * 2);
 )
 
 g.pause;
 g.resume;
 g.stop;
-g.reset;
+g.reset;*/
 
-/*Tdef(\song, ~defaultSong).play;
+Tdef(\song, ~defaultSong).play;
 
 Tdef(\song).pause;
 Tdef(\song).resume;
 Tdef(\song).stop;
-Tdef(\song).reset;*/
+Tdef(\song).reset;
 
 ///////////////////////////////////////  Playground
 
 Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
 ~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
-// Tdef(\song, ~song2).play;
+Tdef(\song, ~song2).play;
 ~samplerStereo.set(\out, ~channelBus[0]);
 
 (

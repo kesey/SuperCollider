@@ -53,10 +53,10 @@
 	var pdefNameSymbol, pdefNameString, type;
 	pdefNameSymbol = pdef.key.asSymbol;
 	pdefNameString = pdefNameSymbol.asString;
-	if (pattern.patternpairs.asEvent.at(\type).isNil,
-		{ type = \note; },
-		{ type = pattern.patternpairs.asEvent.at(\type); }
-	);
+	type = pattern.patternpairs.asEvent.at(\type);
+	if (type.isNil, {
+		type = \note;
+	});
 	~patternType.put(pdefNameString, type);
 
 	if (~activePdefMute.at(pdefNameString), {
