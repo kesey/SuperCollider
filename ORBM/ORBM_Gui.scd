@@ -342,7 +342,7 @@ pdefGuiView.layout = HLayout();
 					state = true;
 				},
 				{
-					type= ~patternType.at(pdefNameString);
+					type = ~patternType.at(pdefNameString);
 					state = false;
 				}
 			);
@@ -379,7 +379,7 @@ u = ScrollView(y, y.view.bounds);
 u.canvas = View();
 u.canvas.layout = VLayout();
 
-~autoGui.value(u, ~reverbSynthDef, ~reverb, 110, 0, Color.new255(209, 238, 238), Dictionary.newFrom(List["predelaytime", ["slider", ControlSpec(0, 10, step: 0.01, default: 7.63), true], "decaytimec", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "decaytimea", ["slider", ControlSpec(0, 10, step: 0.01, default: 5.79), true], "level", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
+~autoGui.value(u, ~verbSynthDef, ~verb, 110, 0, Color.new255(209, 238, 238), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
 
 ~autoGui.value(u, ~quadDelaySynthDef, ~quadDelay, 115, 1, Color.new255(238, 238, 209), Dictionary.newFrom(List["tempoClock", ["none"], "sync1", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync2", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync3", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync4", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "delaypan1", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "delaypan2", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "delaypan3", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "delaypan4", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false]]));
 

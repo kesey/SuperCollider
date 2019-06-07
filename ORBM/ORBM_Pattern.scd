@@ -42,6 +42,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\dur, Pdefn(\durIkedaNoise),
 	\amp, 0.014,
 	\pan , Pwhite(-1, 1, inf),
+	\timingOffset, Pseq([0.001, 0.002], inf), // add groove
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance;

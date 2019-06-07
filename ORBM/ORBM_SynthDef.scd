@@ -81,6 +81,81 @@ SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay
     );
 }).add;
 
+~verbSynthDef = SynthDef(\verb, { arg in = 0, out = 0, fdback = 0, amp = 0.1, drywet = 0.5;
+	var sig, input;
+	input = In.ar(in, 2);
+	input = Mix.ar([input, LocalIn.ar(2)]);
+	sig = input;
+	sig = FreeVerb2.ar(sig[0], sig[1], \mix.kr(0.85), \room.kr(1), \damp.kr(0.4));
+	LocalOut.ar(fdback * sig);
+	XOut.ar(out, drywet, sig * Lag2.kr(amp));
+}).add;
+
+// infinite reverb by Eli Feldsteel
+SynthDef(\allreverb, { arg in = 0, out = 0, amp = 0.1, gate = 1, pan = 0, freq = 200;
+	var sig;
+	var input = InFeedback.ar(in, 2);
+	sig = LocalIn.ar(2) * \fb.kr(0.1);
+	sig = sig + input;
+	15.do {
+		sig = AllpassL.ar(sig, 0.06, Rand(0.001,0.06), 3);
+	};
+	LocalOut.ar(sig);
+	sig = sig * EnvGen.ar(Env.adsr(0.01,0.1,0.8,0.1),gate,doneAction:2);
+	sig = SelectX.ar(\mix.kr(0.5), [input, sig]);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\allreverbf, { arg in = 0, out=0, amp=0.1, gate=1, pan=0, freq=200;
+	var sig;
+	var input = InFeedback.ar(in, 2);
+	var fbsig;
+	sig = LocalIn.ar(2) * \fb.kr(0.1);
+	sig = sig + input;
+	15.do {
+		sig = AllpassL.ar(sig, 0.06, Rand(0.001,0.06), 3);
+	};
+	fbsig = sig;
+	fbsig = LPF.ar(sig, \lpf.kr(1000));
+	fbsig = HPF.ar(sig, \hpf.kr(100));
+	sig = fbsig;
+	LocalOut.ar(fbsig);
+	sig = sig * EnvGen.ar(Env.adsr(0.4,0.1,0.8,0.1),gate,doneAction:2);
+	sig = SelectX.ar(\mix.kr(0.5), [input, sig]);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\allreverbif, { arg in = 0, out=0, amp=0.1, gate=1, pan=0, freq=200;
+	var sig;
+	var input = InFeedback.ar(in, 2);
+	var fbsig;
+	sig =
+	sig = LocalIn.ar(2) * \fb.kr(0.1);
+	sig = sig + SelectX.ar(\mix.kr(0.5), [DC.ar(0), input]);
+	15.do {
+		sig = AllpassL.ar(sig, 0.06, Rand(0.001,0.06), 3);
+	};
+	fbsig = sig;
+	fbsig = LPF.ar(sig, \lpf.kr(1000));
+	fbsig = HPF.ar(sig, \hpf.kr(100));
+	sig = fbsig;
+	LocalOut.ar(fbsig);
+	sig = sig * EnvGen.ar(Env.adsr(0.4,0.1,0.8,0.1),gate,doneAction:2);
+	sig = sig + input;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\reverbCraum, { arg in = 0, out = 0, gate = 1, roomsize = 100, revtime = 1, damping = 0.6, inputbw = 0.5, spread = 15, drylevel = 1, earlyreflevel = 0.7, taillevel = 0.5, maxroomsize = 300, amp = 0.5;
+	var source = In.ar(in, 2);
+	var reverb;
+	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
+
+	reverb = GVerb.ar(source, roomsize, revtime, damping, inputbw, spread, drylevel, earlyreflevel, taillevel, maxroomsize);
+	reverb = reverb * amp ;
+	XOut.ar(out,env,reverb);
+//By Zé Craum
+}).add;
+
 SynthDef(\Phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5, level = 1;
 	var input, effect;
 	input = In.ar(in, 2);

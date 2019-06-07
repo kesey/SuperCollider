@@ -48,12 +48,16 @@
 	});
 };
 
-// persist Pdef mute state at pattern change
+// persist Pdef mute state at pattern change and check pattern type
 ~changePattern = { arg pdef, pattern;
-	var pdefNameSymbol, pdefNameString;
-	pdefNameSymbol = pdef.key;
+	var pdefNameSymbol, pdefNameString, type;
+	pdefNameSymbol = pdef.key.asSymbol;
 	pdefNameString = pdefNameSymbol.asString;
-	~patternType.put(pdefNameString, pattern.patternpairs.asEvent.at(\type));
+	if (pattern.patternpairs.asEvent.at(\type).isNil,
+		{ type = \note; },
+		{ type = pattern.patternpairs.asEvent.at(\type); }
+	);
+	~patternType.put(pdefNameString, type);
 
 	if (~activePdefMute.at(pdefNameString), {
 		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant * 2);
@@ -143,7 +147,7 @@
 			);
 
 			case
-			{ controlType == "none" or: "out in input output doneaction".contains(controlName.toLower) }
+			{ controlType == "none" or: "out in input output inbus outbus doneaction".contains(controlName.toLower) }
 			{
 				caseFind = true;
 			}
