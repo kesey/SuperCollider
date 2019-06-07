@@ -83,7 +83,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 			instance = ~pdefName.asSymbol;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~ikedaClickSynthDef, instance, 666, 0, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true]]));
+				~autoGui.value(v, ~ikedaClickSynthDef, instance, 666, 0, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true], "centerFreq", ["slider", ControlSpec(20, 20000, step: 1, default: 15000), true]]));
 			}.defer;
 			~prevInstr = currentInstr;
 		});

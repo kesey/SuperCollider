@@ -659,14 +659,14 @@ SynthDef(\hat, { | out = 0, amp = 1 |
 	var noise, sig;
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
 	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq.max(0.001));
-	DetectSilence.ar(sig, 0.001, doneAction:2);
+	DetectSilence.ar(sig, 0.0001, doneAction:2);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
 ~ikedaClickSynthDef = SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, amp = 25, pan = 0, level = 1;
 	var noise, sig;
  	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
- 	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
+	sig = BPF.ar(noise, centerFreq.max(1), rq.max(0.01), amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
  	DetectSilence.ar(sig, 0.0001, doneAction:2);
  	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
