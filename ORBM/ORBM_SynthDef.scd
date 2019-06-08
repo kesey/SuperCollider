@@ -34,6 +34,14 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 
 ///////////////////////////////////////  Fx
 
+~pitchShifterSynthDef = SynthDef(\pitchShifter, { arg in = 0, out = 0, dryWet = 0.5, pitchRatio = 1, pitchDisper = 0, timeDisper = 0;
+	var sig, windowSize;
+	windowSize = 0.2;
+	sig = InFeedback.ar(in, 2);
+	sig = PitchShift.ar(sig, windowSize, pitchRatio, pitchDisper, timeDisper.min(windowSize));
+	XOut.ar(out, dryWet, sig);
+}).add;
+
 ~simpleDelaySynthDef = SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 	var input, effect;
 	input = In.ar(in, 2);
@@ -81,18 +89,18 @@ SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay
     );
 }).add;
 
-~verbSynthDef = SynthDef(\verb, { arg in = 0, out = 0, fdback = 0, amp = 0.1, drywet = 0.5;
+~verbSynthDef = SynthDef(\verb, { arg in = 0, out = 0, amp = 1, feedback = 0;
 	var sig, input;
-	input = In.ar(in, 2);
+	input = InFeedback.ar(in, 2);
 	input = Mix.ar([input, LocalIn.ar(2)]);
 	sig = input;
 	sig = FreeVerb2.ar(sig[0], sig[1], \mix.kr(0.85), \room.kr(1), \damp.kr(0.4));
-	LocalOut.ar(fdback * sig);
-	XOut.ar(out, drywet, sig * Lag2.kr(amp));
+	LocalOut.ar(feedback * sig);
+	Out.ar(out, sig * Lag2.kr(amp));
 }).add;
 
 // infinite reverb by Eli Feldsteel
-SynthDef(\allreverb, { arg in = 0, out = 0, amp = 0.1, gate = 1, pan = 0, freq = 200;
+SynthDef(\allreverb, { arg in = 0, out = 0, gate = 1, pan = 0, freq = 200;
 	var sig;
 	var input = InFeedback.ar(in, 2);
 	sig = LocalIn.ar(2) * \fb.kr(0.1);
@@ -106,7 +114,7 @@ SynthDef(\allreverb, { arg in = 0, out = 0, amp = 0.1, gate = 1, pan = 0, freq =
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\allreverbf, { arg in = 0, out=0, amp=0.1, gate=1, pan=0, freq=200;
+SynthDef(\allreverbf, { arg in = 0, out=0, gate=1, pan=0, freq=200;
 	var sig;
 	var input = InFeedback.ar(in, 2);
 	var fbsig;
@@ -125,7 +133,7 @@ SynthDef(\allreverbf, { arg in = 0, out=0, amp=0.1, gate=1, pan=0, freq=200;
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\allreverbif, { arg in = 0, out=0, amp=0.1, gate=1, pan=0, freq=200;
+SynthDef(\allreverbif, { arg in = 0, out=0, gate=1, pan=0, freq=200;
 	var sig;
 	var input = InFeedback.ar(in, 2);
 	var fbsig;
@@ -156,20 +164,20 @@ SynthDef(\reverbCraum, { arg in = 0, out = 0, gate = 1, roomsize = 100, revtime 
 //By Zé Craum
 }).add;
 
-SynthDef(\Phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5, level = 1;
+SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	var input, effect;
-	input = In.ar(in, 2);
+	input = InFeedback.ar(in, 2);
 	effect = AllpassN.ar(input, 0.02, SinOsc.kr(freq, 0, 0.01, 0.01));  // max delay of 20msec
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect);
 }).add;
 
-SynthDef(\Flanging, {arg in = 0, out = 0, flangefreq = 0.1, fdback = 0.1, drywet = 0.5, level = 1;
+~flangingSynthDef = SynthDef(\flanging, {arg in = 0, out = 0, fgfreq = 0.1, fdback = 0.1, drywet = 0.5;
 	var input, effect;
-	input = In.ar(0, 2);
+	input = InFeedback.ar(in, 2);
 	input = input + LocalIn.ar(2); // add some feedback
-	effect = DelayN.ar(input, 0.02, SinOsc.kr(flangefreq, 0, 0.005, 0.005)); // max delay of 20msec
+	effect = DelayN.ar(input, 0.02, SinOsc.kr(fgfreq, 0, 0.005, 0.005)); // max delay of 20msec
 	LocalOut.ar(fdback * effect);
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect);
 }).add;
 
 SynthDef(\DistoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
@@ -200,9 +208,9 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 	ReplaceOut.ar(out, effect);
 }).add;
 
-~quadDelaySynthDef = SynthDef(\quadDelay, { arg in = 0, out = 0, dryWet = 0.4, feedBack = 0.2, amp = 0.5;
+~quadDelaySynthDef = SynthDef(\quadDelay, { arg in = 0, out = 0, amp = 1, dryWet = 0.4, feedBack = 0.2;
 	var input, delay, delay1, delay2, delay3, delay4, time1, time2, time3, time4, sig, tempoClock;
-	input = In.ar(in, 2);
+	input = InFeedback.ar(in, 2);
 	delay = Mix.ar([input, LocalIn.ar(2)]);
 	tempoClock = \tempoClock.kr(TempoClock.default.tempo);
 

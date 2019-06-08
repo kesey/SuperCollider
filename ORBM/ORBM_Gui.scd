@@ -23,10 +23,15 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 
 ///////////////////////////////////////  Channel
 
-~channelNumber.do {
-	arg i;
+~channelNumber.do { arg i;
+	var bgColor;
+	switch(i,
+		2, { bgColor = ~aux1Color; },
+		3, { bgColor = ~aux2Color; },
+		{ bgColor = Color.white; }
+	);
 	channel[\channelView] = CompositeView(w, 118@720);
-	channel[\channelView].background_(Color.white);
+	channel[\channelView].background_(bgColor);
 	channel[\channelView].decorator_(FlowLayout(channel[\channelView].bounds, 3@3, 3@3));
 
 	// Channel name
@@ -61,13 +66,12 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 	(~ccStart).debug("channel " ++ i ++ " lpfreq cc number");
 	~ccStart = ~ccStart + 1;
 
-	3.do({
-		arg j;
+	3.do({ arg j;
 		var default;
 		switch(j,
-			0, { default = 8000 },
-			1, { default = 1200 },
-			2, { default = 80 },
+			0, { default = 8000; },
+			1, { default = 1200; },
+			2, { default = 80; },
 			{ default = 1200; }
 		);
 		j = j + 1;
@@ -169,12 +173,17 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 	(~ccStart).debug("channel " ++ i ++ " hpfreq cc number");
 	~ccStart = ~ccStart + 1;
 
-	2.do({
-		arg j;
+	2.do({ arg j;
+		var color;
+		switch(j,
+			0, { color = ~aux1Color; },
+			1, { color = ~aux2Color; },
+			{ color = Color.white; }
+		);
 		j = j + 1;
 		// aux
 		channel[(\activeAux ++ j ++ i).asSymbol] = false;
-		channel[(\aux ++ j ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux' ++ j, ControlSpec(0, 1, step: 0.01, default: 0), { arg aux; currentEnvironment.at((\channel ++ i).asSymbol).set((\auxsend ++ j).asSymbol, aux.value); channel[(\activeAux ++ j ++ i).asSymbol] = false; });
+		channel[(\aux ++ j ++ i).asSymbol] = EZKnob(channel[\channelView], 35@70, 'aux' ++ j, ControlSpec(0, 1, step: 0.01, default: 0), { arg aux; currentEnvironment.at((\channel ++ i).asSymbol).set((\auxsend ++ j).asSymbol, aux.value); channel[(\activeAux ++ j ++ i).asSymbol] = false; }).setColors(background: color);
 
 		// aux midi map
 		MIDIFunc.cc({ arg val, num, chan, src;
@@ -371,7 +380,7 @@ v.canvas.layout.insert(pdefGuiView);
 
 ///////////////////////////////////////  Fx Gui
 
-y = Window("Fx", Rect(350, 220, 600, 320));
+y = Window("Fx", Rect(250, 120, 820, 520));
 y.layout = VLayout();
 y.front;
 
@@ -379,8 +388,13 @@ u = ScrollView(y, y.view.bounds);
 u.canvas = View();
 u.canvas.layout = VLayout();
 
-~autoGui.value(u, ~verbSynthDef, ~verb, 110, 0, Color.new255(209, 238, 238), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["knob", ControlSpec(0, 2, step: 0.01, default: 0.75), true], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
+// Aux 2
+~autoGui.value(u, ~verbSynthDef, ~verb, 110, 0, ~aux2Color, Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["none"], "drywet", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
 
-~autoGui.value(u, ~quadDelaySynthDef, ~quadDelay, 115, 1, Color.new255(238, 238, 209), Dictionary.newFrom(List["tempoClock", ["none"], "sync1", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync2", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync3", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync4", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "pan1", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan2", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan3", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan4", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false]]));
+~autoGui.value(u, ~flangingSynthDef, ~flanging, 666, 0, ~aux2Color, Dictionary.newFrom(List["fgfreq", ["slider", ControlSpec(0.01, 1000, step: 1, default: 0.2), true]]));
+
+~autoGui.value(u, ~pitchShifterSynthDef, ~pitchShifter, 666, 0, ~aux2Color, Dictionary.newFrom(List["pitchRatio", ["slider", ControlSpec(0, 4, step: 0.01, default: 1), true]]));
+
+~autoGui.value(u, ~quadDelaySynthDef, ~quadDelay, 115, 1, ~aux2Color, Dictionary.newFrom(List["tempoClock", ["none"], "amp", ["none"], "sync1", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync2", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync3", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync4", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "pan1", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan2", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan3", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan4", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false]]));
 
 )

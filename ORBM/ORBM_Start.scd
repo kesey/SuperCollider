@@ -63,6 +63,9 @@ if (MIDIClient.destinations[2].notNil, {
 ~synthWindow = Dictionary.new;
 ~patternType = Dictionary.new;
 
+~aux1Color = Color.new255(209, 238, 238);
+~aux2Color = Color.new255(238, 238, 209);
+
 ////////////////////////////////// 5. define specific functions
 
 this.executeFile(~path ++ "ORBM_Function.scd");
