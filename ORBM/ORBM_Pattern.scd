@@ -8,6 +8,8 @@ Pdefn(\durIkedaNoise, Pseq([3/4, 3/24, 3/12, 3/8, 3/12, 3/24], inf)).quant_(~glo
 Pdefn(\durIkedaBass, Pseq([3/4, Rest(0.75), Pwrand([1, 0.5], [0.4, 0.6].normalizeSum, 1)], inf)).quant_(~globalQuant);
 Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
+~initPattern = Pbind(\type, \rest);
+
 ~defaultPattern1 = Pbind(
 	\instrument, \snapkick,
 	\dur, Pdefn(\durSnapkick),

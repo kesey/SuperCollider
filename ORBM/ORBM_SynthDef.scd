@@ -176,8 +176,8 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 ~flangingSynthDef = SynthDef(\flanging, {arg in = 0, out = 0, drywet = 0.5, fgfreq = 0.1, fdback = 0.1;
 	var input, sig, effect;
 	input = InFeedback.ar(in, 2);
-	input = input + LocalIn.ar(2); // add some feedback
-	effect = DelayN.ar(input, 0.02, SinOsc.kr(fgfreq, 0, 0.005, 0.005)); // max delay of 20msec
+	effect = input + LocalIn.ar(2); // add some feedback
+	effect = DelayN.ar(effect, 0.02, SinOsc.kr(fgfreq, 0, 0.005, 0.005)); // max delay of 20msec
 	LocalOut.ar(fdback * effect);
 	sig = XFade2.ar(input, effect, drywet);
 	Out.ar(out, sig);
