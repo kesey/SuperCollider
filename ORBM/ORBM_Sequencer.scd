@@ -10,24 +10,24 @@ s.serverRunning.if({
 	t = TempoClock.default;
 	t.tempo = n / 60; // TempoClock by default in beat per seconds
 
-	~pdefNumber = 8; // number of pdef or unit
+	~pdefNumber = 8; // number of pdef or units
 	~pdefNumber = ~pdefNumber.max(1).min(12); // limit number of pdef
 
 	~sequencer = Dictionary.new;
 
-	~pdefNumber.do({ // sequencer creation with pdefNumber of unit
+	~pdefNumber.do({ // sequencer creation with pdefNumber of units
 		arg i;
 		var name;
 		name = ("unit" ++ (i + 1)).asSymbol;
 		~sequencer.put(name,
 			Penvir(
 				(pdefName: name, prevInstr: nil),
-				Pdef(name).quant_(~globalQuant)
+				Pdef(name)
 			)
 		);
 	});
 
-	p = Ppar(~listUnits.value(~sequencer), inf).play(t, quant: ~globalQuant); // play all unit in parallel
+	p = Ppar(~listUnits.value(~sequencer), inf).play(t, quant: ~globalQuant); // play all units in parallel
 
 	this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
 
@@ -53,17 +53,7 @@ p.reset;
 
 // Song transport
 
-/*(
-g = ~defaultSong; // ~song2;
-g.play(quant: ~globalQuant * 2);
-)
-
-g.pause;
-g.resume;
-g.stop;
-g.reset;*/
-
-Tdef(\song, ~defaultSong).play;
+Tdef(\song, ~defaultSong).play(t, quant: ~globalQuant);
 
 Tdef(\song).pause;
 Tdef(\song).resume;
@@ -75,7 +65,7 @@ Tdef(\song).reset;
 Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
 ~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
-Tdef(\song, ~song2).play;
+Tdef(\song, ~song2).play(t, quant: ~globalQuant);
 ~samplerStereo.set(\out, ~channelBus[0]);
 
 (

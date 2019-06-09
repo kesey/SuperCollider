@@ -190,7 +190,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\instrument, \sinBass,
 	\amp, 1.84,
 	\dur, 1.5,//Pdefn(\durSnapkick),
-	\function, Pfunc({ arg event; // Pif ? or Plazy
+	\function, Pfunc({ arg event; // Pif ? or Pn(Plazy, inf)
 		var currentInstr, synthWindowKey, instance;
 		currentInstr = event.at(\instrument);
 

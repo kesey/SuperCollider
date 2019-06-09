@@ -180,19 +180,31 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	XOut.ar(out, drywet, effect);
 }).add;
 
-SynthDef(\DistoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
+~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
 	var input, effect;
-	input = In.ar(in, 2);
-	effect = InsideOut.ar(input);
-	XOut.ar(out, drywet, effect * level);
+	input = InFeedback.ar(in, 2);
+	effect = InsideOut.ar(input, level);
+	XOut.ar(out, drywet, effect);
 }).add;
 
-SynthDef(\DistoCrossOver, { arg in = 0, out = 0, amp = 0.5, smooth = 0.5, drywet = 0.5, level = 1;
-	var input, effect;
-	input = In.ar(in, 2);
-	effect = CrossoverDistortion.ar(input , amp, smooth);
-	XOut.ar(out, drywet, effect * level);
+~distoCrossOverSynthDef = SynthDef(\distoCrossOver, { arg in = 0, out = 0, amp = 0.5, smooth = 0.5, level = 1, drywet = 0;
+	var input, effect, sig;
+	input = InFeedback.ar(in, 2);
+	effect = CrossoverDistortion.ar(input , amp, smooth, level);
+	sig = XFade2.ar(input, effect, drywet);
+	Out.ar(out, sig);
 }).add;
+
+/*SynthDef(\ladspaDist, { arg in = 0, out = 0, drywet = 0.5, envTime = 0.001, knee = 0;
+    var input, sig;
+	input = InFeedback(in, 2);
+    /*envTime = MouseX.kr(1.0e-3, 0.1e-3);
+    knee = MouseY.kr(0, -90).dbamp;*/
+	envTime = envTime.linlin(0, 1, 1.0e-3, 0.1e-3);
+	knee = knee.linlin(0, 1, 0, -90).dbamp;
+    sig = DelayC.ar(input, 0.01, envTime * 0.5, EnvFollow.ar(input, 1 - (envTime * SampleRate.ir).reciprocal).max(knee).reciprocal) * 0.1;
+	XOut(out, drywet, sig);
+}).add;*/
 
 SynthDef(\Compression, {arg in = 0, out = 0, gain = 1.5, threshold = 0.5, drywet = 0.5, level = 1;
 	var input, effect;
@@ -874,13 +886,13 @@ SynthDef(\cosc,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,freq=512;
     OffsetOut.ar(0,sig*amp);
 }).add;
 
-SynthDef(\noiseInjection, { arg in = 0, out = 0, attack = 0.01, release = 0.01, noiseType = 0, amp = 0.5;
+~noiseInjectionSnythDef = SynthDef(\noiseInjection, { arg in = 0, out = 0, attack = 0.01, release = 0.01, noiseType = 0, dryWet = 0.5;
 	var input, sig, inputAmp;
-	input = In.ar(in, 2);
+	input = InFeedback.ar(in, 2);
 	inputAmp = Amplitude.kr(input, attack, release);
 	noiseType = noiseType.max(0).min(4);
 	sig = Select.ar(noiseType, [WhiteNoise.ar(inputAmp), BrownNoise.ar(inputAmp), GrayNoise.ar(inputAmp), PinkNoise.ar(inputAmp), ClipNoise.ar(inputAmp)]);
-	Out.ar(out, sig * amp);
+	XOut.ar(out, dryWet, sig);
 }).add;
 
 ///////////////////////////////////////  Sampler
@@ -952,6 +964,72 @@ SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
 	sig = HPF.ar(sig,100);
 	sig = CompanderD.ar(sig,0.3,0.3,1.5,0.0001,0.01);
 	OffsetOut.ar(out,sig*amp);
+}).add;
+
+SynthDef(\prayer_bell, { |outbus, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, i_doneAction = 0|
+  var sig, input, first, freqscale, mallet, sing;
+  freqscale = freq / 2434;
+  freqscale = Lag3.kr(freqscale, lag);
+  decayscale = Lag3.kr(decayscale, lag);
+
+  mallet = LPF.ar(Trig.ar(t_trig, SampleDur.ir)!2, 10000 * freqscale);
+  sing = LPF.ar(
+    LPF.ar(
+      {
+        PinkNoise.ar * Integrator.kr(sing_switch * 0.001, 0.999).linexp(0, 1, 0.01, 1) * amp
+      } ! 2,
+      2434 * freqscale
+    ) + Dust.ar(0.1), 10000 * freqscale
+  ) * LFNoise1.kr(0.5).range(-45, -30).dbamp;
+  input = mallet + (sing_switch.clip(0, 1) * sing);
+
+
+  sig = DynKlank.ar(`[
+    [
+      (first = LFNoise1.kr(0.5).range(2424, 2444)) + Line.kr(20, 0, 0.5),
+      first + LFNoise1.kr(0.5).range(1,3),
+      LFNoise1.kr(1.5).range(5435, 5440) - Line.kr(35, 0, 1),
+      LFNoise1.kr(1.5).range(5480, 5485) - Line.kr(10, 0, 0.5),
+      LFNoise1.kr(2).range(8435, 8445) + Line.kr(15, 0, 0.05),
+      LFNoise1.kr(2).range(8665, 8670),
+      LFNoise1.kr(2).range(8704, 8709),
+      LFNoise1.kr(2).range(8807, 8817),
+      LFNoise1.kr(2).range(9570, 9607),
+      LFNoise1.kr(2).range(10567, 10572) - Line.kr(20, 0, 0.05),
+      LFNoise1.kr(2).range(10627, 10636) + Line.kr(35, 0, 0.05),
+      LFNoise1.kr(2).range(14689, 14697) - Line.kr(10, 0, 0.05)
+    ],
+    [
+      LFNoise1.kr(1).range(-10, -5).dbamp,
+      LFNoise1.kr(1).range(-20, -10).dbamp,
+      LFNoise1.kr(1).range(-12, -6).dbamp,
+      LFNoise1.kr(1).range(-12, -6).dbamp,
+      -20.dbamp,
+      -20.dbamp,
+      -20.dbamp,
+      -25.dbamp,
+      -10.dbamp,
+      -20.dbamp,
+      -20.dbamp,
+      -25.dbamp
+    ],
+    [
+      20 * freqscale.pow(0.2),
+      20 * freqscale.pow(0.2),
+      5,
+      5,
+      0.6,
+      0.5,
+      0.3,
+      0.25,
+      0.4,
+      0.5,
+      0.4,
+      0.6
+    ] * freqscale.reciprocal.pow(0.5)
+  ], input, freqscale, 0, decayscale);
+  DetectSilence.ar(sig, doneAction: i_doneAction);
+  Out.ar(outbus, sig);
 }).add;
 
 ///////////////////////////////////////  Rimshot
