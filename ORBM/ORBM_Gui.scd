@@ -345,15 +345,14 @@ pdefGuiView.layout = HLayout();
 		])
 		.action = { arg guiControl;
 			var type, state;
+			type = \rest;
 			if(guiControl.value > 0,
 				{
-					type = \rest;
 					state = true;
 				},
 				{
 					if(~patternType.includesKey(pdefNameString),
-						{ type = ~patternType.at(pdefNameString); },
-						{ type = \note; }
+						{ type = ~patternType.at(pdefNameString); }
 					);
 					state = false;
 				}

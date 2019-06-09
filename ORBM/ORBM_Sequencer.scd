@@ -22,7 +22,7 @@ s.serverRunning.if({
 		~sequencer.put(name,
 			Penvir(
 				(pdefName: name, prevInstr: nil),
-				Pdef(name)
+				Pdef(name, Pbind(\type, \rest))
 			)
 		);
 	});
