@@ -63,7 +63,7 @@ if (MIDIClient.destinations[2].notNil, {
 ~synthWindow = Dictionary.new;
 ~patternType = Dictionary.new;
 
-~aux1Color = Color.new255(209, 238, 238);
+~aux1Color = Color.new255(205, 205, 193);
 ~aux2Color = Color.new255(238, 238, 209);
 
 ////////////////////////////////// 5. define specific functions
@@ -91,7 +91,7 @@ s.serverRunning.not.if({ s.boot });
 ////////////////////////////////// 8. actions to perform once boot is completed
 
 s.waitForBoot({
-	"boot complete".postln;
+	"server boot complete".postln;
 	s.newBusAllocators;
 	// s.plotTree; // node tree
 	this.executeFile(~path ++ "ORBM_SynthDef.scd");
@@ -102,6 +102,7 @@ s.waitForBoot({
 	s.sync;
 	this.executeFile(~path ++ "ORBM_Song.scd");
 	s.sync;
+	"init complete".postln;
 });
 
 )

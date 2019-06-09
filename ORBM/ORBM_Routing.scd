@@ -9,8 +9,8 @@ aux2Bus;
 mixGroup = Group.new(s, \addToTail);
 synthGroup = Group.new(mixGroup, \addBefore);
 fxGroup = Group.new(mixGroup);
-aux1Group = Group.new(fxGroup, \addToHead);
-aux2Group = Group.new(fxGroup);
+aux1Group = Group.new(fxGroup);
+aux2Group = Group.new(aux1Group, \addAfter);
 
 masterBus = Bus.audio(s, 2);
 ~master = Synth(\MasterStrip, [\in, masterBus], mixGroup, addAction: 'addToTail');
@@ -38,7 +38,8 @@ aux2Bus = Bus.audio(s, 2);
 
 // Aux 1
 s.bind { ~noiseInjection = Synth(\noiseInjection, [\in, ~aux1, \out, aux1Bus], aux1Group, addAction: 'addToHead'); };
-s.bind { ~distoCrossOver = Synth(\distoCrossOver, [\in, aux1Bus, \out, ~channelBus[2]], ~noiseInjection, addAction: 'addAfter'); };
+s.bind { ~distoCrossOver = Synth(\distoCrossOver, [\in, aux1Bus, \out, aux1Bus], ~noiseInjection, addAction: 'addAfter'); };
+s.bind { ~distoInsideOut = Synth(\distoInsideOut, [\in, aux1Bus, \out, ~channelBus[2]], ~distoCrossOver, addAction: 'addAfter'); };
 
 // Aux 2
 ~quadDelay = Synth(\quadDelay, [\in, ~aux2, \out, aux2Bus], aux2Group, addAction: 'addToHead');

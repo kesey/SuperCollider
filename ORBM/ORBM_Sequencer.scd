@@ -22,7 +22,7 @@ s.serverRunning.if({
 		~sequencer.put(name,
 			Penvir(
 				(pdefName: name, prevInstr: nil),
-				Pdef(name, Pbind(\type, \rest))
+				Pdef(name, Pbind(\type, \rest));
 			)
 		);
 	});
@@ -53,7 +53,7 @@ p.reset;
 
 // Song transport
 
-Tdef(\song, ~defaultSong).play(t, quant: ~globalQuant);
+Tdef(\song, ~defaultSong).play(t, quant: 1);
 
 Tdef(\song).pause;
 Tdef(\song).resume;
@@ -65,7 +65,7 @@ Tdef(\song).reset;
 Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
 ~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
-Tdef(\song, ~song2).play(t, quant: ~globalQuant);
+Tdef(\song, ~song2).play(t, quant: 1);
 ~samplerStereo.set(\out, ~channelBus[0]);
 
 (

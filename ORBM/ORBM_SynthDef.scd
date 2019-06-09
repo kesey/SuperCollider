@@ -34,12 +34,14 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 
 ///////////////////////////////////////  Fx
 
-~pitchShifterSynthDef = SynthDef(\pitchShifter, { arg in = 0, out = 0, dryWet = 0.5, pitchRatio = 1, pitchDisper = 0, timeDisper = 0;
-	var sig, windowSize;
+~pitchShifterSynthDef = SynthDef(\pitchShifter, { arg in = 0, out = 0, drywet = 0.5, pitchRatio = 1, pitchDisper = 0, timeDisper = 0;
+	var input, sig, windowSize;
 	windowSize = 0.2;
-	sig = InFeedback.ar(in, 2);
-	sig = PitchShift.ar(sig, windowSize, pitchRatio, pitchDisper, timeDisper.min(windowSize));
-	XOut.ar(out, dryWet, sig);
+	input = InFeedback.ar(in, 2);
+	sig = PitchShift.ar(input, windowSize, pitchRatio, pitchDisper, timeDisper.min(windowSize));
+	sig = XFade2.ar(input, sig, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, sig);
 }).add;
 
 ~simpleDelaySynthDef = SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
@@ -89,12 +91,12 @@ SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay
     );
 }).add;
 
-~verbSynthDef = SynthDef(\verb, { arg in = 0, out = 0, amp = 1, feedback = 0;
+~verbSynthDef = SynthDef(\verb, { arg in = 0, out = 0, drywet = 0.85, amp = 1, feedback = 0;
 	var sig, input;
 	input = InFeedback.ar(in, 2);
 	input = Mix.ar([input, LocalIn.ar(2)]);
 	sig = input;
-	sig = FreeVerb2.ar(sig[0], sig[1], \mix.kr(0.85), \room.kr(1), \damp.kr(0.4));
+	sig = FreeVerb2.ar(sig[0], sig[1], drywet, \room.kr(1), \damp.kr(0.4));
 	LocalOut.ar(feedback * sig);
 	Out.ar(out, sig * Lag2.kr(amp));
 }).add;
@@ -171,40 +173,47 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	XOut.ar(out, drywet, effect);
 }).add;
 
-~flangingSynthDef = SynthDef(\flanging, {arg in = 0, out = 0, fgfreq = 0.1, fdback = 0.1, drywet = 0.5;
-	var input, effect;
+~flangingSynthDef = SynthDef(\flanging, {arg in = 0, out = 0, drywet = 0.5, fgfreq = 0.1, fdback = 0.1;
+	var input, sig, effect;
 	input = InFeedback.ar(in, 2);
 	input = input + LocalIn.ar(2); // add some feedback
 	effect = DelayN.ar(input, 0.02, SinOsc.kr(fgfreq, 0, 0.005, 0.005)); // max delay of 20msec
 	LocalOut.ar(fdback * effect);
-	XOut.ar(out, drywet, effect);
-}).add;
-
-~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
-	var input, effect;
-	input = InFeedback.ar(in, 2);
-	effect = InsideOut.ar(input, level);
-	XOut.ar(out, drywet, effect);
-}).add;
-
-~distoCrossOverSynthDef = SynthDef(\distoCrossOver, { arg in = 0, out = 0, amp = 0.5, smooth = 0.5, level = 1, drywet = 0;
-	var input, effect, sig;
-	input = InFeedback.ar(in, 2);
-	effect = CrossoverDistortion.ar(input , amp, smooth, level);
 	sig = XFade2.ar(input, effect, drywet);
 	Out.ar(out, sig);
+	//XOut.ar(out, drywet, effect);
 }).add;
 
-/*SynthDef(\ladspaDist, { arg in = 0, out = 0, drywet = 0.5, envTime = 0.001, knee = 0;
-    var input, sig;
+~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = -0.5, level = 0.12;
+	var input, effect, sig;
+	input = InFeedback.ar(in, 2);
+	effect = InsideOut.ar(input, level);
+	sig = XFade2.ar(input, effect, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, effect);
+}).add;
+
+~distoCrossOverSynthDef = SynthDef(\distoCrossOver, { arg in = 0, out = 0, drywet = 0.5, amp = 0.14, smooth = 0.1, level = 0.4;
+	var input, effect, sig;
+	input = InFeedback.ar(in, 2);
+	effect = CrossoverDistortion.ar(input , Lag2.kr(amp.max(0.001)), Lag2.kr(smooth.max(0.01)), level);
+	sig = XFade2.ar(input, effect, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, effect);
+}).add;
+
+SynthDef(\ladspaDist, { arg in = 0, out = 0, drywet = -0.5, envTime = 0.001, knee = 0;
+	var input, sig;
 	input = InFeedback(in, 2);
-    /*envTime = MouseX.kr(1.0e-3, 0.1e-3);
-    knee = MouseY.kr(0, -90).dbamp;*/
+	/*envTime = MouseX.kr(1.0e-3, 0.1e-3);
+	knee = MouseY.kr(0, -90).dbamp;*/
 	envTime = envTime.linlin(0, 1, 1.0e-3, 0.1e-3);
 	knee = knee.linlin(0, 1, 0, -90).dbamp;
-    sig = DelayC.ar(input, 0.01, envTime * 0.5, EnvFollow.ar(input, 1 - (envTime * SampleRate.ir).reciprocal).max(knee).reciprocal) * 0.1;
-	XOut(out, drywet, sig);
-}).add;*/
+	sig = DelayC.ar(input, 0.01, envTime * 0.5, EnvFollow.ar(input, 1 - (envTime * SampleRate.ir).reciprocal).max(knee).reciprocal) * 0.1;
+	sig = XFade2.ar(input, sig, drywet);
+	Out.ar(out, sig);
+	//XOut(out, drywet, sig);
+}).add;
 
 SynthDef(\Compression, {arg in = 0, out = 0, gain = 1.5, threshold = 0.5, drywet = 0.5, level = 1;
 	var input, effect;
@@ -220,7 +229,7 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 	ReplaceOut.ar(out, effect);
 }).add;
 
-~quadDelaySynthDef = SynthDef(\quadDelay, { arg in = 0, out = 0, amp = 1, dryWet = 0.4, feedBack = 0.2;
+~quadDelaySynthDef = SynthDef(\quadDelay, { arg in = 0, out = 0, drywet = 0.4, amp = 1, feedBack = 0.2;
 	var input, delay, delay1, delay2, delay3, delay4, time1, time2, time3, time4, sig, tempoClock;
 	input = InFeedback.ar(in, 2);
 	delay = Mix.ar([input, LocalIn.ar(2)]);
@@ -249,11 +258,11 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 	sig =  Mix.ar([delay1, delay2, delay3, delay4]);
 
 	LocalOut.ar(sig * feedBack);
-	sig = XFade2.ar(input, sig, dryWet, amp);
+	sig = XFade2.ar(input, sig, drywet, amp);
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, dryWet = 0.4, pan = 0, amp = 0.5;
+SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, drywet = 0.4, pan = 0, amp = 0.5;
     var input, delay, sig, time;
     input = In.ar(in, 2);
 	delay = Mix.ar([input, LocalIn.ar(2)]);
@@ -263,7 +272,7 @@ SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, d
 	delay = Balance2.ar(delay[0], delay[1], pan);
 
     LocalOut.ar(delay * feedBack);
-	sig = XFade2.ar(input, delay, dryWet, amp);
+	sig = XFade2.ar(input, delay, drywet, amp);
 	Out.ar(out, sig);
 }).add;
 
@@ -886,13 +895,15 @@ SynthDef(\cosc,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,freq=512;
     OffsetOut.ar(0,sig*amp);
 }).add;
 
-~noiseInjectionSnythDef = SynthDef(\noiseInjection, { arg in = 0, out = 0, attack = 0.01, release = 0.01, noiseType = 0, dryWet = 0.5;
+~noiseInjectionSnythDef = SynthDef(\noiseInjection, { arg in = 0, out = 0, drywet = -0.6, attack = 0.01, release = 0.01, noiseType = 0;
 	var input, sig, inputAmp;
 	input = InFeedback.ar(in, 2);
 	inputAmp = Amplitude.kr(input, attack, release);
 	noiseType = noiseType.max(0).min(4);
 	sig = Select.ar(noiseType, [WhiteNoise.ar(inputAmp), BrownNoise.ar(inputAmp), GrayNoise.ar(inputAmp), PinkNoise.ar(inputAmp), ClipNoise.ar(inputAmp)]);
-	XOut.ar(out, dryWet, sig);
+	sig = XFade2.ar(input, sig, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, sig);
 }).add;
 
 ///////////////////////////////////////  Sampler
