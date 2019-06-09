@@ -46,27 +46,40 @@ MIDIClient.init; // post a list of available devices
 
 // MIDIClient.sources; // list avalaible midi sources
 // MIDIIn.connectAll; // connect to all attached input sources
-MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect
+if (MIDIClient.sources[0].notNil, {
+	MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect
+});
 
 // MIDIClient.destinations; // list avalaible midi destinations
-~midiOut = MIDIOut.new(2).latency_(s.latency); // 2 for MIDIClient.destinations[2]
+if (MIDIClient.destinations[2].notNil, {
+	~midiOut = MIDIOut.new(2).latency_(s.latency); // 2 for MIDIClient.destinations[2]
+});
 
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
-~globalQuant = 0.125; // avoid 0 here
+~globalQuant = 0.125;
+~globalQuant = ~globalQuant.max(0.0625); // avoid 0
 ~synthWindow = Dictionary.new;
 ~patternType = Dictionary.new;
+
+~aux1Color = Color.new255(205, 205, 193);
+~aux2Color = Color.new255(238, 238, 209);
+
 ////////////////////////////////// 5. define specific functions
 
 this.executeFile(~path ++ "ORBM_Function.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 
+ServerBoot.removeAll;
 ServerBoot.add({
 	~makeBuffers.value;
 });
 
+ServerTree.removeAll;
+
+ServerQuit.removeAll;
 ServerQuit.add({
 	~cleanup.value;
 });
@@ -78,7 +91,7 @@ s.serverRunning.not.if({ s.boot });
 ////////////////////////////////// 8. actions to perform once boot is completed
 
 s.waitForBoot({
-	"boot complete".postln;
+	"server boot complete".postln;
 	s.newBusAllocators;
 	// s.plotTree; // node tree
 	this.executeFile(~path ++ "ORBM_SynthDef.scd");
@@ -89,6 +102,7 @@ s.waitForBoot({
 	s.sync;
 	this.executeFile(~path ++ "ORBM_Song.scd");
 	s.sync;
+	"init complete".postln;
 });
 
 )

@@ -34,6 +34,16 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 
 ///////////////////////////////////////  Fx
 
+~pitchShifterSynthDef = SynthDef(\pitchShifter, { arg in = 0, out = 0, drywet = 0.5, pitchRatio = 1, pitchDisper = 0, timeDisper = 0;
+	var input, sig, windowSize;
+	windowSize = 0.2;
+	input = InFeedback.ar(in, 2);
+	sig = PitchShift.ar(input, windowSize, pitchRatio, pitchDisper, timeDisper.min(windowSize));
+	sig = XFade2.ar(input, sig, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, sig);
+}).add;
+
 ~simpleDelaySynthDef = SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 	var input, effect;
 	input = In.ar(in, 2);
@@ -81,34 +91,128 @@ SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay
     );
 }).add;
 
-SynthDef(\Phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5, level = 1;
+~verbSynthDef = SynthDef(\verb, { arg in = 0, out = 0, drywet = 0.85, amp = 1, feedback = 0;
+	var sig, input;
+	input = InFeedback.ar(in, 2);
+	input = Mix.ar([input, LocalIn.ar(2)]);
+	sig = input;
+	sig = FreeVerb2.ar(sig[0], sig[1], drywet, \room.kr(1), \damp.kr(0.4));
+	LocalOut.ar(feedback * sig);
+	Out.ar(out, sig * Lag2.kr(amp));
+}).add;
+
+// infinite reverb by Eli Feldsteel
+SynthDef(\allreverb, { arg in = 0, out = 0, gate = 1, pan = 0, freq = 200;
+	var sig;
+	var input = InFeedback.ar(in, 2);
+	sig = LocalIn.ar(2) * \fb.kr(0.1);
+	sig = sig + input;
+	15.do {
+		sig = AllpassL.ar(sig, 0.06, Rand(0.001,0.06), 3);
+	};
+	LocalOut.ar(sig);
+	sig = sig * EnvGen.ar(Env.adsr(0.01,0.1,0.8,0.1),gate,doneAction:2);
+	sig = SelectX.ar(\mix.kr(0.5), [input, sig]);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\allreverbf, { arg in = 0, out=0, gate=1, pan=0, freq=200;
+	var sig;
+	var input = InFeedback.ar(in, 2);
+	var fbsig;
+	sig = LocalIn.ar(2) * \fb.kr(0.1);
+	sig = sig + input;
+	15.do {
+		sig = AllpassL.ar(sig, 0.06, Rand(0.001,0.06), 3);
+	};
+	fbsig = sig;
+	fbsig = LPF.ar(sig, \lpf.kr(1000));
+	fbsig = HPF.ar(sig, \hpf.kr(100));
+	sig = fbsig;
+	LocalOut.ar(fbsig);
+	sig = sig * EnvGen.ar(Env.adsr(0.4,0.1,0.8,0.1),gate,doneAction:2);
+	sig = SelectX.ar(\mix.kr(0.5), [input, sig]);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\allreverbif, { arg in = 0, out=0, gate=1, pan=0, freq=200;
+	var sig;
+	var input = InFeedback.ar(in, 2);
+	var fbsig;
+	sig =
+	sig = LocalIn.ar(2) * \fb.kr(0.1);
+	sig = sig + SelectX.ar(\mix.kr(0.5), [DC.ar(0), input]);
+	15.do {
+		sig = AllpassL.ar(sig, 0.06, Rand(0.001,0.06), 3);
+	};
+	fbsig = sig;
+	fbsig = LPF.ar(sig, \lpf.kr(1000));
+	fbsig = HPF.ar(sig, \hpf.kr(100));
+	sig = fbsig;
+	LocalOut.ar(fbsig);
+	sig = sig * EnvGen.ar(Env.adsr(0.4,0.1,0.8,0.1),gate,doneAction:2);
+	sig = sig + input;
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\reverbCraum, { arg in = 0, out = 0, gate = 1, roomsize = 100, revtime = 1, damping = 0.6, inputbw = 0.5, spread = 15, drylevel = 1, earlyreflevel = 0.7, taillevel = 0.5, maxroomsize = 300, amp = 0.5;
+	var source = In.ar(in, 2);
+	var reverb;
+	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
+
+	reverb = GVerb.ar(source, roomsize, revtime, damping, inputbw, spread, drylevel, earlyreflevel, taillevel, maxroomsize);
+	reverb = reverb * amp ;
+	XOut.ar(out,env,reverb);
+//By Zé Craum
+}).add;
+
+SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	var input, effect;
-	input = In.ar(in, 2);
+	input = InFeedback.ar(in, 2);
 	effect = AllpassN.ar(input, 0.02, SinOsc.kr(freq, 0, 0.01, 0.01));  // max delay of 20msec
-	XOut.ar(out, drywet, effect * level);
+	XOut.ar(out, drywet, effect);
 }).add;
 
-SynthDef(\Flanging, {arg in = 0, out = 0, flangefreq = 0.1, fdback = 0.1, drywet = 0.5, level = 1;
-	var input, effect;
-	input = In.ar(0, 2);
+~flangingSynthDef = SynthDef(\flanging, {arg in = 0, out = 0, drywet = 0.5, fgfreq = 0.1, fdback = 0.1;
+	var input, sig, effect;
+	input = InFeedback.ar(in, 2);
 	input = input + LocalIn.ar(2); // add some feedback
-	effect = DelayN.ar(input, 0.02, SinOsc.kr(flangefreq, 0, 0.005, 0.005)); // max delay of 20msec
+	effect = DelayN.ar(input, 0.02, SinOsc.kr(fgfreq, 0, 0.005, 0.005)); // max delay of 20msec
 	LocalOut.ar(fdback * effect);
-	XOut.ar(out, drywet, effect * level);
+	sig = XFade2.ar(input, effect, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, effect);
 }).add;
 
-SynthDef(\DistoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
-	var input, effect;
-	input = In.ar(in, 2);
-	effect = InsideOut.ar(input);
-	XOut.ar(out, drywet, effect * level);
+~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = -0.5, level = 0.12;
+	var input, effect, sig;
+	input = InFeedback.ar(in, 2);
+	effect = InsideOut.ar(input, level);
+	sig = XFade2.ar(input, effect, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, effect);
 }).add;
 
-SynthDef(\DistoCrossOver, { arg in = 0, out = 0, amp = 0.5, smooth = 0.5, drywet = 0.5, level = 1;
-	var input, effect;
-	input = In.ar(in, 2);
-	effect = CrossoverDistortion.ar(input , amp, smooth);
-	XOut.ar(out, drywet, effect * level);
+~distoCrossOverSynthDef = SynthDef(\distoCrossOver, { arg in = 0, out = 0, drywet = 0.5, amp = 0.14, smooth = 0.1, level = 0.4;
+	var input, effect, sig;
+	input = InFeedback.ar(in, 2);
+	effect = CrossoverDistortion.ar(input , Lag2.kr(amp.max(0.001)), Lag2.kr(smooth.max(0.01)), level);
+	sig = XFade2.ar(input, effect, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, effect);
+}).add;
+
+SynthDef(\ladspaDist, { arg in = 0, out = 0, drywet = -0.5, envTime = 0.001, knee = 0;
+	var input, sig;
+	input = InFeedback(in, 2);
+	/*envTime = MouseX.kr(1.0e-3, 0.1e-3);
+	knee = MouseY.kr(0, -90).dbamp;*/
+	envTime = envTime.linlin(0, 1, 1.0e-3, 0.1e-3);
+	knee = knee.linlin(0, 1, 0, -90).dbamp;
+	sig = DelayC.ar(input, 0.01, envTime * 0.5, EnvFollow.ar(input, 1 - (envTime * SampleRate.ir).reciprocal).max(knee).reciprocal) * 0.1;
+	sig = XFade2.ar(input, sig, drywet);
+	Out.ar(out, sig);
+	//XOut(out, drywet, sig);
 }).add;
 
 SynthDef(\Compression, {arg in = 0, out = 0, gain = 1.5, threshold = 0.5, drywet = 0.5, level = 1;
@@ -125,50 +229,50 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 	ReplaceOut.ar(out, effect);
 }).add;
 
-SynthDef(\quadDelay, { arg in = 0, out = 0, delayamp1 = 1, delaypan1 = 0, sync1 = 0, delayamp2 = 1,  delaypan2 = 0, sync2 = 0, delayamp3 = 1, delaypan3 = 0, sync3 = 0, delayamp4 = 1, delaypan4 = 0, sync4 = 0, feedBack = 0.2, dryWet = 0.4, amp = 0.5;
+~quadDelaySynthDef = SynthDef(\quadDelay, { arg in = 0, out = 0, drywet = 0.4, amp = 1, feedBack = 0.2;
 	var input, delay, delay1, delay2, delay3, delay4, time1, time2, time3, time4, sig, tempoClock;
-	input = In.ar(in, 2);
+	input = InFeedback.ar(in, 2);
 	delay = Mix.ar([input, LocalIn.ar(2)]);
 	tempoClock = \tempoClock.kr(TempoClock.default.tempo);
 
 	// delay 1
-	time1 = Select.kr(sync1, [\delaytime1.kr(0.25), \division1.kr(2/3) / tempoClock]);
-	delay1 = XFadeDelay.ar(delay, time1, time1);
-	delay1 = Balance2.ar(delay1[0], delay1[1], delaypan1, delayamp1);
+	time1 = Select.kr(\sync1.kr(0), [\time1.kr(0.25), \division1.kr(2/3) / tempoClock]);
+	delay1 = XFadeDelay.ar(delay, 1, time1);
+	delay1 = Balance2.ar(delay1[0], delay1[1], \pan1.kr(0), \amp1.kr(1));
 
 	// delay 2
-	time2 = Select.kr(sync2, [\delaytime2.kr(0.4), \division2.kr(2/8) / tempoClock]);
-	delay2 = XFadeDelay.ar(delay, time2, time2);
-	delay2 = Balance2.ar(delay2[0], delay2[1], delaypan2, delayamp2);
+	time2 = Select.kr(\sync2.kr(0), [\time2.kr(0.4), \division2.kr(2/8) / tempoClock]);
+	delay2 = XFadeDelay.ar(delay, 1, time2);
+	delay2 = Balance2.ar(delay2[0], delay2[1], \pan2.kr(0), \amp2.kr(1));
 
 	// delay 3
-	time3 = Select.kr(sync3, [\delaytime3.kr(0.15), \division3.kr(3/6) / tempoClock]);
-	delay3 = XFadeDelay.ar(delay, time3, time3);
-	delay3 = Balance2.ar(delay3[0], delay3[1], delaypan3, delayamp3);
+	time3 = Select.kr(\sync3.kr(0), [\time3.kr(0.15), \division3.kr(3/6) / tempoClock]);
+	delay3 = XFadeDelay.ar(delay, 1, time3);
+	delay3 = Balance2.ar(delay3[0], delay3[1], \pan3.kr(0), \amp3.kr(1));
 
 	// delay 4
-	time4 = Select.kr(sync4, [\delaytime4.kr(0.3), \division4.kr(3/4) / tempoClock]);
-	delay4 = XFadeDelay.ar(delay, time4, time4);
-	delay4 = Balance2.ar(delay4[0], delay4[1], delaypan4, delayamp4);
+	time4 = Select.kr(\sync4.kr(0), [\time4.kr(0.3), \division4.kr(3/4) / tempoClock]);
+	delay4 = XFadeDelay.ar(delay, 1, time4);
+	delay4 = Balance2.ar(delay4[0], delay4[1], \pan4.kr(0), \amp4.kr(1));
 
 	sig =  Mix.ar([delay1, delay2, delay3, delay4]);
 
 	LocalOut.ar(sig * feedBack);
-	sig = XFade2.ar(input, sig, dryWet, amp);
+	sig = XFade2.ar(input, sig, drywet, amp);
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, dryWet = 0.4, pan = 0, amp = 0.5;
+SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, drywet = 0.4, pan = 0, amp = 0.5;
     var input, delay, sig, time;
     input = In.ar(in, 2);
 	delay = Mix.ar([input, LocalIn.ar(2)]);
 
 	time = Select.kr(sync, [\delaytime.kr(0.25), \division.kr(2/3) / \tempoClock.kr(TempoClock.default.tempo)]);
-	delay = XFadeDelay.ar(delay, time, time);
+	delay = XFadeDelay.ar(delay, 1, time);
 	delay = Balance2.ar(delay[0], delay[1], pan);
 
     LocalOut.ar(delay * feedBack);
-	sig = XFade2.ar(input, delay, dryWet, amp);
+	sig = XFade2.ar(input, delay, drywet, amp);
 	Out.ar(out, sig);
 }).add;
 
@@ -251,7 +355,7 @@ SynthDef(\kickhi, { arg out = 0, tu = 1, pan = 0, amp = 1;
 	OffsetOut.ar(out, sig);
 }).add;
 
-SynthDef(\kick2,{arg out = 0, t_gate = 1 ,freq = 60, tu = 1, amp = 1, atf = 80, rel =1, pan = 1;
+~kick2SynthDef = SynthDef(\kick2,{arg out = 0, t_gate = 1 ,freq = 60, tu = 1, amp = 1, atf = 80, rel =1, pan = 1;
 	var env = EnvGen.ar(Env.perc(0,rel),t_gate,doneAction:2);
 	var frequ = EnvGen.ar(Env([freq-30,freq,60],[0.001,0.01]));
 	var sig = SinOsc.ar(frequ*tu,0,env);
@@ -305,7 +409,7 @@ SynthDef(\kicknoise,{arg out = 0, amp = 0.5, pan = 0;
 	OffsetOut.ar(out, sig);
 }).add;
 
-SynthDef(\t1kick2,{arg out = 0, snd = 18, rel = 0.6, pitch = 0.1 , amp = 1, pan = 1;
+~t1kick2SynthDef = SynthDef(\t1kick2,{arg out = 0, snd = 18, rel = 0.6, pitch = 0.1 , amp = 1, pan = 1;
 	var enva = EnvGen.ar(Env([1,1,0],[rel,0.2]),doneAction:2);
 	var envf = EnvGen.ar(Env([10000,20,00,4],[0.002,0.1,1,1]));
 	var sig = SinOsc.ar(envf+50*pitch,0,enva);
@@ -584,14 +688,14 @@ SynthDef(\hat, { | out = 0, amp = 1 |
 	var noise, sig;
 	noise = WhiteNoise.ar(Decay2.kr(t_trig, attack, decay, amp));
 	sig = BPF.ar(noise, TRand.kr(12000, 15000, t_trig), rq.max(0.001));
-	DetectSilence.ar(sig, 0.001, doneAction:2);
+	DetectSilence.ar(sig, 0.0001, doneAction:2);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
 
-SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, amp = 25, pan = 0, level = 1;
+~ikedaClickSynthDef = SynthDef(\IkedaClick, { arg out = 0, t_trig = 0, centerFreq = 15000, rq = 0.9, amp = 25, pan = 0, level = 1;
 	var noise, sig;
  	noise = PinkNoise.ar(Decay.kr(t_trig, 0.001 * LFNoise1.kr(4).abs));
- 	sig = BPF.ar(noise, centerFreq.max(1), rq, amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
+	sig = BPF.ar(noise, centerFreq.max(1), rq.max(0.01), amp * LFNoise1.kr(8).range(0, 1)).fold(-1, 1);
  	DetectSilence.ar(sig, 0.0001, doneAction:2);
  	OffsetOut.ar(out, Pan2.ar(sig, pan, level));
 }).add;
@@ -791,13 +895,15 @@ SynthDef(\cosc,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,freq=512;
     OffsetOut.ar(0,sig*amp);
 }).add;
 
-SynthDef(\noiseInjection, { arg in = 0, out = 0, attack = 0.01, release = 0.01, noiseType = 0, amp = 0.5;
+~noiseInjectionSnythDef = SynthDef(\noiseInjection, { arg in = 0, out = 0, drywet = -0.6, attack = 0.01, release = 0.01, noiseType = 0;
 	var input, sig, inputAmp;
-	input = In.ar(in, 2);
+	input = InFeedback.ar(in, 2);
 	inputAmp = Amplitude.kr(input, attack, release);
 	noiseType = noiseType.max(0).min(4);
 	sig = Select.ar(noiseType, [WhiteNoise.ar(inputAmp), BrownNoise.ar(inputAmp), GrayNoise.ar(inputAmp), PinkNoise.ar(inputAmp), ClipNoise.ar(inputAmp)]);
-	Out.ar(out, sig * amp);
+	sig = XFade2.ar(input, sig, drywet);
+	Out.ar(out, sig);
+	//XOut.ar(out, drywet, sig);
 }).add;
 
 ///////////////////////////////////////  Sampler
@@ -869,6 +975,72 @@ SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
 	sig = HPF.ar(sig,100);
 	sig = CompanderD.ar(sig,0.3,0.3,1.5,0.0001,0.01);
 	OffsetOut.ar(out,sig*amp);
+}).add;
+
+SynthDef(\prayer_bell, { |outbus, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, i_doneAction = 0|
+  var sig, input, first, freqscale, mallet, sing;
+  freqscale = freq / 2434;
+  freqscale = Lag3.kr(freqscale, lag);
+  decayscale = Lag3.kr(decayscale, lag);
+
+  mallet = LPF.ar(Trig.ar(t_trig, SampleDur.ir)!2, 10000 * freqscale);
+  sing = LPF.ar(
+    LPF.ar(
+      {
+        PinkNoise.ar * Integrator.kr(sing_switch * 0.001, 0.999).linexp(0, 1, 0.01, 1) * amp
+      } ! 2,
+      2434 * freqscale
+    ) + Dust.ar(0.1), 10000 * freqscale
+  ) * LFNoise1.kr(0.5).range(-45, -30).dbamp;
+  input = mallet + (sing_switch.clip(0, 1) * sing);
+
+
+  sig = DynKlank.ar(`[
+    [
+      (first = LFNoise1.kr(0.5).range(2424, 2444)) + Line.kr(20, 0, 0.5),
+      first + LFNoise1.kr(0.5).range(1,3),
+      LFNoise1.kr(1.5).range(5435, 5440) - Line.kr(35, 0, 1),
+      LFNoise1.kr(1.5).range(5480, 5485) - Line.kr(10, 0, 0.5),
+      LFNoise1.kr(2).range(8435, 8445) + Line.kr(15, 0, 0.05),
+      LFNoise1.kr(2).range(8665, 8670),
+      LFNoise1.kr(2).range(8704, 8709),
+      LFNoise1.kr(2).range(8807, 8817),
+      LFNoise1.kr(2).range(9570, 9607),
+      LFNoise1.kr(2).range(10567, 10572) - Line.kr(20, 0, 0.05),
+      LFNoise1.kr(2).range(10627, 10636) + Line.kr(35, 0, 0.05),
+      LFNoise1.kr(2).range(14689, 14697) - Line.kr(10, 0, 0.05)
+    ],
+    [
+      LFNoise1.kr(1).range(-10, -5).dbamp,
+      LFNoise1.kr(1).range(-20, -10).dbamp,
+      LFNoise1.kr(1).range(-12, -6).dbamp,
+      LFNoise1.kr(1).range(-12, -6).dbamp,
+      -20.dbamp,
+      -20.dbamp,
+      -20.dbamp,
+      -25.dbamp,
+      -10.dbamp,
+      -20.dbamp,
+      -20.dbamp,
+      -25.dbamp
+    ],
+    [
+      20 * freqscale.pow(0.2),
+      20 * freqscale.pow(0.2),
+      5,
+      5,
+      0.6,
+      0.5,
+      0.3,
+      0.25,
+      0.4,
+      0.5,
+      0.4,
+      0.6
+    ] * freqscale.reciprocal.pow(0.5)
+  ], input, freqscale, 0, decayscale);
+  DetectSilence.ar(sig, doneAction: i_doneAction);
+  Out.ar(outbus, sig);
 }).add;
 
 ///////////////////////////////////////  Rimshot
@@ -943,11 +1115,11 @@ SynthDef(\bass,{arg out=0, gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, re
     OffsetOut.ar(out,sig * amp);
 }).add;
 
-~sinBassSynthDef = SynthDef(\sinBass, { arg out = 0, gate = 1, amp = 1, curve = \lin, loopNode = nil, attack = 0.01, release = 4, pan = 0, envFreq1 = 0, envFreq2 = 40, envFreq3 = 32, envFreq4 = 50, envFreq5 = 0, envFreq6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
+~sinBassSynthDef = SynthDef(\sinBass, { arg out = 0, gate = 1, amp = 1, curve = 0, loopNode = nil, attack = 0.2, release = 4, pan = 0, envLevel1 = 0, envLevel2 = 40, envLevel3 = 32, envLevel4 = 50, envLevel5 = 0, envLevel6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
 	var freqEnv, env, sig;
-	freqEnv = EnvGen.kr(Env.new([envFreq1, envFreq2, envFreq3, envFreq4, envFreq5, envFreq6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve, loopNode: loopNode));
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
-	sig = LPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
+	freqEnv = EnvGen.kr(Env([envLevel1, envLevel2, envLevel3, envLevel4, envLevel5, envLevel6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve), gate);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, doneAction: doneAction);
+	sig = HPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, Lag.kr(amp, 0.5)));
 }).add;
 
