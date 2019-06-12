@@ -40,7 +40,7 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 	input = InFeedback.ar(in, 2);
 	sig = PitchShift.ar(input, windowSize, pitchRatio, pitchDisper, timeDisper.min(windowSize));
 	sig = XFade2.ar(input, sig, drywet);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 	//XOut.ar(out, drywet, sig);
 }).add;
 
@@ -98,7 +98,7 @@ SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay
 	sig = input;
 	sig = FreeVerb2.ar(sig[0], sig[1], drywet, \room.kr(1), \damp.kr(0.4));
 	LocalOut.ar(feedback * sig);
-	Out.ar(out, sig * Lag2.kr(amp));
+	ReplaceOut.ar(out, sig * Lag2.kr(amp));
 }).add;
 
 // infinite reverb by Eli Feldsteel
@@ -180,7 +180,7 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	effect = DelayN.ar(effect, 0.02, SinOsc.kr(fgfreq, 0, 0.005, 0.005)); // max delay of 20msec
 	LocalOut.ar(fdback * effect);
 	sig = XFade2.ar(input, effect, drywet);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 	//XOut.ar(out, drywet, effect);
 }).add;
 
@@ -189,7 +189,7 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	input = InFeedback.ar(in, 2);
 	effect = InsideOut.ar(input, level);
 	sig = XFade2.ar(input, effect, drywet);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 	//XOut.ar(out, drywet, effect);
 }).add;
 
@@ -198,7 +198,7 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	input = InFeedback.ar(in, 2);
 	effect = CrossoverDistortion.ar(input , Lag2.kr(amp.max(0.001)), Lag2.kr(smooth.max(0.01)), level);
 	sig = XFade2.ar(input, effect, drywet);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 	//XOut.ar(out, drywet, effect);
 }).add;
 
@@ -259,7 +259,7 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 
 	LocalOut.ar(sig * feedBack);
 	sig = XFade2.ar(input, sig, drywet, amp);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, drywet = 0.4, pan = 0, amp = 0.5;
@@ -273,7 +273,7 @@ SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, d
 
     LocalOut.ar(delay * feedBack);
 	sig = XFade2.ar(input, delay, drywet, amp);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 ///////////////////////////////////////  Kick
@@ -902,7 +902,7 @@ SynthDef(\cosc,{arg gate = 1, amp=1, out=0,rel=0.1,pan=0,freq=512;
 	noiseType = noiseType.max(0).min(4);
 	sig = Select.ar(noiseType, [WhiteNoise.ar(inputAmp), BrownNoise.ar(inputAmp), GrayNoise.ar(inputAmp), PinkNoise.ar(inputAmp), ClipNoise.ar(inputAmp)]);
 	sig = XFade2.ar(input, sig, drywet);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 	//XOut.ar(out, drywet, sig);
 }).add;
 
