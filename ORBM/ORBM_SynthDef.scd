@@ -184,7 +184,7 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	//XOut.ar(out, drywet, effect);
 }).add;
 
-~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = -0.5, level = 0.12;
+~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = -0.5, level = 0.06;
 	var input, effect, sig;
 	input = InFeedback.ar(in, 2);
 	effect = InsideOut.ar(input, level);
