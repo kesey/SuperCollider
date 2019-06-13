@@ -30,6 +30,7 @@ s.serverRunning.if({
 	p = Ppar(~listUnits.value(~sequencer), inf).play(t, quant: ~globalQuant); // play all units in parallel
 
 	this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
+	this.executeFile(~path ++ "ORBM_Song.scd"); // Gui need to exist before executing ORBM_Song.scd
 
 });
 

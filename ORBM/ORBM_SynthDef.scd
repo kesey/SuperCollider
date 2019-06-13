@@ -184,7 +184,7 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	//XOut.ar(out, drywet, effect);
 }).add;
 
-~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = -0.5, level = 0.06;
+~distoInsideOutSynthDef = SynthDef(\distoInsideOut, { arg in = 0, out = 0, drywet = -0.5, level = 0.02;
 	var input, effect, sig;
 	input = InFeedback.ar(in, 2);
 	effect = InsideOut.ar(input, level);
@@ -193,7 +193,7 @@ SynthDef(\phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5;
 	//XOut.ar(out, drywet, effect);
 }).add;
 
-~distoCrossOverSynthDef = SynthDef(\distoCrossOver, { arg in = 0, out = 0, drywet = 0.5, amp = 0.14, smooth = 0.1, level = 0.4;
+~distoCrossOverSynthDef = SynthDef(\distoCrossOver, { arg in = 0, out = 0, drywet = -0.05, amp = 0.14, smooth = 0.1, level = 0.4;
 	var input, effect, sig;
 	input = InFeedback.ar(in, 2);
 	effect = CrossoverDistortion.ar(input , Lag2.kr(amp.max(0.001)), Lag2.kr(smooth.max(0.01)), level);

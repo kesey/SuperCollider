@@ -100,8 +100,6 @@ s.waitForBoot({
 	s.sync;
 	this.executeFile(~path ++ "ORBM_Pattern.scd");
 	s.sync;
-	this.executeFile(~path ++ "ORBM_Song.scd");
-	s.sync;
 	"init complete".postln;
 });
 

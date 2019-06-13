@@ -7,15 +7,17 @@
 	loop {
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
-		8.0.wait;
-		~changePattern.value(Pdef(\unit1), ~initPattern);
+		10.0.wait;
+		{ ~mute.at("mute0").valueAction_(1); }.defer; // mute unit1 & update gui
+		//~changePattern.value(Pdef(\unit1), ~initPattern); // another way to mute
 		2.0.wait;
-		~changePattern.value(Pdef(\unit6), ~initPattern); // mute
+		~changePattern.value(Pdef(\unit6), ~initPattern);
 		2.0.wait;
-		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
+		{ ~mute.at("mute0").valueAction_(0); }.defer;
+		//~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
-		8.0.wait;
+		10.0.wait;
 		~changePattern.value(Pdef(\unit1), ~initPattern);
 		2.0.wait;
 		~changePattern.value(Pdef(\unit2), ~initPattern);
@@ -29,23 +31,38 @@
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
 		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
 		~changePattern.value(Pdef(\unit8), ~defaultPattern8);
-		24.0.wait;
+		10.0.wait;
+		~changePattern.value(Pdef(\unit2), ~initPattern);
+		{
+			~channel[\aux10].valueAction_(0.02.lag3); // set SynthDef & update gui
+			~channel[\aux11].valueAction_(0.25.lag3);
+		}.defer;
+		5.0.wait;
+		{
+			~channel[\aux21].valueAction_(0.5.lag3);
+			~channel[\aux13].valueAction_(0.2.lag3);
+		}.defer;
+		15.0.wait;
 		~changePattern.value(Pdef(\unit7), ~initPattern);
-		4.0.wait;
+		5.0.wait;
 		~changePattern.value(Pdef(\unit3), ~initPattern);
 		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
-		8.0.wait;
-		~changePattern.value(Pdef(\unit2), ~initPattern);
-		4.0.wait;
+		10.0.wait;
 		~changePattern.value(Pdef(\unit1), ~initPattern);
 		~changePattern.value(Pdef(\unit4), ~initPattern);
-		4.0.wait;
+		2.5.wait;
 		~changePattern.value(Pdef(\unit5), ~initPattern);
 		~changePattern.value(Pdef(\unit7), ~initPattern);
-		6.0.wait;
+		5.0.wait;
 		~changePattern.value(Pdef(\unit6), ~initPattern);
 		~changePattern.value(Pdef(\unit8), ~initPattern);
-		4.0.wait;
+		2.5.wait;
+		{
+			~channel[\aux10].valueAction_(0.lag3);
+			~channel[\aux11].valueAction_(0.lag3);
+			~channel[\aux21].valueAction_(0.lag3);
+			~channel[\aux13].valueAction_(0.lag3);
+		}.defer;
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
 		~changePattern.value(Pdef(\unit3), ~defaultPattern3);
@@ -57,7 +74,9 @@
 		Pbindef(\unit2, \note1, 76.9, \note2, 86.9).quant_(~globalQuant);
 		Pbindef(\unit7, \freq, 515.69, \tu, 0.55, \pitch, 1.38).quant_(~globalQuant);
 		Pbindef(\unit8, \snd, 17.95, \rel, 3.68, \pitch, 1.38).quant_(~globalQuant);
-		36.0.wait;
+		40.0.wait;
+		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		10.0.wait;
 	}
 };
 
