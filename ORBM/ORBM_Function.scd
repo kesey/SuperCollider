@@ -79,7 +79,7 @@
 
 // automatic GUI creation and midi mapping
 ~autoGui = { arg parentWindow = nil, synthDef = nil, instance = nil, ccStart = 10, midiChan = 0, backGroundColor = Color.white, specDict = Dictionary.new;
-	var arguments, synthWindow, list, slider, button, knob, active, synthDefName, pdefName;
+	var arguments, synthWindow, list, slider, button, knob, active, synthDefName, pdefName, id;
 
 	if ((parentWindow.notNil and: synthDef.notNil and: instance.notNil), {
 		synthDefName = synthDef.name.asString;
@@ -94,18 +94,21 @@
 		}, {
 			pdefName = "";
 			if (instance.isString, {
+				pdefName = instance;
 				instance = instance.asSymbol;
 			});
 		});
 
-		~synthWindow.put(synthDefName ++ pdefName,
+		id = (synthDefName ++ pdefName).asString;
+
+		~synthWindow.put(id,
 			CompositeView(bounds: (arguments.size * 62)@110)
 			.scroll(autoScrolls: true)
 			.minHeight_(115)
 			.minWidth_(230)
 			.background_(backGroundColor);
 		);
-		synthWindow = ~synthWindow.at(synthDefName ++ pdefName);
+		synthWindow = ~synthWindow.at(id);
 
 		synthWindow.decorator_(FlowLayout(synthWindow.bounds, 3@3, 6@3));
 
@@ -116,17 +119,14 @@
 		.align_(\center);
 		synthWindow.decorator.nextLine;
 
-		list = Dictionary.new;
-		slider = Dictionary.new;
-		button = Dictionary.new;
-		knob = Dictionary.new;
 		active = Dictionary.new;
 
 		arguments.do({
 			arg control, i;
-			var caseFind, controlName, controlNameSymb, controlType, controlSpec, midiMap;
+			var caseFind, controlName, controlNameSymb, controlType, controlSpec, midiMap, controlId;
 			caseFind = false;
 			controlName = control.name.asString;
+			controlId = (id ++ controlName).asString;
 			controlNameSymb = control.name.asSymbol;
 
 			if (control.defaultValue.notNil, {
@@ -154,8 +154,8 @@
 			{ controlType == "list" and: caseFind.not }
 			{
 				// list creation
-				active.put(("list" ++ i ++ "Active").asString, false);
-				list.put(("list" ++ i).asString, EZListView(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("list" ++ i ++ "Active").asString, false); }));
+				active.put(controlId, false);
+				~autoGuiControl.put(controlId, EZListView(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(controlId, false); }));
 
 				if (midiMap, { // list midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -163,13 +163,13 @@
 						threshold = 0.5;
 						midiControl = val.linlin(0, 127, 0, list.at(("list" ++ i).asString).items.size - 1);
 						{
-							guiControl = list.at(("list" ++ i).asString).value;
+							guiControl = ~autoGuiControl.at(controlId).value;
 							if ( // soft takeover
-								(active.at(("list" ++ i ++ "Active").asString) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
+								(active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 								{
-									active.put(("list" ++ i ++ "Active").asString, true);
+									active.put(controlId, true);
 									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); }, { instance.set(controlNameSymb, midiControl); });
-									list.at(("list" ++ i).asString).value_(midiControl);
+									~autoGuiControl.at(controlId).value_(midiControl);
 								}
 							);
 						}.defer;
@@ -183,24 +183,27 @@
 			{ controlType == "slider" and: caseFind.not }
 			{
 				// slider creation
-				active.put(("slider" ++ i ++ "Active").asString, false);
-				slider.put(("slider" ++ i).asString, EZSlider(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("slider" ++ i ++ "Active").asString, false); }, layout: \vert, gap: 6@6));
+				active.put(controlId, false);
+				~autoGuiControl.put(controlId, EZSlider(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(controlId, false); }, layout: \vert, gap: 6@6));
 
 				if (midiMap, { // slider midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
 						var guiControl, midiControl, threshold, minValue, maxValue;
-						minValue = slider.at(("slider" ++ i).asString).controlSpec.minval;
-						maxValue = slider.at(("slider" ++ i).asString).controlSpec.maxval;
+						minValue = ~autoGuiControl.at(controlId).controlSpec.minval;
+						maxValue = ~autoGuiControl.at(controlId).controlSpec.maxval;
 						threshold = ((maxValue - minValue) * 5) / 100; // 5% of the range
 						midiControl = val.linlin(0, 127, minValue, maxValue);
-						guiControl = slider.at(("slider" ++ i).asString).value;
+						guiControl = ~autoGuiControl.at(controlId).value;
 						if ( // soft takeover
-							(active.at(("slider" ++ i ++ "Active").asString) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
+							(active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 							{
-								active.put(("slider" ++ i ++ "Active").asString, true);
+								active.put(controlId, true);
 								{
-									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); }, { instance.set(controlNameSymb, midiControl); });
-									slider.at(("slider" ++ i).asString).value_(midiControl);
+									if (instance.isSymbol,
+										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
+										{ instance.set(controlNameSymb, midiControl); }
+									);
+									~autoGuiControl.at(controlId).value_(midiControl);
 								}.defer;
 							}
 						);
@@ -214,14 +217,14 @@
 			{ /*"trigger trig gate t_trig t_gate loop mute start stop on off".contains(controlName) or: */controlType == "button" and: caseFind.not } // in this case create button
 			{
 				// button creation
-				button.put(("button" ++ i).asString, Button(synthWindow, Rect(10,110,40,25)).states_([[controlName, Color.black, Color.white],["stop", Color.white, Color.grey]]).action = { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); });
+				~autoGuiControl.put(controlId, Button(synthWindow, Rect(10,110,40,25)).states_([[controlName, Color.black, Color.white],["stop", Color.white, Color.grey]]).action = { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); });
 
 				if (midiMap, { // button midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
 						var midiControl;
 						midiControl = val.linlin(0, 127, 0, 1);
 						{
-							button.at(("button" ++ i).asString).valueAction_(midiControl);
+							~autoGuiControl.at(controlId).valueAction_(midiControl);
 						}.defer;
 					}, ccStart, midiChan);
 					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
@@ -233,24 +236,24 @@
 			{  controlType == "knob" or: caseFind.not } // default case create knob
 			{
 				// knob creation
-				active.put(("knob" ++ i ++ "Active").asString, false);
-				knob.put(("knob" ++ i).asString, EZKnob(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(("knob" ++ i ++ "Active").asString, false); }));
+				active.put(controlId, false);
+				~autoGuiControl.put(controlId, EZKnob(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(controlId, false); }));
 
 				if (midiMap, { // knob midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
 						var guiControl, midiControl, threshold, minValue, maxValue;
-						minValue = knob.at(("knob" ++ i).asString).controlSpec.minval;
-						maxValue = knob.at(("knob" ++ i).asString).controlSpec.maxval;
+						minValue = ~autoGuiControl.at(controlId).controlSpec.minval;
+						maxValue = ~autoGuiControl.at(controlId).controlSpec.maxval;
 						threshold = ((maxValue - minValue) * 5) / 100; // 5% of the range
 						midiControl = val.linlin(0, 127, minValue, maxValue);
-						guiControl = knob.at(("knob" ++ i).asString).value;
+						guiControl = ~autoGuiControl.at(controlId).value;
 						if ( // soft takeover
-							(active.at(("knob" ++ i ++ "Active").asString) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
+							(active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 							{
-								active.put(("knob" ++ i ++ "Active").asString, true);
+								active.put(controlId, true);
 								{
 									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); }, { instance.set(controlNameSymb, midiControl); });
-									knob.at(("knob" ++ i).asString).value_(midiControl);
+									~autoGuiControl.at(controlId).value_(midiControl);
 								}.defer;
 							}
 						);

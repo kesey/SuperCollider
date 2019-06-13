@@ -61,6 +61,8 @@ if (MIDIClient.destinations[2].notNil, {
 ~globalQuant = 0.125;
 ~globalQuant = ~globalQuant.max(0.0625); // avoid 0
 ~synthWindow = Dictionary.new;
+~autoGuiControl = Dictionary.new;
+~active = Dictionary.new;
 ~patternType = Dictionary.new;
 
 ~aux1Color = Color.new255(205, 205, 193);

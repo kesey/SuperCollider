@@ -34,13 +34,13 @@
 		10.0.wait;
 		~changePattern.value(Pdef(\unit2), ~initPattern);
 		{
-			~channel[\aux10].valueAction_(0.02.lag3); // set SynthDef & update gui
-			~channel[\aux11].valueAction_(0.25.lag3);
+			~channel[\aux10].valueAction_(0.02); // set SynthDef & update gui
+			~channel[\aux11].valueAction_(0.25);
 		}.defer;
 		5.0.wait;
 		{
-			~channel[\aux21].valueAction_(0.5.lag3);
-			~channel[\aux13].valueAction_(0.2.lag3);
+			~channel[\aux21].valueAction_(0.5);
+			~channel[\aux13].valueAction_(0.2);
 		}.defer;
 		15.0.wait;
 		~changePattern.value(Pdef(\unit7), ~initPattern);
@@ -58,10 +58,10 @@
 		~changePattern.value(Pdef(\unit8), ~initPattern);
 		2.5.wait;
 		{
-			~channel[\aux10].valueAction_(0.lag3);
-			~channel[\aux11].valueAction_(0.lag3);
-			~channel[\aux21].valueAction_(0.lag3);
-			~channel[\aux13].valueAction_(0.lag3);
+			~channel[\aux10].valueAction_(0);
+			~channel[\aux11].valueAction_(0);
+			~channel[\aux21].valueAction_(0);
+			~channel[\aux13].valueAction_(0);
 		}.defer;
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
@@ -71,9 +71,19 @@
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
 		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
 		~changePattern.value(Pdef(\unit8), ~defaultPattern8);
-		Pbindef(\unit2, \note1, 76.9, \note2, 86.9).quant_(~globalQuant);
-		Pbindef(\unit7, \freq, 515.69, \tu, 0.55, \pitch, 1.38).quant_(~globalQuant);
-		Pbindef(\unit8, \snd, 17.95, \rel, 3.68, \pitch, 1.38).quant_(~globalQuant);
+		{
+			~autoGuiControl.at("IkedaBreathunit2note1").valueAction_(76.9);
+			~autoGuiControl.at("IkedaBreathunit2note2").valueAction_(86.9);
+		}.defer;
+		{
+			~autoGuiControl.at("kick2unit7freq").valueAction_(515.69);
+			~autoGuiControl.at("kick2unit7tu").valueAction_(0.55);
+		}.defer;
+		{
+			~autoGuiControl.at("t1kick2unit8snd").valueAction_(17.95);
+			~autoGuiControl.at("t1kick2unit8rel").valueAction_(3.68);
+			~autoGuiControl.at("t1kick2unit8pitch").valueAction_(1.38);
+		}.defer;
 		40.0.wait;
 		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
 		10.0.wait;
@@ -81,7 +91,12 @@
 };
 
 ~song2 = {
-	~samplerStereo.set(\startPos, 0, \rate, 0.03, \release, 2, \attack, 0.1);
+	{
+		~autoGuiControl.at("samplerStereostartPos").valueAction_(0);
+		~autoGuiControl.at("samplerStereorate").valueAction_(0.03);
+		~autoGuiControl.at("samplerStereorelease").valueAction_(2);
+		~autoGuiControl.at("samplerStereoattack").valueAction_(0.1);
+	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~pattern1);
 		~changePattern.value(Pdef(\unit2), ~pattern2);
