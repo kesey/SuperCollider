@@ -4,7 +4,6 @@
 
 ~defaultSong = {
 	loop {
-		"~defaultSong says hello world".postln;
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
 		~changePattern.value(Pdef(\unit3), ~defaultPattern3);
@@ -14,9 +13,10 @@
 		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
 		~changePattern.value(Pdef(\unit8), ~defaultPattern8);
 		16.0.wait;
-		"~defaultSong says unit4 change dur".postln;
-		Pbindef(\unit4, \dur, Pseq([0.5, Rest(1.5)]/2, inf)).quant_(~globalQuant);
-		8.0.wait;
+		Pbindef(\unit2, \note1, 76.9, \note2, 86.9).quant_(~globalQuant);
+		Pbindef(\unit7, \freq, 515.69, \tu, 0.55, \pitch, 1.38).quant_(~globalQuant);
+		Pbindef(\unit8, \snd, 17.95, \rel, 3.68, \pitch, 1.38).quant_(~globalQuant);
+		24.0.wait;
 	}
 };
 
