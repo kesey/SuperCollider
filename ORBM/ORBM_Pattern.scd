@@ -8,7 +8,24 @@ Pdefn(\durIkedaNoise, Pseq([3/4, 3/24, 3/12, 3/8, 3/12, 3/24], inf)).quant_(~glo
 Pdefn(\durIkedaBass, Pseq([3/4, Rest(0.75), Pwrand([1, 0.5], [0.4, 0.6].normalizeSum, 1)], inf)).quant_(~globalQuant);
 Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
-~initPattern = Pbind(\type, \rest);
+~initPattern = Pbind(
+	\type, \rest,
+	\instrument, \default,
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~prevInstr, {
+			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			{
+				~removePrevView.value(~synthWindow, synthWindowKey);
+			}.defer;
+			~prevInstr = currentInstr;
+		});
+		0;
+	})
+);
 
 ~defaultPattern1 = Pbind(
 	\instrument, \snapkick,

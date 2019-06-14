@@ -335,7 +335,7 @@ pdefGuiView.layout = HLayout();
 	pdefNameSymbol = pdefNameString.asSymbol;
 	~activePdefMute.put(pdefNameString, false);
 
-	~mute.put(("mute" ++ i).asString,
+	~mute.put(pdefNameString,
 		Button()
 		.minHeight_(60)
 		.states_([
@@ -368,13 +368,13 @@ pdefGuiView.layout = HLayout();
 		var midiControl;
 		midiControl = val.linlin(0, 127, 0, 1);
 		{
-			~mute.at(("mute" ++ i).asString).valueAction_(midiControl);
+			~mute.at(pdefNameString).valueAction_(midiControl);
 		}.defer;
 	}, ccStartPdMute, pdMidiChan);
 	(ccStartPdMute).debug(pdefNameString ++ " mute cc number");
 	ccStartPdMute = ccStartPdMute + 1;
 
-	pdefGuiView.layout.add(~mute.at(("mute" ++ i).asString));
+	pdefGuiView.layout.add(~mute.at(pdefNameString));
 });
 
 v.canvas.layout.insert(pdefGuiView);

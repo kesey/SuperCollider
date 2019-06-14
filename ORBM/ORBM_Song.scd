@@ -8,21 +8,28 @@
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
 		10.0.wait;
-		{ ~mute.at("mute0").valueAction_(1); }.defer; // mute unit1 & update gui
-		//~changePattern.value(Pdef(\unit1), ~initPattern); // another way to mute
+		{ ~mute.at("unit1").valueAction_(1); }.defer; // mute unit1 & update gui
 		2.0.wait;
-		~changePattern.value(Pdef(\unit6), ~initPattern);
+		{ ~mute.at("unit6").valueAction_(1); }.defer;
 		2.0.wait;
-		{ ~mute.at("mute0").valueAction_(0); }.defer;
-		//~changePattern.value(Pdef(\unit1), ~defaultPattern1);
-		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
+		{
+			~mute.at("unit1").valueAction_(0);
+			~mute.at("unit6").valueAction_(0);
+		}.defer;
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
 		10.0.wait;
-		~changePattern.value(Pdef(\unit1), ~initPattern);
+		{ ~mute.at("unit1").valueAction_(1); }.defer;
 		2.0.wait;
-		~changePattern.value(Pdef(\unit2), ~initPattern);
-		~changePattern.value(Pdef(\unit6), ~initPattern);
+		{
+			~mute.at("unit2").valueAction_(1);
+			~mute.at("unit6").valueAction_(1);
+		}.defer;
 		2.0.wait;
+		{
+			~mute.at("unit1").valueAction_(0);
+			~mute.at("unit2").valueAction_(0);
+			~mute.at("unit6").valueAction_(0);
+		}.defer;
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
 		~changePattern.value(Pdef(\unit3), ~defaultPattern3);
@@ -32,7 +39,7 @@
 		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
 		~changePattern.value(Pdef(\unit8), ~defaultPattern8);
 		10.0.wait;
-		~changePattern.value(Pdef(\unit2), ~initPattern);
+		{ ~mute.at("unit2").valueAction_(1); }.defer;
 		{
 			~channel[\aux10].valueAction_(0.02); // set SynthDef & update gui
 			~channel[\aux11].valueAction_(0.25);
@@ -43,25 +50,41 @@
 			~channel[\aux13].valueAction_(0.2);
 		}.defer;
 		15.0.wait;
-		~changePattern.value(Pdef(\unit7), ~initPattern);
+		{ ~mute.at("unit7").valueAction_(1); }.defer;
 		5.0.wait;
-		~changePattern.value(Pdef(\unit3), ~initPattern);
-		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
-		10.0.wait;
-		~changePattern.value(Pdef(\unit1), ~initPattern);
-		~changePattern.value(Pdef(\unit4), ~initPattern);
-		2.5.wait;
-		~changePattern.value(Pdef(\unit5), ~initPattern);
-		~changePattern.value(Pdef(\unit7), ~initPattern);
-		5.0.wait;
-		~changePattern.value(Pdef(\unit6), ~initPattern);
-		~changePattern.value(Pdef(\unit8), ~initPattern);
-		2.5.wait;
 		{
+			~mute.at("unit3").valueAction_(1);
+			~mute.at("unit7").valueAction_(0);
+		}.defer;
+		10.0.wait;
+		{
+			~mute.at("unit1").valueAction_(1);
+			~mute.at("unit4").valueAction_(1);
 			~channel[\aux10].valueAction_(0);
 			~channel[\aux11].valueAction_(0);
-			~channel[\aux21].valueAction_(0);
+		}.defer;
+		2.5.wait;
+		{
+			~mute.at("unit5").valueAction_(1);
+			~mute.at("unit7").valueAction_(1);
 			~channel[\aux13].valueAction_(0);
+		}.defer;
+		5.0.wait;
+		{
+			~mute.at("unit6").valueAction_(1);
+			~mute.at("unit8").valueAction_(1);
+			~channel[\aux21].valueAction_(0);
+		}.defer;
+		2.5.wait;
+		{
+			~mute.at("unit1").valueAction_(0);
+			~mute.at("unit2").valueAction_(0);
+			~mute.at("unit3").valueAction_(0);
+			~mute.at("unit4").valueAction_(0);
+			~mute.at("unit5").valueAction_(0);
+			~mute.at("unit6").valueAction_(0);
+			~mute.at("unit7").valueAction_(0);
+			~mute.at("unit8").valueAction_(0);
 		}.defer;
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
@@ -87,6 +110,14 @@
 		40.0.wait;
 		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
 		10.0.wait;
+		~changePattern.value(Pdef(\unit1), ~initPattern);
+		~changePattern.value(Pdef(\unit2), ~initPattern);
+		~changePattern.value(Pdef(\unit3), ~initPattern);
+		~changePattern.value(Pdef(\unit4), ~initPattern);
+		~changePattern.value(Pdef(\unit5), ~initPattern);
+		~changePattern.value(Pdef(\unit6), ~initPattern);
+		~changePattern.value(Pdef(\unit7), ~initPattern);
+		~changePattern.value(Pdef(\unit8), ~initPattern);
 	}
 };
 
