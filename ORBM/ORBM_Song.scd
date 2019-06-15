@@ -38,11 +38,34 @@
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
 		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
 		~changePattern.value(Pdef(\unit8), ~defaultPattern8);
-		10.0.wait;
-		{ ~mute.at("unit2").valueAction_(1); }.defer;
+		25.0.wait;
+		{ ~mute.at("unit1").valueAction_(1); }.defer;
+		1.0.wait;
+		{ ~mute.at("unit7").valueAction_(1); }.defer;
+		1.0.wait;
+		{ ~mute.at("unit3").valueAction_(1); }.defer;
+		1.0.wait;
+		{ ~mute.at("unit5").valueAction_(1); }.defer;
+		1.0.wait;
+		{
+			~mute.at("unit2").valueAction_(1);
+			~mute.at("unit4").valueAction_(1);
+			~mute.at("unit6").valueAction_(1);
+			~mute.at("unit8").valueAction_(1);
+
+		}.defer;
+		1.0.wait;
 		{
 			~channel[\aux10].valueAction_(0.02); // set SynthDef & update gui
 			~channel[\aux11].valueAction_(0.25);
+			~mute.at("unit1").valueAction_(0);
+			~mute.at("unit3").valueAction_(0);
+			~mute.at("unit4").valueAction_(0);
+			~mute.at("unit5").valueAction_(0);
+			~mute.at("unit6").valueAction_(0);
+			~mute.at("unit7").valueAction_(0);
+			~mute.at("unit8").valueAction_(0);
+
 		}.defer;
 		5.0.wait;
 		{
@@ -62,6 +85,7 @@
 			~mute.at("unit4").valueAction_(1);
 			~channel[\aux10].valueAction_(0);
 			~channel[\aux11].valueAction_(0);
+			~channel[\aux22].valueAction_(0.04);
 		}.defer;
 		2.5.wait;
 		{
@@ -73,10 +97,11 @@
 		{
 			~mute.at("unit6").valueAction_(1);
 			~mute.at("unit8").valueAction_(1);
-			~channel[\aux21].valueAction_(0);
 		}.defer;
 		2.5.wait;
 		{
+			~channel[\aux21].valueAction_(0);
+			~channel[\aux22].valueAction_(0);
 			~mute.at("unit1").valueAction_(0);
 			~mute.at("unit2").valueAction_(0);
 			~mute.at("unit3").valueAction_(0);
