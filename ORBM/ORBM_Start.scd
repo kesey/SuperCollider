@@ -7,8 +7,6 @@
 // Server.supernova; // Switches the server program to supernova. Check ParGroup how to make use of multicore hardware with the supernova server.
 Server.scsynth; // This is the default server
 Server.default = s = Server.local;
-ServerTree.removeAll;
-ServerQuit.removeAll;
 /********Multi-Client Setups***********/
 // s.addr = NetAddr("168.192.1.20", 57110); // in case of distant server, args are IP and port number
 // s.options.maxLogins = 2; // 2 users on the same server
@@ -74,17 +72,16 @@ this.executeFile(~path ++ "ORBM_Function.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 
-ServerBoot.removeAll;
 ServerBoot.add({
 	~makeBuffers.value;
 });
 
 ServerTree.removeAll;
 
-ServerQuit.removeAll;
 ServerQuit.add({
 	~cleanup.value;
 });
+ServerQuit.removeAll;
 
 ////////////////////////////////// 7. boot
 
