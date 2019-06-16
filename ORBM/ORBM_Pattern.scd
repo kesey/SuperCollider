@@ -12,16 +12,15 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\type, \rest,
 	\instrument, \default,
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
-			instance = ~pdefName.asSymbol;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -40,17 +39,19 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\level, 1,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~ikedaBreathSynthDef, instance, 666/*cc start*/, 0/*midi channel*/, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "level", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\level)), true], "note1", ["slider", ControlSpec(0, 127, step: 0.1, default: 44), true], "note2", ["slider", ControlSpec(0, 127, step: 0.1, default: 90), true], "lpfFreq", ["knob", ControlSpec(20, 20000, step: 0.1, default: 103.82), true], "hpfFreq", ["knob", ControlSpec(20, 20000, step: 0.1, default: 2400), true]]));
+				~autoGui.value(v, ~ikedaBreathSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "level", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\level)), true], "note1", ["slider", ControlSpec(0, 127, step: 0.1, default: 44), true], "note2", ["slider", ControlSpec(0, 127, step: 0.1, default: 90), true], "lpfFreq", ["knob", ControlSpec(20, 20000, step: 0.1, default: 103.82), true], "hpfFreq", ["knob", ControlSpec(20, 20000, step: 0.1, default: 2400), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -64,17 +65,19 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\timingOffset, Pseq([0, 0, 0, 0.02, 0.015, 0], inf), // add groove
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~ikedaHiNoiseSynthDef, instance, 666, 0, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\amp)), true]]));
+				~autoGui.value(v, ~ikedaHiNoiseSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\amp)), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -94,17 +97,19 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\pan , Pwhite(-1, 1, inf),
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~ikedaClickSynthDef, instance, 666, 0, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true], "centerFreq", ["slider", ControlSpec(20, 20000, step: 1, default: 15000), true]]));
+				~autoGui.value(v, ~ikedaClickSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true], "centerFreq", ["slider", ControlSpec(20, 20000, step: 1, default: 15000), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -118,17 +123,21 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\pan, Pwhite(-1, 1, inf),
 	\out, ~channelBus[0],
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
+		ccStart = ~pdefCcStart;
+		midiChan = ~pdefMidiChan;
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~t1kickSynthDef, instance, 666, 0, Color.white, Dictionary.newFrom(List["rel", ["knob", ControlSpec(0, 28, step: 0.1, default: event.at(\rel)), true], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true]]));
+				~autoGui.value(v, ~t1kickSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["rel", ["knob", ControlSpec(0, 28, step: 0.1, default: event.at(\rel)), true], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -140,17 +149,19 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\amp, 1,
 	\out, ~channelBus[0],
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~kick2SynthDef, instance, 666, 0, Color.white, Dictionary.newFrom(List["t_gate", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true], "freq", ["knob", ControlSpec(20, 600, step: 0.01, default: 60), true], "atf", ["knob", ControlSpec(0, 200, step: 0.01, default: 80), true], "rel", ["knob", ControlSpec(0, 20, step: 0.01, default: 1), true]]));
+				~autoGui.value(v, ~kick2SynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_gate", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true], "freq", ["knob", ControlSpec(20, 600, step: 0.01, default: 60), true], "atf", ["knob", ControlSpec(0, 200, step: 0.01, default: 80), true], "rel", ["knob", ControlSpec(0, 20, step: 0.01, default: 1), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -163,17 +174,42 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\amp, 0.35,
 	\out, ~channelBus[0],
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~t1kick2SynthDef, instance, 666, 0, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true], "snd", ["knob", ControlSpec(0, 42, step: 0.01, default: 18), true], "rel", ["knob", ControlSpec(0, 20, step: 0.01, default: 0.6), true], "pitch", ["knob", ControlSpec(0, 12, step: 0.01, default: 0.1), true]]));
+				~autoGui.value(v, ~t1kick2SynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "amp", ["knob", ControlSpec(0, 6, step: 0.01, default: event.at(\amp)), true], "snd", ["knob", ControlSpec(0, 42, step: 0.01, default: 18), true], "rel", ["knob", ControlSpec(0, 20, step: 0.01, default: 0.6), true], "pitch", ["knob", ControlSpec(0, 12, step: 0.01, default: 0.1), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~defaultPattern9 = Pbind(
+	\instrument, \prayer_bell,
+	\dur, 10,
+	\level, 0.05,
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrevView.value(~synthWindow, synthWindowKey);
+				~autoGui.value(v, ~prayerBellSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "freq", ["knob", ControlSpec(1500, 4000, step: 1, default: 2434), true], "level", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\level)), true], "decayscale", ["knob", ControlSpec(0, 4, step: 0.01, default: 1), true], "lag", ["knob", ControlSpec(0, 20, step: 0.01, default: 10), true]]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -189,17 +225,19 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\release, 2,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~samplerStereoSynthDef, instance, 116, 0, Color.white, Dictionary.newFrom(List["buffer", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["none"], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true], "startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\startPos)), true], "rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\rate)), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true]]));
+				~autoGui.value(v, ~samplerStereoSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["buffer", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0), true], "gate", ["none"], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true], "startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\startPos)), true], "rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\rate)), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
@@ -210,17 +248,19 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\amp, 1.84,
 	\dur, 1.5,//Pdefn(\durSnapkick),
 	\function, Pfunc({ arg event; // Pif ? or Pn(Plazy, inf)
-		var currentInstr, synthWindowKey, instance;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
 
-		if (currentInstr != ~prevInstr, {
-			synthWindowKey = (~prevInstr ++ ~pdefName).asString;
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
 			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~sinBassSynthDef, instance, 123, 0, Color.white, Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true], "gate", ["none"], "curve", ["knob", ControlSpec(-8, 8, step: 1, default: 0), true], "loopNode", ["knob", ControlSpec(0, 4, step: 1, default: 0), true], "attack", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.2), true], "release", ["knob", ControlSpec(0, 10, step: 0.01, default: 4), true], "envLevel1", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true], "envLevel2", ["knob", ControlSpec(0, 80, step: 0.1, default: 40), true], "envLevel3", ["knob", ControlSpec(0, 80, step: 0.1, default: 32), true], "envLevel4", ["knob", ControlSpec(0, 80, step: 0.1, default: 50), true], "envLevel5", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true], "envLevel6", ["knob", ControlSpec(0, 80, step: 0.1, default: 60), true], "envTime1", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true], "envTime2", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.3), true], "envTime3", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.25), true], "envTime4", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true], "envTime5", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true]]));
+				~autoGui.value(v, ~sinBassSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true], "gate", ["none"], "curve", ["knob", ControlSpec(-8, 8, step: 1, default: 0), true], "loopNode", ["knob", ControlSpec(0, 4, step: 1, default: 0), true], "attack", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.2), true], "release", ["knob", ControlSpec(0, 10, step: 0.01, default: 4), true], "envLevel1", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true], "envLevel2", ["knob", ControlSpec(0, 80, step: 0.1, default: 40), true], "envLevel3", ["knob", ControlSpec(0, 80, step: 0.1, default: 32), true], "envLevel4", ["knob", ControlSpec(0, 80, step: 0.1, default: 50), true], "envLevel5", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true], "envLevel6", ["knob", ControlSpec(0, 80, step: 0.1, default: 60), true], "envTime1", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true], "envTime2", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.3), true], "envTime3", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.25), true], "envTime4", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true], "envTime5", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true]]));
 			}.defer;
-			~prevInstr = currentInstr;
+			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	}),

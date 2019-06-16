@@ -977,7 +977,7 @@ SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
 	OffsetOut.ar(out,sig*amp);
 }).add;
 
-SynthDef(\prayer_bell, { |outbus, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, i_doneAction = 0|
+~prayerBellSynthDef = SynthDef(\prayer_bell, { |outbus = 0, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, level = 0.05, doneAction = 2|
   var sig, input, first, freqscale, mallet, sing;
   freqscale = freq / 2434;
   freqscale = Lag3.kr(freqscale, lag);
@@ -1039,8 +1039,8 @@ SynthDef(\prayer_bell, { |outbus, t_trig = 1, sing_switch = 0, freq = 2434, amp 
       0.6
     ] * freqscale.reciprocal.pow(0.5)
   ], input, freqscale, 0, decayscale);
-  DetectSilence.ar(sig, doneAction: i_doneAction);
-  Out.ar(outbus, sig);
+  DetectSilence.ar(sig, doneAction: doneAction);
+  Out.ar(outbus, sig * level);
 }).add;
 
 ///////////////////////////////////////  Rimshot

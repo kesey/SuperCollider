@@ -4,7 +4,7 @@
 
 ///////////////////////////////////////  Mixer
 
-var channelMaster, mixerMidiChan, pdefGuiView, ccStartPdMute, pdMidiChan;
+var channelMaster, mixerMidiChan, pdefGuiView, pdMuteCcStart, pdMuteMidiChan;
 
 ~ccStart = 21; // start mapping midi cc from here
 ~ccStart = ~ccStart.max(1).min(127); // limit ccStart
@@ -311,10 +311,10 @@ v.canvas.layout = VLayout();
 
 ////////////////////  Pdef Mute Gui
 
-ccStartPdMute = 1;
-pdMidiChan = 0; // 0 for midi channel 1
-pdMidiChan = pdMidiChan.max(0).min(15);
-(pdMidiChan).debug("units midi channel");
+pdMuteCcStart = 1;
+pdMuteMidiChan = 0; // 0 for midi channel 1
+pdMuteMidiChan = pdMuteMidiChan.max(0).min(15);
+(pdMuteMidiChan).debug("units mute midi channel");
 
 ~mute = Dictionary.new;
 ~activePdefMute = Dictionary.new;
@@ -370,9 +370,9 @@ pdefGuiView.layout = HLayout();
 		{
 			~mute.at(pdefNameString).valueAction_(midiControl);
 		}.defer;
-	}, ccStartPdMute, pdMidiChan);
-	(ccStartPdMute).debug(pdefNameString ++ " mute cc number");
-	ccStartPdMute = ccStartPdMute + 1;
+	}, pdMuteCcStart, pdMuteMidiChan);
+	(pdMuteCcStart).debug(pdefNameString ++ " mute cc number");
+	pdMuteCcStart = pdMuteCcStart + 1;
 
 	pdefGuiView.layout.add(~mute.at(pdefNameString));
 });

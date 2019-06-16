@@ -135,6 +135,16 @@
 		40.0.wait;
 		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
 		10.0.wait;
+		{
+			~mute.at("unit1").valueAction_(1);
+			~mute.at("unit3").valueAction_(1);
+			~mute.at("unit4").valueAction_(1);
+			~mute.at("unit5").valueAction_(1);
+			~mute.at("unit6").valueAction_(1);
+			~mute.at("unit8").valueAction_(1);
+		}.defer;
+		~changePattern.value(Pdef(\unit2), ~defaultPattern9);
+		20.wait;
 		~changePattern.value(Pdef(\unit1), ~initPattern);
 		~changePattern.value(Pdef(\unit2), ~initPattern);
 		~changePattern.value(Pdef(\unit3), ~initPattern);

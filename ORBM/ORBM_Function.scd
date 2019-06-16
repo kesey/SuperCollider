@@ -39,7 +39,7 @@
 	listUnits;
 };
 
-~removePrevView = { arg synthWindow, synthWindowKey;
+~removePrevView = { arg synthWindow, synthWindowKey; // { ~removePrevView.value(x, y); }.defer; use it with defer
 	var synthView;
 	if (synthWindow.includesKey(synthWindowKey), {
 		synthView = synthWindow.at(synthWindowKey);
@@ -84,8 +84,7 @@
 	if ((parentWindow.notNil and: synthDef.notNil and: instance.notNil), {
 		synthDefName = synthDef.name.asString;
 		arguments = synthDef.allControlNames;
-		midiChan = midiChan.max(0).min(15);
-		(midiChan).debug(synthDefName ++ " midi channel");
+		//midiChan = midiChan.max(0).min(15);
 
 		specDict.put("default", ["knob", ControlSpec(0, 1, step: 0.01, default: 0), true]);
 
@@ -100,6 +99,7 @@
 		});
 
 		id = (synthDefName ++ pdefName).asString;
+		(midiChan).debug(id ++ " midi channel");
 
 		~synthWindow.put(id,
 			CompositeView(bounds: (arguments.size * 62)@110)
