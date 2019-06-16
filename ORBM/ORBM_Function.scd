@@ -45,6 +45,12 @@
 		synthView = synthWindow.at(synthWindowKey);
 		synthView.removeAll; // removes all children
 		synthView.remove; // remove the composite view
+		~autoGuiControl.keysValuesDo({ // clean autoGuiControl Dictionary
+			arg key;
+			if(key.contains(synthWindowKey), {
+				~autoGuiControl.removeAt(key);
+			});
+		});
 	});
 };
 
@@ -99,7 +105,7 @@
 		});
 
 		id = (synthDefName ++ pdefName).asString;
-		(midiChan).debug(id ++ " midi channel");
+		(midiChan).debug(synthDefName ++ " " ++ pdefName ++ " midi channel");
 
 		~synthWindow.put(id,
 			CompositeView(bounds: (arguments.size * 62)@110)

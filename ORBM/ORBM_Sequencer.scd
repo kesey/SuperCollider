@@ -48,6 +48,7 @@ p.reset;
 	if(key.contains("unit"), {
 		value.removeAll;
 		value.remove;
+		~synthWindow.removeAt(key);
 	});
 });
 )

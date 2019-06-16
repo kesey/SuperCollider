@@ -111,23 +111,19 @@
 			~mute.at("unit7").valueAction_(0);
 			~mute.at("unit8").valueAction_(0);
 		}.defer;
-		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
+		/*~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
 		~changePattern.value(Pdef(\unit3), ~defaultPattern3);
 		~changePattern.value(Pdef(\unit4), ~defaultPattern4);
 		~changePattern.value(Pdef(\unit5), ~defaultPattern5);
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
 		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
-		~changePattern.value(Pdef(\unit8), ~defaultPattern8);
+		~changePattern.value(Pdef(\unit8), ~defaultPattern8);*/
 		{
 			~autoGuiControl.at("IkedaBreathunit2note1").valueAction_(76.9);
 			~autoGuiControl.at("IkedaBreathunit2note2").valueAction_(86.9);
-		}.defer;
-		{
 			~autoGuiControl.at("kick2unit7freq").valueAction_(515.69);
 			~autoGuiControl.at("kick2unit7tu").valueAction_(0.55);
-		}.defer;
-		{
 			~autoGuiControl.at("t1kick2unit8snd").valueAction_(17.95);
 			~autoGuiControl.at("t1kick2unit8rel").valueAction_(3.68);
 			~autoGuiControl.at("t1kick2unit8pitch").valueAction_(1.38);
