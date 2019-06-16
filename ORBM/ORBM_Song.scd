@@ -135,7 +135,14 @@
 		40.0.wait;
 		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
 		8.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, 0.125, 0.25, 2/3], inf)).quant_(~globalQuant);
+		{ ~mute.at("unit7").valueAction_(1); }.defer;
+		2.0.wait;
+		{
+			~mute.at("unit7").valueAction_(0);
+			~mute.at("unit2").valueAction_(1);
+		}.defer;
+		8.0.wait;
+		Pbindef(\unit7, \dur, Pseq([1, 1.125, 0.5], inf)).quant_(~globalQuant);
 		2.0.wait;
 		{
 			~mute.at("unit1").valueAction_(1);
@@ -147,8 +154,9 @@
 		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern9);
 		~changePattern.value(Pdef(\unit4), ~defaultPattern10);
+		{ ~mute.at("unit2").valueAction_(0); }.defer;
 		18.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		{ ~mute.at("unit7").valueAction_(1); }.defer;
 		2.0.wait;
 		{
 			~channel[\aux10].valueAction_(0.01);
@@ -156,35 +164,13 @@
 			~channel[\aux22].valueAction_(0.14);
 			~channel[\aux13].valueAction_(0.05);
 		}.defer;
-		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
-		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
-		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
-		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
-		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
-		4.0.wait;
-		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
-		1.0.wait;
+		{ ~mute.at("unit7").valueAction_(0); }.defer;
+		10.do({
+			Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+			4.0.wait;
+			Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, 0.125, 0.25, 2/3], inf)).quant_(~globalQuant);
+			1.0.wait;
+		});
 		~changePattern.value(Pdef(\unit1), ~initPattern);
 		~changePattern.value(Pdef(\unit2), ~initPattern);
 		~changePattern.value(Pdef(\unit3), ~initPattern);
