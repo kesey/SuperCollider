@@ -8,7 +8,7 @@ Pdefn(\durIkedaNoise, Pseq([3/4, 3/24, 3/12, 3/8, 3/12, 3/24], inf)).quant_(~glo
 Pdefn(\durIkedaBass, Pseq([3/4, Rest(0.75), Pwrand([1, 0.5], [0.4, 0.6].normalizeSum, 1)], inf)).quant_(~globalQuant);
 Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
-~initPattern = Pbind(
+~initPattern = Pbind( // use PbindProxy to persist live changes
 	\type, \rest,
 	\instrument, \default,
 	\function, Pfunc({ arg event;
@@ -194,8 +194,11 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~defaultPattern9 = Pbind(
 	\instrument, \prayer_bell,
-	\dur, 10,
-	\level, 0.05,
+	\dur, 5,
+	\level, 0.03,
+	\freq, 378,
+	\decayscale, 0.48,
+	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
@@ -207,7 +210,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrevView.value(~synthWindow, synthWindowKey);
-				~autoGui.value(v, ~prayerBellSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "freq", ["knob", ControlSpec(1500, 4000, step: 1, default: 2434), true], "level", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\level)), true], "decayscale", ["knob", ControlSpec(0, 4, step: 0.01, default: 1), true], "lag", ["knob", ControlSpec(0, 20, step: 0.01, default: 10), true]]));
+				~autoGui.value(v, ~prayerBellSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["t_trig", ["none"], "i_doneAction", ["none"], "freq", ["knob", ControlSpec(20, 4500, step: 1, default: event.at(\freq)), true], "level", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\level)), true], "decayscale", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\decayscale)), true], "lag", ["knob", ControlSpec(0, 20, step: 0.01, default: 10), true], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true]]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
 		});
@@ -215,7 +218,36 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	})
 );
 
-~pattern1 = Pbind( // use PbindProxy to persist live changes
+~defaultPattern10 = Pbind(
+	\instrument, \samplerStereo,
+	\buffer, b[\Bowed_Empty_Sweep_Slow][1].bufnum,
+	\dur, 5,
+	\amp, 2,
+	\rate, 0.06,
+	\startPos, 0.04,
+	\attack, 2.2,
+	\release, 2,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrevView.value(~synthWindow, synthWindowKey);
+				~autoGui.value(v, ~samplerStereoSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List["buffer", ["none"], "pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true], "gate", ["none"], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true], "startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\startPos)), true], "rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\rate)), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true]]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~pattern1 = Pbind(
 	\instrument, \samplerStereo,
 	\buffer, b[\Bowed_Empty_Sweep_Slow][1].bufnum,
 	\dur, Pdefn(\durSnapkick),

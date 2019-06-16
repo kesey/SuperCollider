@@ -134,17 +134,57 @@
 		}.defer;
 		40.0.wait;
 		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
-		10.0.wait;
+		8.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, 0.125, 0.25, 2/3], inf)).quant_(~globalQuant);
+		2.0.wait;
 		{
 			~mute.at("unit1").valueAction_(1);
 			~mute.at("unit3").valueAction_(1);
-			~mute.at("unit4").valueAction_(1);
 			~mute.at("unit5").valueAction_(1);
 			~mute.at("unit6").valueAction_(1);
 			~mute.at("unit8").valueAction_(1);
 		}.defer;
+		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern9);
-		20.wait;
+		~changePattern.value(Pdef(\unit4), ~defaultPattern10);
+		18.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		2.0.wait;
+		{
+			~channel[\aux10].valueAction_(0.01);
+			~channel[\aux21].valueAction_(0.45);
+			~channel[\aux22].valueAction_(0.14);
+			~channel[\aux13].valueAction_(0.05);
+		}.defer;
+		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
+		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
+		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
+		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
+		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		4.0.wait;
+		Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, Pwrand([0.125, 0.0625], [0.6, 0.4].normalizeSum, 1), 0.25, 2/3], inf)).quant_(~globalQuant);
+		1.0.wait;
 		~changePattern.value(Pdef(\unit1), ~initPattern);
 		~changePattern.value(Pdef(\unit2), ~initPattern);
 		~changePattern.value(Pdef(\unit3), ~initPattern);
@@ -153,6 +193,17 @@
 		~changePattern.value(Pdef(\unit6), ~initPattern);
 		~changePattern.value(Pdef(\unit7), ~initPattern);
 		~changePattern.value(Pdef(\unit8), ~initPattern);
+		{
+			~mute.at("unit1").valueAction_(0);
+			~mute.at("unit3").valueAction_(0);
+			~mute.at("unit5").valueAction_(0);
+			~mute.at("unit6").valueAction_(0);
+			~mute.at("unit8").valueAction_(0);
+			~channel[\aux10].valueAction_(0);
+			~channel[\aux21].valueAction_(0);
+			~channel[\aux22].valueAction_(0);
+			~channel[\aux13].valueAction_(0);
+		}.defer;
 	}
 };
 
