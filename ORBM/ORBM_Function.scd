@@ -23,6 +23,8 @@
 ~cleanup = {
 	currentEnvironment.removeAll;
 	Buffer.freeAll;
+	Tdef.removeAll;
+	Pdef.removeAll;
 	Window.closeAll;
 	s.newBusAllocators;
 	s.freeAll;
@@ -161,7 +163,14 @@
 			{
 				// list creation
 				active.put(controlId, false);
-				~autoGuiControl.put(controlId, EZListView(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(controlId, false); }));
+				~autoGuiControl.put(controlId, EZListView(synthWindow, 60@70, controlName, controlSpec, {
+					arg guiControl;
+					if (instance.isSymbol,
+						{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
+						{ { instance.set(controlNameSymb, guiControl.value); }.fork(t, ~globalQuant); }
+					);
+					active.put(controlId, false);
+				}));
 
 				if (midiMap, { // list midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -174,7 +183,10 @@
 								(active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 								{
 									active.put(controlId, true);
-									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); }, { instance.set(controlNameSymb, midiControl); });
+									if (instance.isSymbol,
+										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
+										{ { instance.set(controlNameSymb, midiControl); }.fork(t, ~globalQuant); }
+									);
 									~autoGuiControl.at(controlId).value_(midiControl);
 								}
 							);
@@ -190,7 +202,14 @@
 			{
 				// slider creation
 				active.put(controlId, false);
-				~autoGuiControl.put(controlId, EZSlider(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(controlId, false); }, layout: \vert, gap: 6@6));
+				~autoGuiControl.put(controlId, EZSlider(synthWindow, 60@70, controlName, controlSpec, {
+					arg guiControl;
+					if (instance.isSymbol,
+						{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
+						{ { instance.set(controlNameSymb, guiControl.value); }.fork(t, ~globalQuant); }
+					);
+					active.put(controlId, false);
+				}, layout: \vert, gap: 6@6));
 
 				if (midiMap, { // slider midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -207,7 +226,7 @@
 								{
 									if (instance.isSymbol,
 										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
-										{ instance.set(controlNameSymb, midiControl); }
+										{ { instance.set(controlNameSymb, midiControl); }.fork(t, ~globalQuant); }
 									);
 									~autoGuiControl.at(controlId).value_(midiControl);
 								}.defer;
@@ -223,7 +242,20 @@
 			{ /*"trigger trig gate t_trig t_gate loop mute start stop on off".contains(controlName) or: */controlType == "button" and: caseFind.not } // in this case create button
 			{
 				// button creation
-				~autoGuiControl.put(controlId, Button(synthWindow, Rect(10,110,40,25)).states_([[controlName, Color.black, Color.white],["stop", Color.white, Color.grey]]).action = { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); });
+				~autoGuiControl.put(controlId,
+					Button(synthWindow, Rect(10,110,40,25))
+					.states_([
+						[controlName, Color.black, Color.white],
+						["stop", Color.white, Color.grey]
+					])
+					.action = {
+						arg guiControl;
+						if (instance.isSymbol,
+							{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
+							{ instance.set(controlNameSymb, guiControl.value); }
+						);
+					}
+				);
 
 				if (midiMap, { // button midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -243,7 +275,14 @@
 			{
 				// knob creation
 				active.put(controlId, false);
-				~autoGuiControl.put(controlId, EZKnob(synthWindow, 60@70, controlName, controlSpec, { arg guiControl; if (instance.isSymbol, { Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); }, { instance.set(controlNameSymb, guiControl.value); }); active.put(controlId, false); }));
+				~autoGuiControl.put(controlId, EZKnob(synthWindow, 60@70, controlName, controlSpec, {
+					arg guiControl;
+					if (instance.isSymbol,
+						{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
+						{ { instance.set(controlNameSymb, guiControl.value); }.fork(t, ~globalQuant); }
+					);
+					active.put(controlId, false);
+				}));
 
 				if (midiMap, { // knob midi map
 					MIDIFunc.cc({ arg val, num, chan, src;
@@ -258,7 +297,10 @@
 							{
 								active.put(controlId, true);
 								{
-									if (instance.isSymbol, { Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); }, { instance.set(controlNameSymb, midiControl); });
+									if (instance.isSymbol,
+										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
+										{ { instance.set(controlNameSymb, midiControl); }.fork(t, ~globalQuant); }
+									);
 									~autoGuiControl.at(controlId).value_(midiControl);
 								}.defer;
 							}

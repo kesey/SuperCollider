@@ -66,6 +66,10 @@ if (MIDIClient.destinations[2].notNil, {
 ~aux1Color = Color.new255(205, 205, 193);
 ~aux2Color = Color.new255(238, 238, 209);
 
+n = 60; // Tempo in beat per minutes
+t = TempoClock.default;
+t.tempo = n / 60; // TempoClock by default in beat per seconds
+
 ////////////////////////////////// 5. define specific functions
 
 this.executeFile(~path ++ "ORBM_Function.scd");
