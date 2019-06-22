@@ -48,14 +48,14 @@ p.reset;
 	if(key.contains("unit"), {
 		value.removeAll;
 		value.remove;
-		~synthWindow.removeAt(key);
+		~synthWindow.removeAt(key); // remove previous composite views
 	});
 });
 )
 
 // Song transport
 
-Tdef(\song, ~defaultSong).play(t, quant: 1);
+Tdef(\song, ~defaultSong).play(t, quant: 1); // play me
 
 Tdef(\song).pause;
 Tdef(\song).resume;

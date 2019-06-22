@@ -45,7 +45,7 @@
 		synthView = synthWindow.at(synthWindowKey);
 		synthView.removeAll; // removes all children
 		synthView.remove; // remove the composite view
-		~autoGuiControl.keysValuesDo({ // clean autoGuiControl Dictionary
+		~autoGuiControl.keysValuesDo({ // remove controls no longer in use
 			arg key;
 			if(key.contains(synthWindowKey), {
 				~autoGuiControl.removeAt(key);
@@ -66,10 +66,10 @@
 	~patternType.put(pdefNameString, type);
 
 	if (~activePdefMute.at(pdefNameString), {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant * 2);
-		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant);
+		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
+		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant / 2);
 	}, {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant * 2);
+		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
 	});
 };
 
@@ -90,7 +90,7 @@
 	if ((parentWindow.notNil and: synthDef.notNil and: instance.notNil), {
 		synthDefName = synthDef.name.asString;
 		arguments = synthDef.allControlNames;
-		//midiChan = midiChan.max(0).min(15);
+		midiChan = midiChan.max(0).min(15);
 
 		specDict.put("default", ["knob", ControlSpec(0, 1, step: 0.01, default: 0), true]);
 

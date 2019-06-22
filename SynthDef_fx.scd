@@ -29,52 +29,55 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 
 ///////////////////////////////////////  Fx
 
-SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
+///////////////////////////////////////  Distortion
+
+SynthDef(\DistoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
 	var input, effect;
 	input = In.ar(in, 2);
-	effect = DelayN.ar(input, 1, delaytime);
-	//Out.ar(0, effect); // Mix with the data already present on the corresponding bus
-	ReplaceOut.ar(out, effect); // overwriting previous data on the corresponding bus
-}).add;
-
-SynthDef(\Chorus, { arg in = 0, out = 0, lpfreq = 6000, rq = 1, drywet = 0.5, level = 1;
-	var input, effect, density, maxdelaytime;
-	input = BPF.ar(In.ar(in, 2), lpfreq, rq);
-	density = 10;
-	effect = Mix.fill(density, {
-		maxdelaytime = rrand(0.01,0.03);
-		DelayC.ar(input, maxdelaytime, LFNoise1.kr(Rand(5,10),0.01,0.02));
-	});
+	effect = InsideOut.ar(input);
 	XOut.ar(out, drywet, effect * level);
 }).add;
 
-SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, decaytimea = 1, drywet = 0.5, level = 0.2;
-	var input, numc, numa, temp;
+SynthDef(\DistoCrossOver, { arg in = 0, out = 0, amp = 0.5, smooth = 0.5, drywet = 0.5, level = 1;
+	var input, effect;
 	input = In.ar(in, 2);
-	numc = 4; // number of comb delays
-	numa = 6; // number of allpass delays
-	temp = DelayN.ar(input, 0.1, predelaytime);
-	temp = Mix.fill(numc, { CombL.ar(temp, 0.1, rrand(0.01, 0.1), decaytimec) });
-	numa.do({ temp = AllpassN.ar(temp, 0.051, [rrand(0.01, 0.05), rrand(0.01, 0.05)], decaytimea) });
-	XOut.ar(out, drywet, temp * level);
+	effect = CrossoverDistortion.ar(input , amp, smooth);
+	XOut.ar(out, drywet, effect * level);
 }).add;
 
-SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay = 0.1, combDecay = 15, allPassMaxDelay = 0.05, allPassDecay = 1;
-	var sig, pre, delay;
-	//sig = Mix.ar(Array.fill(10, { Resonz.ar(Dust.ar(0.2, 50), 200 + 3000.0.rand, 0.003)}) );
-	sig = In.ar(in, 2);
-	pre = DelayN.ar(sig, preDelay); // reverb predelay time
-	delay = Mix.ar(Array.fill(7,{
-		CombL.ar(pre, maxCombDelay, LFNoise1.kr(Rand(0, 0.1), 0.04, 0.05), combDecay);
-	}));
-	4.do({
-		delay = AllpassN.ar(delay, allPassMaxDelay, [Rand(0, 0.05), Rand(0, 0.05)], allPassDecay);
-	});
-    Out.ar(
-        out,
-        sig + (0.2 * delay)
-    );
+SynthDef(\awdistortion, {arg in = 0, out = 0, gate = 1;
+	var source = In.ar(in,2);
+	var env = Linen.kr(gate, 0.0, 1, 0.1, 2);
+	var abs, excess,output;
+
+	abs = source.abs;
+
+	excess = (abs-0.1).max(0.0).min(0.9)/0.9;
+
+	//original plus sinusoidal perturbation of amount based on absolute amplitude
+	output = source+(excess*(sin(excess*2pi*5)*0.5-0.5));
+
+	XOut.ar(out,env,output*env);
+
 }).add;
+
+///////////////////////////////////////  Dynamic
+
+SynthDef(\Compression, {arg in = 0, out = 0, gain = 1.5, threshold = 0.5, drywet = 0.5, level = 1;
+	var input, effect;
+	input = In.ar(in, 2);
+	effect = CompanderD.ar(gain * input, threshold, 1, 0.5);
+	XOut.ar(out, drywet, effect * level);
+}).add;
+
+SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
+	var input, effect;
+	input = In.ar(in, 2);
+	effect = Limiter.ar(gain * input, level, dur);
+	ReplaceOut.ar(out, effect);
+}).add;
+
+///////////////////////////////////////  Time
 
 SynthDef(\Phasing, { arg in = 0, out = 0, freq = 0.2, drywet = 0.5, level = 1;
 	var input, effect;
@@ -92,32 +95,88 @@ SynthDef(\Flanging, {arg in = 0, out = 0, flangefreq = 0.1, fdback = 0.1, drywet
 	XOut.ar(out, drywet, effect * level);
 }).add;
 
-SynthDef(\DistoInsideOut, { arg in = 0, out = 0, drywet = 0.5, level = 1;
-	var input, effect;
-	input = In.ar(in, 2);
-	effect = InsideOut.ar(input);
+SynthDef(\chorus, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
+	var sig;
+	var in = InFeedback.ar(\inbus.kr(0), 2);
+	sig = LocalIn.ar(2) * \fb.kr(0.4);
+	sig = sig + in;
+	sig = DelayC.ar(sig, \maxdelay.ir(0.2), \delay.kr(0.0101) * ((0..7)/7 - 0.5 * \diff.kr(0.4001) + 1) * ( SinOsc.kr(\modfreq.kr(8.1)) * \modamp.kr(0.48) + 1 )).mean;
+	//sig = LPF.ar(sig, \dif.kr(7500));
+	LocalOut.ar(sig);
+
+	sig = LPF.ar(sig, \lpf.kr(15000));
+	sig = HPF.ar(sig, \hpf.kr(50));
+	sig = SelectX.ar(\mix.kr(0.5), [in, sig]);
+	sig = sig * EnvGen.ar(\adsr.kr( Env.adsr(0.01,0.1,0.8,0.1) ),gate,doneAction:2);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\Chorus1, { arg in = 0, out = 0, lpfreq = 6000, rq = 1, drywet = 0.5, level = 1;
+	var input, effect, density, maxdelaytime;
+	input = BPF.ar(In.ar(in, 2), lpfreq, rq);
+	density = 10;
+	effect = Mix.fill(density, {
+		maxdelaytime = rrand(0.01,0.03);
+		DelayC.ar(input, maxdelaytime, LFNoise1.kr(Rand(5,10),0.01,0.02));
+	});
 	XOut.ar(out, drywet, effect * level);
 }).add;
 
-SynthDef(\DistoCrossOver, { arg in = 0, out = 0, amp = 0.5, smooth = 0.5, drywet = 0.5, level = 1;
-	var input, effect;
-	input = In.ar(in, 2);
-	effect = CrossoverDistortion.ar(input , amp, smooth);
-	XOut.ar(out, drywet, effect * level);
+SynthDef(\choruseffect, {arg in = 0, out = 0, gate = 1;
+	var source = In.ar(in,2);
+	var chorus;
+	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
+
+	chorus= Mix.fill(7, {
+
+		var maxdelaytime= rrand(0.005,0.02);
+
+		DelayC.ar(source, maxdelaytime,LFNoise1.kr(Rand(4.5,10.5),0.25*maxdelaytime,0.75*maxdelaytime) )
+
+	});
+
+	XOut.ar(out,env, chorus);
+
 }).add;
 
-SynthDef(\Compression, {arg in = 0, out = 0, gain = 1.5, threshold = 0.5, drywet = 0.5, level = 1;
-	var input, effect;
-	input = In.ar(in, 2);
-	effect = CompanderD.ar(gain * input, threshold, 1, 0.5);
-	XOut.ar(out, drywet, effect * level);
+SynthDef(\choruscompresseffect, {|out =0 gate= 1|
+	var source = In.ar(out,2);
+	var chorus;
+	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
+
+	chorus= Splay.ar(Array.fill(4,{
+		var maxdelaytime= rrand(0.005,0.02);
+
+		DelayC.ar(source[0], maxdelaytime,LFNoise1.kr(Rand(0.1,0.6),0.25*maxdelaytime,0.75*maxdelaytime) )
+	}));
+
+	chorus = Compander.ar(4*(source + chorus),source,0.4,1,4);
+
+	XOut.ar(out,env,chorus);
+
+//From Steal This Sound SC Example
+//By Nick Collins
 }).add;
 
-SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
+///////////////////////////////////////  Delay
+
+SynthDef(\delayeffect, { arg in = 0, out = 0, gate = 1;
+	var source = In.ar(in,2);
+	var delay;
+	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
+
+	delay= CombC.ar(source,0.25,0.25,2.0);
+
+	XOut.ar(out,env, delay);
+
+}).add;
+
+SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 	var input, effect;
 	input = In.ar(in, 2);
-	effect = Limiter.ar(gain * input, level, dur);
-	ReplaceOut.ar(out, effect);
+	effect = DelayN.ar(input, 1, delaytime);
+	//Out.ar(0, effect); // Mix with the data already present on the corresponding bus
+	ReplaceOut.ar(out, effect); // overwriting previous data on the corresponding bus
 }).add;
 
 SynthDef(\quadDelay, { arg in = 0, out = 0, delayamp1 = 1, delaypan1 = 0, sync1 = 0, delayamp2 = 1,  delaypan2 = 0, sync2 = 0, delayamp3 = 1, delaypan3 = 0, sync3 = 0, delayamp4 = 1, delaypan4 = 0, sync4 = 0, feedBack = 0.2, dryWet = 0.4, amp = 0.5;
@@ -167,18 +226,6 @@ SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, d
 	Out.ar(out, sig);
 }).add;
 
-// Rudy
-SynthDef(\drumy, { arg freq=200, pan=0, amp=0.1;
-	var sig;
-	var in = InFeedback.ar(\inbus.kr(0), 2);
-	sig = in;
-	//sig = sig + DelayC.ar(sig, 0.01, 0.0001 * [0.1235,1,0.86534]).mean/2;
-	sig = Compander.ar(sig, in, \cpt.kr(0.4), \cpbelow.kr(1.001), \cpabove.kr(0.9), \cpclamp.kr(0.01), \cprelax.kr(0.1));
-	sig = sig * \gain.kr(1);
-	sig = SelectX.ar(\mix.kr(1), [in, sig]);
-	Out.ar(\outbus.kr(0), sig);
-}).add;
-
 SynthDef(\echo, { arg freq=200, pan=0, amp=0.1;
 	var sig;
 	var in = InFeedback.ar(\inbus.kr(BusDef(\sendbus1, \audio)), 2);
@@ -200,30 +247,18 @@ SynthDef(\echo, { arg freq=200, pan=0, amp=0.1;
 	Out.ar(\outbus.kr(0), sig);
 }).add;
 
-SynthDef(\verb, { arg freq=200, pan=0, amp=0.1, drywet = 0.5;
-	var sig, in;
-	in = InFeedback.ar(\inbus.kr(0), 2);
-	sig = in;
-	sig = FreeVerb2.ar(sig[0], sig[1], \mix.kr(0.5), \room.kr(1), \damp.kr(0.4));
-	//Out.ar(\outbus.kr(0), sig);
-	XOut.ar(\outbus.kr(0), drywet, sig * amp);
-}).add;
-
-SynthDef(\chorus, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
+SynthDef(\drumy, { arg freq=200, pan=0, amp=0.1;
 	var sig;
 	var in = InFeedback.ar(\inbus.kr(0), 2);
-	sig = LocalIn.ar(2) * \fb.kr(0.4);
-	sig = sig + in;
-	sig = DelayC.ar(sig, \maxdelay.ir(0.2), \delay.kr(0.0101) * ((0..7)/7 - 0.5 * \diff.kr(0.4001) + 1) * ( SinOsc.kr(\modfreq.kr(8.1)) * \modamp.kr(0.48) + 1 )).mean;
-	//sig = LPF.ar(sig, \dif.kr(7500));
-	LocalOut.ar(sig);
-
-	sig = LPF.ar(sig, \lpf.kr(15000));
-	sig = HPF.ar(sig, \hpf.kr(50));
-	sig = SelectX.ar(\mix.kr(0.5), [in, sig]);
-	sig = sig * EnvGen.ar(\adsr.kr( Env.adsr(0.01,0.1,0.8,0.1) ),gate,doneAction:2);
-	Out.ar(out, sig);
+	sig = in;
+	//sig = sig + DelayC.ar(sig, 0.01, 0.0001 * [0.1235,1,0.86534]).mean/2;
+	sig = Compander.ar(sig, in, \cpt.kr(0.4), \cpbelow.kr(1.001), \cpabove.kr(0.9), \cpclamp.kr(0.01), \cprelax.kr(0.1));
+	sig = sig * \gain.kr(1);
+	sig = SelectX.ar(\mix.kr(1), [in, sig]);
+	Out.ar(\outbus.kr(0), sig);
 }).add;
+
+///////////////////////////////////////  Stutter
 
 ~stutter = { |snd, reset, fragmentlength, rate = 1.0, maxdelay = 10|
     var phase, fragment, del;
@@ -266,17 +301,6 @@ SynthDef(\stuttertest, {
 	XOut.ar(\outbus.kr(0), drywet, sig * amp);
 }).add;
 
-// "scrambler" -- randomly samples from recent audio
-SynthDef(\scrambler, { arg in = 0, out = 0, amp = 0.3, drywet = 0.5,;
-    var sig;
-    sig = In.ar(inbus, 2);
-    sig = DelayC.ar(sig, 1.0, LFNoise0.ar(13).range(0.0, 1.0));
-    sig = sig!2 * 0.3;
-	//Out.ar(out, sig);
-	XOut.ar(\outbus.kr(0), drywet, sig * amp);
-}).add;
-
-
 //allInOne
 SynthDef(\rdStutter, { arg out = 0, time= 0.1, mix=0, rate=1;
 	var stutter = { arg sig, reset, time, rate = 1.0, maxdelay = 10;
@@ -296,6 +320,18 @@ SynthDef(\rdStutter, { arg out = 0, time= 0.1, mix=0, rate=1;
 	sig = sig * \gain.kr(1);
 	Out.ar(out, sig);
 }).add;
+
+// "scrambler" -- randomly samples from recent audio
+SynthDef(\scrambler, { arg in = 0, out = 0, amp = 0.3, drywet = 0.5,;
+    var sig;
+    sig = In.ar(inbus, 2);
+    sig = DelayC.ar(sig, 1.0, LFNoise0.ar(13).range(0.0, 1.0));
+    sig = sig!2 * 0.3;
+	//Out.ar(out, sig);
+	XOut.ar(\outbus.kr(0), drywet, sig * amp);
+}).add;
+
+///////////////////////////////////////  Reverb
 
 // infinite reverb by Eli Feldsteel
 SynthDef(\allreverb, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
@@ -351,25 +387,6 @@ SynthDef(\allreverbif, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\choruscompresseffect, {|out =0 gate= 1|
-	var source = In.ar(out,2);
-	var chorus;
-	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
-
-	chorus= Splay.ar(Array.fill(4,{
-		var maxdelaytime= rrand(0.005,0.02);
-
-		DelayC.ar(source[0], maxdelaytime,LFNoise1.kr(Rand(0.1,0.6),0.25*maxdelaytime,0.75*maxdelaytime) )
-	}));
-
-	chorus = Compander.ar(4*(source + chorus),source,0.4,1,4);
-
-	XOut.ar(out,env,chorus);
-
-//From Steal This Sound SC Example
-//By Nick Collins
-}).add;
-
 SynthDef(\reverbCraum, {
 	arg out = 0, gate = 1, roomsize = 100, revtime = 1, damping = 0.6, inputbw = 0.5, spread = 15, drylevel = 1, earlyreflevel = 0.7, taillevel = 0.5, maxroomsize = 300, amp = 0.5;
 	var source = In.ar(out,8);
@@ -381,6 +398,68 @@ SynthDef(\reverbCraum, {
 	reverb = reverb * amp ;
 	XOut.ar(out,env,reverb);
 //By Zé Craum
+}).add;
+
+SynthDef(\gatedreverb, {|in = 0, out =0 gate= 1 threshold= 0.1 amp=0.1|
+
+	var a,c,z,y,input;
+	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
+
+	c = 5; // number of comb delays
+	a = 4; // number of allpass delays
+
+	input=In.ar(in,2);
+
+	gate = if((input.mean)>threshold,input.mean,DC.ar(0)!2);
+
+	// reverb predelay time :
+	z = gate; //DelayN.ar(gate, 0.048,0.048);
+
+	//for delaytime if want modulation-	//LFNoise1.kr(0.1.rand, 0.04, 0.05)
+	y=Mix.arFill(c,{CombL.ar(z,0.1,rrand(0.01, 0.1),rrand(1.5,4))});
+
+	// chain of 4 allpass delays on each of two channels (8 total) :
+	a.do({ y = AllpassN.ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) });
+
+	Out.ar(out,Pan2.ar(y,0)*env*amp);
+
+}).add;
+
+SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay = 0.1, combDecay = 15, allPassMaxDelay = 0.05, allPassDecay = 1;
+	var sig, pre, delay;
+	//sig = Mix.ar(Array.fill(10, { Resonz.ar(Dust.ar(0.2, 50), 200 + 3000.0.rand, 0.003)}) );
+	sig = In.ar(in, 2);
+	pre = DelayN.ar(sig, preDelay); // reverb predelay time
+	delay = Mix.ar(Array.fill(7,{
+		CombL.ar(pre, maxCombDelay, LFNoise1.kr(Rand(0, 0.1), 0.04, 0.05), combDecay);
+	}));
+	4.do({
+		delay = AllpassN.ar(delay, allPassMaxDelay, [Rand(0, 0.05), Rand(0, 0.05)], allPassDecay);
+	});
+    Out.ar(
+        out,
+        sig + (0.2 * delay)
+    );
+}).add;
+
+SynthDef(\verb, { arg freq=200, pan=0, amp=0.1, drywet = 0.5;
+	var sig, in;
+	in = InFeedback.ar(\inbus.kr(0), 2);
+	sig = in;
+	sig = FreeVerb2.ar(sig[0], sig[1], \mix.kr(0.5), \room.kr(1), \damp.kr(0.4));
+	//Out.ar(\outbus.kr(0), sig);
+	XOut.ar(\outbus.kr(0), drywet, sig * amp);
+}).add;
+
+SynthDef(\Reverb, {arg in = 0, out = 0, predelaytime = 0.048, decaytimec = 5, decaytimea = 1, drywet = 0.5, level = 0.2;
+	var input, numc, numa, temp;
+	input = In.ar(in, 2);
+	numc = 4; // number of comb delays
+	numa = 6; // number of allpass delays
+	temp = DelayN.ar(input, 0.1, predelaytime);
+	temp = Mix.fill(numc, { CombL.ar(temp, 0.1, rrand(0.01, 0.1), decaytimec) });
+	numa.do({ temp = AllpassN.ar(temp, 0.051, [rrand(0.01, 0.05), rrand(0.01, 0.05)], decaytimea) });
+	XOut.ar(out, drywet, temp * level);
 }).add;
 
 )

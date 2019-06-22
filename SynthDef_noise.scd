@@ -104,4 +104,71 @@ SynthDef(\noiseInjection, { arg in = 0, out = 0, attack = 0.01, release = 0.01, 
 	Out.ar(out, sig * amp);
 }).add;
 
+SynthDef(\jilet, { arg out=0, gate=1, freq=4, amp=0.5, endReflection=1.5, jetReflection=0.5, jetRatio=10.72, noiseGain=0.35, vibFreq=5.925, vibGain=0.02, outputGain=0.20;
+
+	var adsr = (amp*0.2) + EnvGen.ar(Env.adsr(0.005, 0.01, 1.1, 0.01), gate, doneAction: 2);
+	var noise = WhiteNoise.ar(noiseGain);
+	var vibrato = SinOsc.ar(vibFreq, 0, vibGain);
+
+	var delay = (freq*0.66666).reciprocal;
+	var lastOut = LocalIn.ar(1);
+	var breathPressure = adsr*Mix([1.0, noise, vibrato]);
+	var filter = LeakDC.ar(OnePole.ar(lastOut.neg, 0.7));
+	var pressureDiff = breathPressure - (jetReflection*filter);
+	var jetDelay = DelayL.ar(pressureDiff, 0.025, delay*jetRatio);
+	var jet = (jetDelay * (jetDelay.squared - 1.0)).clip2(1.0);
+	var boreDelay = DelayL.ar(jet + (endReflection*filter), 0.05, delay);
+	LocalOut.ar(boreDelay);
+	Out.ar(out, 0.3*boreDelay*outputGain);
+}).add;
+
+SynthDef(\pitchednoise, {arg freq=440, amp=0.1,attack=0.01, sustain=0.1, decay=0.01,pan=0.0, bandwidth=100;
+var source, filter, env;
+
+env= EnvGen.ar(Env([0,1,1,0],[attack, sustain, decay]), doneAction:2);
+
+source= WhiteNoise.ar;
+
+filter= BPF.ar(source*env*2*amp,freq,bandwidth/freq);
+
+OffsetOut.ar(0,Pan2.ar(filter,pan))
+}).add;
+
+SynthDef(\plastickystrings,{|out= 0 freq = 440 amp = 0.1 gate=1 lforate = 5900 lfowidth= 0.01 cutoff= 12000 rq=0.5 pan=0.0|
+
+	var lfo, saw, filter, env;
+
+	lfo = LFTri.ar(lforate,Rand(0,2.0));
+
+	saw = Saw.ar(freq*(1.0+(lfowidth*lfo)),0.5);
+
+	//filter = BBandPass.ar(saw,freq,4);
+	filter = BHiPass.ar(saw,freq,rq); 	//or using cutoff
+
+	env = EnvGen.ar(Env.adsr(0.4,0.0,1.0,1.0),gate,doneAction:2);
+
+	OffsetOut.ar(out,Pan2.ar(filter*env,pan amp));
+
+}).add;
+
+SynthDef(\res, { | out=0 gate=1 freq=40 fltBus pan=0|
+	var aEnv, osc, flt;
+	aEnv = EnvGen.kr(Env.perc(0, 0.7), gate, doneAction: 2);
+	osc = Mix([Saw.ar(freq), Pulse.ar(freq / 2, 0.5)]);
+	flt = RLPF.ar(osc, In.kr(fltBus, 1), 0.1, aEnv);
+	ReplaceOut.kr(fltBus, LFNoise1.kr(0.3, 1000, 1500));
+
+	OffsetOut.ar(out, Pan2.ar(flt, pan));
+}).add;
+
+SynthDef(\mutantFric, { arg out = 0, amp = 1, spec1 = 0.00001, spec2 = 0.03, noiseFreq = 3, gate = 1, attack = 0.01, release = 1, doneAction = 2;
+	var friction, sig;
+	friction = Array.fill(5, {
+		[spec1, spec2].asSpec.map(LFNoise2.kr(noiseFreq))
+	});
+	sig = Friction.ar(LFTri.ar(50), friction: friction, mass: friction*30000);
+	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, doneAction: doneAction);
+	OffsetOut.ar(out, Splay.ar(sig * amp));
+}).add;
+
 )

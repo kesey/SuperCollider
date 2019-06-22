@@ -110,16 +110,6 @@
 			~mute.at("unit6").valueAction_(0);
 			~mute.at("unit7").valueAction_(0);
 			~mute.at("unit8").valueAction_(0);
-		}.defer;
-		/*~changePattern.value(Pdef(\unit1), ~defaultPattern1);
-		~changePattern.value(Pdef(\unit2), ~defaultPattern2);
-		~changePattern.value(Pdef(\unit3), ~defaultPattern3);
-		~changePattern.value(Pdef(\unit4), ~defaultPattern4);
-		~changePattern.value(Pdef(\unit5), ~defaultPattern5);
-		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
-		~changePattern.value(Pdef(\unit7), ~defaultPattern7);
-		~changePattern.value(Pdef(\unit8), ~defaultPattern8);*/
-		{
 			~autoGuiControl.at("IkedaBreathunit2note1").valueAction_(76.9);
 			~autoGuiControl.at("IkedaBreathunit2note2").valueAction_(86.9);
 			~autoGuiControl.at("kick2unit7freq").valueAction_(515.69);
@@ -129,7 +119,7 @@
 			~autoGuiControl.at("t1kick2unit8pitch").valueAction_(1.38);
 		}.defer;
 		40.0.wait;
-		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		Pbindef(\unit7, \dur, 0.125).quant_(0);
 		8.0.wait;
 		{ ~mute.at("unit7").valueAction_(1); }.defer;
 		2.0.wait;
@@ -138,7 +128,7 @@
 			~mute.at("unit2").valueAction_(1);
 		}.defer;
 		8.0.wait;
-		Pbindef(\unit7, \dur, Pseq([1, 1.125, 0.5], inf)).quant_(~globalQuant);
+		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([0.5, 2/12, 2/3, Rest(0.5)], inf)))).quant_(0);
 		2.0.wait;
 		{
 			~mute.at("unit1").valueAction_(1);
@@ -147,26 +137,39 @@
 			~mute.at("unit6").valueAction_(1);
 			~mute.at("unit8").valueAction_(1);
 		}.defer;
-		Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
+		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([0.125, 5], inf)))).quant_(~globalQuant * 2);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern9);
 		~changePattern.value(Pdef(\unit4), ~defaultPattern10);
 		{ ~mute.at("unit2").valueAction_(0); }.defer;
-		18.0.wait;
-		{ ~mute.at("unit7").valueAction_(1); }.defer;
-		2.0.wait;
+		20.0.wait;
 		{
 			~channel[\aux10].valueAction_(0.01);
 			~channel[\aux21].valueAction_(0.45);
 			~channel[\aux22].valueAction_(0.14);
 			~channel[\aux13].valueAction_(0.05);
 		}.defer;
-		{ ~mute.at("unit7").valueAction_(0); }.defer;
-		10.do({
-			Pbindef(\unit7, \dur, 0.125).quant_(~globalQuant);
-			4.0.wait;
-			Pbindef(\unit7, \dur, Pseq([0.0625, 0.125, 0.125, 0.25, 2/3], inf)).quant_(~globalQuant);
-			1.0.wait;
-		});
+		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([Pn(0.125, 20), 2/3, 0.25, 0.75, 0.125, 0.375, 0.5], inf)))).quant_(~globalQuant * 2);
+		30.0.wait;
+		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([2/12, 0.125, 2/3, Rest(0.0416), 1], inf)))).quant_(~globalQuant * 2);
+		2.0.wait;
+		{ ~mute.at("unit7").valueAction_(1); }.defer;
+		1.0.wait;
+		{
+			~mute.at("unit3").valueAction_(0);
+			~mute.at("unit7").valueAction_(0);
+		}.defer;
+		Pbindef(\unit3, \dur, 0.125, \amp, 0.015).quant_(0);
+		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([2/6, 0.0625, 0.125, 0.25, 2/3, 1], inf)))).quant_(0);
+		20.0.wait;
+		{
+			~autoGuiControl.at("prayer_bellunit2freq").valueAction_(838);
+			~autoGuiControl.at("samplerStereounit4startPos").valueAction_(0.05);
+			~autoGuiControl.at("t1kick2unit8pitch").valueAction_(0.5);
+			~autoGuiControl.at("t1kick2unit8rel").valueAction_(6.71);
+			~mute.at("unit8").valueAction_(0);
+		}.defer;
+		Pbindef(\unit8, \dur, 2.5, \timingOffset, 0.5).quant_(0);
+		20.0.wait;
 		~changePattern.value(Pdef(\unit1), ~initPattern);
 		~changePattern.value(Pdef(\unit2), ~initPattern);
 		~changePattern.value(Pdef(\unit3), ~initPattern);
@@ -177,10 +180,10 @@
 		~changePattern.value(Pdef(\unit8), ~initPattern);
 		{
 			~mute.at("unit1").valueAction_(0);
-			~mute.at("unit3").valueAction_(0);
+			//~mute.at("unit3").valueAction_(0);
 			~mute.at("unit5").valueAction_(0);
 			~mute.at("unit6").valueAction_(0);
-			~mute.at("unit8").valueAction_(0);
+			//~mute.at("unit8").valueAction_(0);
 			~channel[\aux10].valueAction_(0);
 			~channel[\aux21].valueAction_(0);
 			~channel[\aux22].valueAction_(0);
@@ -209,5 +212,7 @@
 		8.0.wait;
 	}
 };
+
+"song complete".postln;
 
 )

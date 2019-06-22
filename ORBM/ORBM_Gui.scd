@@ -172,6 +172,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 	(~ccStart).debug("channel " ++ i ++ " hpfreq cc number");
 	~ccStart = ~ccStart + 1;
 
+	// aux
 	2.do({ arg j;
 		var color;
 		switch(j,
@@ -180,9 +181,9 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 			{ color = Color.white; }
 		);
 		j = j + 1;
-		// aux
+
 		~channel[(\activeAux ++ j ++ i).asSymbol] = false;
-		~channel[(\aux ++ j ++ i).asSymbol] = EZKnob(~channel[\channelView], 35@70, 'aux' ++ j, ControlSpec(0, 1, step: 0.01, default: 0), { arg aux; currentEnvironment.at((\channel ++ i).asSymbol).set((\auxsend ++ j).asSymbol, aux.value); ~channel[(\activeAux ++ j ++ i).asSymbol] = false; }).setColors(background: color);
+		~channel[(\aux ++ j ++ i).asSymbol] = EZKnob(~channel[\channelView], 35@70, 'aux' ++ j, ControlSpec(0, 1, step: 0.01, default: 0), { arg aux; currentEnvironment.at((\channel ++ i).asSymbol).set((\auxsend ++ j).asSymbol, aux.value); ~channel[(\activeAux ++ j ++ i).asSymbol] = false; }.fork(t, ~globalQuant)).setColors(background: color);
 
 		// aux midi map
 		MIDIFunc.cc({ arg val, num, chan, src;
@@ -404,5 +405,7 @@ u.canvas.layout = VLayout();
 ~autoGui.value(u, ~distoCrossOverSynthDef, ~distoCrossOver, 666, 0, ~aux1Color, Dictionary.newFrom(List["drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]]));
 
 ~autoGui.value(u, ~noiseInjectionSnythDef, ~noiseInjection, 666, 0, ~aux1Color, Dictionary.newFrom(List["attack", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true], "release", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true], "noiseType", ["knob", ControlSpec(0, 4, step: 1, default: 0), true], "drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.6), true]]));
+
+"gui complete".postln;
 
 )

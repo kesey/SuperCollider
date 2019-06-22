@@ -225,7 +225,7 @@ SynthDef(\bigkick, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	sig = sig / 2;
 	sig = sig * EnvGen.ar(Env.adsr(0.001,0.1,0.8,0.1),gate,doneAction:2);
 	sig = Pan2.ar(sig, pan, amp);
-	Out.ar(out, sig);
+	OffsetOut.ar(out, sig);
 }).add;
 
 // acid kick
@@ -244,7 +244,7 @@ SynthDef(\bigkick1, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	sig = sig / 4;
 	sig = sig * EnvGen.ar(Env.adsr(0.01,0.1,0.8,0.1),gate,doneAction:2);
 	sig = Pan2.ar(sig, pan, amp);
-	Out.ar(out, sig);
+	OffsetOut.ar(out, sig);
 }).add;
 
 SynthDef(\basicKick, {arg out = 0, amp = 0.3, sinfreq = 60, glissf = 0.9, att = 0.01, rel = 0.45, pan = 0;
@@ -257,7 +257,7 @@ SynthDef(\basicKick, {arg out = 0, amp = 0.3, sinfreq = 60, glissf = 0.9, att = 
 	);
 	snd = SinOsc.ar(freq: ramp, mul: env);
 	snd = Pan2.ar(snd, pan);
-	Out.ar(out, snd);
+	OffsetOut.ar(out, snd);
 
 //By Nathan Ho aka Snappizz
 //http://sccode.org/1-523
@@ -270,7 +270,7 @@ SynthDef(\kick1b, {
     snd = snd + (BPF.ar(Hasher.ar(Sweep.ar), XLine.ar(800, 100, 0.01), 0.6) * Env.perc(0.001, 0.02).delay(0.001).ar);
     snd = snd + (SinOsc.ar(XLine.ar(172, 50, 0.01)) * Env.perc(0.0001, 0.3, 1, \lin).delay(0.005).ar(2));
     snd = snd.tanh;
-    Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
+    OffsetOut.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
 //By Nathan Ho aka Snappizz
 //http://sccode.org/1-57g
 }).add;
@@ -282,7 +282,7 @@ SynthDef(\kick2b, {
     snd = snd + (SinOsc.ar(XLine.ar(750, 161, 0.02)) * Env.perc(0.0005, 0.02).ar);
     snd = snd + (SinOsc.ar(XLine.ar(167, 52, 0.04)) * Env.perc(0.0005, 0.3).ar(2));
     snd = snd.tanh;
-    Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
+    OffsetOut.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
 //By Nathan Ho aka Snappizz
 //http://sccode.org/1-57g
 }).add;
@@ -295,7 +295,7 @@ SynthDef(\kick3b, {
     snd = snd + (BPF.ar(Hasher.ar(Sweep.ar), 300, 0.9) * Env.perc(0.001, 0.02).ar);
     snd = snd + (SinOsc.ar(XLine.ar(472, 60, 0.045)) * Env.perc(0.0001, 0.3, curve: \lin).delay(0.005).ar(2));
     snd = snd.tanh;
-    Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
+    OffsetOut.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
 //By Nathan Ho aka Snappizz
 //http://sccode.org/1-57g
 }).add;
@@ -309,7 +309,7 @@ SynthDef(\kick_808b, {arg out = 0, freq1 = 240, freq2 = 60, amp = 1, ringTime = 
 	env = EnvGen.ar(Env.perc(0.001, rel, amp), doneAction: 2);
 	snd = (1.0 - dist) * snd + (dist * (snd.distort));
 	snd = snd * env;
-	Out.ar(0, Pan2.ar(snd, pan));
+	OffsetOut.ar(0, Pan2.ar(snd, pan));
 //
 //By Bruno Ruviaro
 //https://github.com/brunoruviaro/SynthDefs-for-Patterns/blob/master/kick808.scd
@@ -334,7 +334,7 @@ SynthDef(\SOSkick,
 		beater_lpf = LPF.ar(in: beater_hpf, freq: lpf_cutoff_contour, mul: 1, add: 0);
 		beater_env = beater_lpf * EnvGen.ar(Env.perc, 1.0, doneAction: 2);
 		kick_mix = Mix.new([drum_env, beater_env]) * 2 * amp;
-		Out.ar(out, [kick_mix, kick_mix])
+		OffsetOut.ar(out, [kick_mix, kick_mix])
 	}
 
 	//DrumSynths SC Example - SOS Drums by Renick Bell, renick_at_gmail.com
@@ -367,9 +367,125 @@ SynthDef(\kick_electro, {
     snd = body + pop + click;
     snd = snd.tanh;
 
-    Out.ar(out, Pan2.ar(snd, pan, amp));
+    OffsetOut.ar(out, Pan2.ar(snd, pan, amp));
 //By Nathan Ho aka Snappizz
 //http://sccode.org/1-523
+}).add;
+
+SynthDef(\drum_kick, {
+	arg out = 0, freq=440, gate=1, amp=0.5, source,pan = 0.0 ;
+	source =
+	Pan2.ar(
+		SinOsc.ar(EnvGen.kr(Env.perc(0.0001, 1.5, 1, -200), gate, 1000, 45, doneAction:2), 1, 1) +
+		((BPF.ar([GrayNoise.ar(6),GrayNoise.ar(6)],EnvGen.kr(Env.perc(0.001, 0.3, 1, -200), gate, 6000, 70), 1.5)).distort * Line.kr(0.3,0,0.1))
+		*
+		EnvGen.kr(Env.perc(0.0001, 0.09, amp, 8)),0);
+	OffsetOut.ar(out, source);
+}).add;
+
+SynthDef(\kickAw, {arg out = 0, amp = 0.3, sinfreq = 70, glissf = 0.9, att = 0.01, rel = 0.45, pan = 0;
+	var gliss = XLine.kr(sinfreq, sinfreq*glissf, rel);
+	var snd = SinOsc.ar(gliss);
+	var env = EnvGen.kr(Env.perc(att, rel), doneAction: 2);
+	snd = snd * env * amp;
+	snd = Limiter.ar(snd,1,0.001);
+	OffsetOut.ar(out, Pan2.ar(snd, pan));
+}).add;
+
+SynthDef(\kick3Aw, {arg punch = 1, amp = 1;
+    var freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
+	sig = Normalizer.ar(SinOsc.ar(freq, 0.5pi, punch).distort, 1) * amp
+            * EnvGen.kr(Env([0, 1, 0.8, 0], [0.01, 0.1, 0.2]), doneAction: 2);
+    OffsetOut.ar(0, sig ! 2);
+}).add;
+
+SynthDef(\kick808Aw, { arg out = 0, freq1 = 240, freq2 = 60, amp = 12, ringTime = 100, rel = 10000, dist = 1.5, pan = 0, tott, durr;
+    var snd, env;
+	snd = Ringz.ar(
+		in: Impulse.ar(0), // single impulse
+		freq: XLine.ar(freq1, freq2, 0.1),
+		decaytime: ringTime);
+	env = EnvGen.ar(Env.perc(0.001, rel, amp), doneAction: 2);
+	snd = (1.0 - dist) * snd + (dist * (snd.distort));
+	snd = snd * env;
+	snd = Limiter.ar(snd, tott, durr) * 0.5 *(1/tott);
+	//snd = Clip.ar(snd, -1 * tott, tott);
+	//	snd = Fold.ar(snd, -1 * tott, tott);
+	//	snd = Wrap.ar(snd, -1 * tott, tott);
+	OffsetOut.ar(0, Pan2.ar(snd, pan));
+}).add;
+
+SynthDef(\kick_oto309, { arg out=0, amp=0.5, pan=0;
+	var env0, env1, env1m, son;
+
+	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.5, 0], [0.005, 0.06, 0.26], [-4, -2, -4]), doneAction:2);
+	env1 = EnvGen.ar(Env.new([110, 59, 29], [0.005, 0.29], [-4, -5]));
+	env1m = env1.midicps;
+
+	son = LFPulse.ar(env1m, 0, 0.5, 1, -0.5);
+	son = son + WhiteNoise.ar(1);
+	son = LPF.ar(son, env1m*1.5, env0);
+	son = son + SinOsc.ar(env1m, 0.5, env0);
+
+	son = son * 1.2;
+	son = son.clip2(1);
+
+	OffsetOut.ar(out, Pan2.ar(son * amp));
+}).add;
+
+SynthDef(\kikAw, { |basefreq = 50, ratio = 7, sweeptime = 0.05, preamp = 1, amp = 1, decay1 = 0.3, decay1L = 0.8, decay2 = 0.15, out|
+    var fcurve = EnvGen.kr(Env([basefreq * ratio, basefreq], [sweeptime], \exp)),
+        env = EnvGen.kr(Env([1, decay1L, 0], [decay1, decay2], -4), doneAction: 2),
+        sig = SinOsc.ar(fcurve, 0.5pi, preamp).distort * env * amp;
+    OffsetOut.ar(out, sig ! 2)
+}).add;
+
+SynthDef(\kicklaserbeam, {
+	arg out = 0, pan = 0.0, freq = 440, amp = 0.1, att = 0.01;
+	var snd, freqenv, ampenv;
+	// frequency envelope
+	freqenv = EnvGen.ar(Env([4, 0.5, 1, 1], [att, 0.01, 1.0]));
+	// amplitude envelope
+	// no gate: fixed-time envelope, self-terminating.
+	ampenv = EnvGen.ar(
+		envelope: Env([0, 1, 0.5, 0.0], [0.02, 0.2, 0.1]),
+		levelScale: amp,
+		doneAction: 2);
+	snd = LFTri.ar(freq: freq * freqenv, mul: ampenv);
+	OffsetOut.ar(out, Pan2.ar(snd, pan));
+}).add;
+
+SynthDef(\ringkick, { arg out = 0, freq = 40, decay = 0.25, amp = 1;
+	var snd;
+	snd = Ringz.ar(
+		in: LPF.ar(
+			in: Impulse.ar(0),
+			freq: 1000
+		),
+		freq: freq,
+		decaytime: decay,
+		mul: 7 * amp
+	).tanh.sin*2;
+	OffsetOut.ar(out, snd!2);
+}).add;
+
+SynthDef(\tweetBassLeak, { arg out = 0, t_trig = 1, amp = 1, attack = 0.01, release = 1, doneAction = 2;
+	var sig, demand, env;
+	demand = Demand.kr(
+		t_trig,
+		0,
+		Drand([0, Drand((0.4, 0.5..1))],inf)
+	);
+	env = Decay2.kr(
+		demand,
+		0.01,
+		0.3
+	);
+	sig = Saw.ar(8, env) ** 1.5;
+	sig = BRF.ar(sig, demand * 20 + [45.1, 45], 0.1);
+	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LeakDC.ar(sig).tanh;
+	OffsetOut.ar(out, sig * amp);
 }).add;
 
 )
