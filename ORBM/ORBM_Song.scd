@@ -72,7 +72,7 @@
 			~channel[\aux21].valueAction_(0.5);
 			~channel[\aux13].valueAction_(0.2);
 		}.defer;
-		15.0.wait;
+		20.0.wait;
 		{ ~mute.at("unit7").valueAction_(1); }.defer;
 		5.0.wait;
 		{
@@ -188,6 +188,7 @@
 			~channel[\aux21].valueAction_(0);
 			~channel[\aux22].valueAction_(0);
 		}.defer;
+		2.0.wait;
 	}
 };
 
