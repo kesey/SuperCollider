@@ -2,6 +2,7 @@
 
 ///////////////////////////////////////  Function
 
+// call on server boot
 ~makeBuffers = { // create a dictionary with folders names under the Audio folder in the first key and sample number in the next key
 	b = Dictionary.new;
 	PathName(~path ++ "Audio").entries.do{
@@ -20,19 +21,19 @@
 };
 // b[\Bowed_Empty_Sweep_Slow][0].play; // use it in a SynthDef like this: s.bind { Synth(\sampler, [\out, 0, \buffer, b[\Bowed_Empty_Sweep_Slow][0].bufnum]) };
 
-~cleanup = {
+// call on server quit
+~cleanup = { arg server;
 	Window.closeAll;
-	Pdef.removeAll;
-	Tdef.removeAll;
 	Buffer.freeAll;
 	currentEnvironment.removeAll;
-	s.newBusAllocators;
-	s.freeAll;
+	Pdef.removeAll;
+	Tdef.removeAll;
+	server.newBusAllocators;
+	server.freeAll;
 };
 
 // return an Array of Penvir use it in Ppar to play all the units
-~listUnits = {
-	arg sequencer;
+~listUnits = { arg sequencer;
 	var listUnits;
 	listUnits = sequencer.size.collect({
 		arg i;
@@ -41,7 +42,19 @@
 	listUnits;
 };
 
-~removePrevView = { arg synthWindow, synthWindowKey; // { ~removePrevView.value(x, y); }.defer; use it with defer
+// remove previous Pdef, use it when you reset sequencer
+~resetPdefView = {
+	~synthWindow.keysValuesDo({
+		arg key, value;
+		if(key.contains("unit"), {
+			value.removeAll;
+			value.remove;
+			{ ~synthWindow.removeAt(key); }.fork(t, 0.2); // need to be delayed
+		});
+	});
+};
+
+~removePrevView = { arg synthWindow, synthWindowKey; // use it inside a defer function
 	var synthView;
 	if (synthWindow.includesKey(synthWindowKey), {
 		synthView = synthWindow.at(synthWindowKey);

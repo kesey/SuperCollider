@@ -3,7 +3,12 @@
 ///////////////////////////////////////  Song
 
 ~defaultSong = {
-	~samplerStereo.set(\startPos, 0.07, \rate, 0.21, \release, 2, \attack, 10);
+	{
+		~autoGuiControl.at("samplerStereostartPos").valueAction_(0.07);
+		~autoGuiControl.at("samplerStereorate").valueAction_(0.21);
+		~autoGuiControl.at("samplerStereorelease").valueAction_(2);
+		~autoGuiControl.at("samplerStereoattack").valueAction_(10);
+	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
@@ -198,6 +203,7 @@
 		~autoGuiControl.at("samplerStereorate").valueAction_(0.03);
 		~autoGuiControl.at("samplerStereorelease").valueAction_(2);
 		~autoGuiControl.at("samplerStereoattack").valueAction_(0.1);
+		~autoGuiControl.at("samplerStereoamp").valueAction_(0.8);
 	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~pattern1);

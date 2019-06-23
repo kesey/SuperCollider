@@ -76,16 +76,9 @@ this.executeFile(~path ++ "ORBM_Function.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 
-ServerBoot.add({
-	~makeBuffers.value;
-});
+ServerBoot.add(~makeBuffers, s);
 
-ServerTree.removeAll;
-
-ServerQuit.add({
-	~cleanup.value;
-});
-ServerQuit.removeAll;
+ServerQuit.add(~cleanup, s);
 
 ////////////////////////////////// 7. boot
 
@@ -98,7 +91,7 @@ s.waitForBoot({
 	s.newBusAllocators;
 	// s.plotTree; // node tree
 	this.executeFile(~path ++ "ORBM_SynthDef.scd");
-	s.sync;
+	s.sync; // wait for previous code compilation is done
 	this.executeFile(~path ++ "ORBM_Routing.scd");
 	s.sync;
 	this.executeFile(~path ++ "ORBM_Pattern.scd");
