@@ -148,8 +148,8 @@
 			~channel[\aux22].valueAction_(0.14);
 			~channel[\aux13].valueAction_(0.05);
 		}.defer;
-		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([Pn(0.125, 20), 0.5, 0.2, 0.3, 0.4], inf)))).quant_(~globalQuant);
-		28.0.wait;
+		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([Pn(0.125, 18.6), 0.5, 0.2, 0.3, 0.4], inf)))).quant_(~globalQuant);
+		38.0.wait;
 		{ ~mute.at("unit7").valueAction_(1); }.defer;
 		2.0.wait;
 		{
@@ -184,9 +184,9 @@
 			~mute.at("unit6").valueAction_(0);
 			//~mute.at("unit8").valueAction_(0);
 			~channel[\aux10].valueAction_(0);
+			~channel[\aux13].valueAction_(0);
 			~channel[\aux21].valueAction_(0);
 			~channel[\aux22].valueAction_(0);
-			~channel[\aux13].valueAction_(0);
 		}.defer;
 	}
 };

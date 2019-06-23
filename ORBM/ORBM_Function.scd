@@ -21,11 +21,11 @@
 // b[\Bowed_Empty_Sweep_Slow][0].play; // use it in a SynthDef like this: s.bind { Synth(\sampler, [\out, 0, \buffer, b[\Bowed_Empty_Sweep_Slow][0].bufnum]) };
 
 ~cleanup = {
-	currentEnvironment.removeAll;
-	Buffer.freeAll;
-	Tdef.removeAll;
-	Pdef.removeAll;
 	Window.closeAll;
+	Pdef.removeAll;
+	Tdef.removeAll;
+	Buffer.freeAll;
+	currentEnvironment.removeAll;
 	s.newBusAllocators;
 	s.freeAll;
 };
