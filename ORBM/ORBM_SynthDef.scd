@@ -728,13 +728,13 @@ SynthDef(\snarenew, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;
     OffsetOut.ar(out, sig*amp);
 }).add;
 
-SynthDef(\snare2,{arg gate = 1, amp=1, out=0;
-	var env = EnvGen.ar(Env.perc(0.001,0.2),gate,doneAction:2);
+SynthDef(\snare2,{arg t_trig = 1, amp=1, out=0, pan = 0;
+	var env = EnvGen.ar(Env.perc(0.001,0.2),t_trig,doneAction:2);
 	var freq = EnvGen.ar(Env([12000,100,12000],[0.01,0.01]));
 	var sig = WhiteNoise.ar(env);
 	sig = LPF.ar(sig,freq);
 	sig = sig.tanh;
-	OffsetOut.ar(out,sig );
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp) );
 }).add;
 
 SynthDef(\snare2new, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;

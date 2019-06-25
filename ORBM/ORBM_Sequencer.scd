@@ -33,20 +33,16 @@ s.serverRunning.if({
 
 ///////////////////////////////////////  Transport
 
-// Sequencer + Song transport
+///////////////////// Sequencer + Song transport
 
 ( // Play Both
-{
-	~sequencerTransport = p.play;
-	Tdef(\song, ~defaultSong).play;
-}.fork(t, ~globalQuant); // use fork to quantize
+Tdef(\song, ~defaultSong).play(t, true, ~sequenceQuant);
+if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~sequenceQuant); });
 )
 
 ( // Stop Both
-{
-	Tdef(\song).stop;
-	~sequencerTransport.stop;
-}.fork(t, ~globalQuant);
+Tdef(\song).stop;
+~sequencerTransport.stop;
 )
 
 ( // Reset Both
@@ -55,31 +51,32 @@ Tdef(\song).reset;
 ~resetPdefView.value;
 )
 
-// Sequencer transport
+///////////////////// Song transport
 
-~sequencerTransport.play(t, quant: ~globalQuant); // Play Sequencer
-{ ~sequencerTransport.stop; }.fork(t, ~globalQuant); // Stop Sequencer
+Tdef(\song, ~testSong).play(t, true, ~sequenceQuant); // Play Song
+
+Tdef(\song).pause;
+Tdef(\song).resume(t, ~sequenceQuant);
+Tdef(\song).stop;
+Tdef(\song).reset;
+
+///////////////////// Sequencer transport
+
+if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~sequenceQuant); }); // Play Sequencer
+~sequencerTransport.stop; // Stop Sequencer
 
 ( // Reset Sequencer
 ~sequencerTransport.reset;
 ~resetPdefView.value;
 )
 
-// Song transport
-
-Tdef(\song, ~defaultSong).play(t, quant: ~globalQuant); // Play Song
-
-{ Tdef(\song).pause; }.fork(t, ~globalQuant); // Pause Song
-Tdef(\song).resume(t, quant: ~globalQuant); // Resume Song
-{ Tdef(\song).stop; }.fork(t, ~globalQuant); // Stop Song
-Tdef(\song).reset; // Reset Song
-
 ///////////////////////////////////////  Playground
 
-Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
+Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~sequenceQuant);
 ~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
-Tdef(\song, ~song2).play(t, quant: ~globalQuant);
+Tdef(\song, ~song2).play(t, quant: ~sequenceQuant);
+Tdef(\song, ~testSong).play(t, quant: ~sequenceQuant);
 { ~samplerStereo.set(\out, ~channelBus[0]); }.fork(t, ~globalQuant);
 
 (

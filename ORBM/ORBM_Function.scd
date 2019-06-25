@@ -81,10 +81,10 @@
 	~patternType.put(pdefNameString, type);
 
 	if (~activePdefMute.at(pdefNameString), {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
-		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant / 2);
+		Pdef(pdefNameSymbol, pattern).quant_(~sequenceQuant);
+		Pbindef(pdefNameSymbol, \type, \rest).quant_(~sequenceQuant / 2);
 	}, {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
+		Pdef(pdefNameSymbol, pattern).quant_(~sequenceQuant);
 	});
 };
 

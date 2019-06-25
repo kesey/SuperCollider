@@ -299,4 +299,34 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	}),
 	\out, ~channelBus[0]
 );
+
+~testPattern1 = Pbind(
+	\instrument, \kick2,
+	\dur, Pseq([1, 2, 0.75, 0.25]/4, inf),
+	\amp, 0.35,
+	\out, ~channelBus[0]
+);
+
+~testPattern2 = Pbind(
+	\instrument, \IkedaHiNoise,
+	[\dur, \amp, \decay],  Pseq([[0.5/2, 0.03, 0.5], Pn([0.5/2, 0.05, 0.01], 3)], inf),
+	\pan , Pwhite(-1, 1, inf),
+	\out, ~channelBus[1]
+);
+
+~testPattern3 = Pbind(
+	\instrument, \prayer_bell,
+	\dur, Pseq([4], inf),
+	\level, 0.03,
+	\freq, 378,
+	\decayscale, 0.48,
+	\out, ~channelBus[0]
+);
+
+~testPattern4 = Pbind(
+	\instrument, \snare2,
+	\dur, 2,
+	\amp, 0.10,
+	\out, ~channelBus[1]
+);
 )

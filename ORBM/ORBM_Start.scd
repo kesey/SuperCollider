@@ -58,6 +58,8 @@ if (MIDIClient.destinations[2].notNil, {
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
 ~globalQuant = 0.125;
 ~globalQuant = ~globalQuant.max(0.0625); // avoid 0
+~sequenceQuant = 1;
+~sequenceQuant = ~globalQuant.max(0.125); // avoid 0
 ~synthWindow = Dictionary.new;
 ~autoGuiControl = Dictionary.new;
 ~active = Dictionary.new;
