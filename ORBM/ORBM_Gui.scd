@@ -351,7 +351,7 @@ v = ScrollView(x, x.view.bounds);
 v.canvas = View();
 v.canvas.layout = VLayout();
 
-~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666, 0, Color.new255(205, 104, 57), Dictionary.newFrom(
+~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666, 0, Color.new255(205, 179, 139), Dictionary.newFrom(
 	List[
 		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
 		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
@@ -369,7 +369,7 @@ v.canvas.layout = VLayout();
 	]
 ));
 
-~autoGui.value(v, ~inputSigSynthDef, ~inputMic, 666, 0, Color.new255(238, 118, 0), Dictionary.newFrom(
+~autoGui.value(v, ~inputSigSynthDef, ~inputMic, 666, 0, Color.new255(205, 198, 115), Dictionary.newFrom(
 	List[
 		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
 		"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: 4), true],
@@ -405,7 +405,7 @@ v.canvas.layout = VLayout();
 	]
 ));
 
-~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, 0, Color.new255(205, 149, 12), Dictionary.newFrom(
+~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 94, 0, Color.new255(205, 149, 12), Dictionary.newFrom(
 	List[
 		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
 		"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1.84), true],
@@ -509,28 +509,28 @@ u.canvas = View();
 u.canvas.layout = VLayout();
 
 // Aux 2
-~autoGui.value(u, ~verbSynthDef, ~verb, 110, 0, ~aux2Color, Dictionary.newFrom(
+~autoGui.value(u, ~verbSynthDef, ~verb, 111, 0, ~aux2Color, Dictionary.newFrom(
 	List[
 		"amp", ["none"],
 		"drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]
 	]
 ));
 
-~autoGui.value(u, ~flangingSynthDef, ~flanging, 666, 0, ~aux2Color, Dictionary.newFrom(
+~autoGui.value(u, ~flangingSynthDef, ~flanging, 115, 0, ~aux2Color, Dictionary.newFrom(
 	List[
 		"fgfreq", ["slider", ControlSpec(0.01, 1000, step: 0.1, default: 0.1), true],
 		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]
 	]
 ));
 
-~autoGui.value(u, ~pitchShifterSynthDef, ~pitchShifter, 666, 0, ~aux2Color, Dictionary.newFrom(
+~autoGui.value(u, ~pitchShifterSynthDef, ~pitchShifter, 118, 0, ~aux2Color, Dictionary.newFrom(
 	List[
 		"pitchRatio", ["slider", ControlSpec(0, 4, step: 0.01, default: 1), true],
 		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]
 	]
 ));
 
-~autoGui.value(u, ~quadDelaySynthDef, ~quadDelay, 115, 1, ~aux2Color, Dictionary.newFrom(
+~autoGui.value(u, ~quadDelaySynthDef, ~quadDelay, 21, 1, ~aux2Color, Dictionary.newFrom(
 	List[
 		"tempoClock", ["none"],
 		"amp", ["none"],
@@ -547,19 +547,19 @@ u.canvas.layout = VLayout();
 ));
 
 // Aux 1
-~autoGui.value(u, ~distoInsideOutSynthDef, ~distoInsideOut, 666, 0, ~aux1Color, Dictionary.newFrom(
+~autoGui.value(u, ~distoInsideOutSynthDef, ~distoInsideOut, 39, 1, ~aux1Color, Dictionary.newFrom(
 	List[
 		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.5), true]
 	]
 ));
 
-~autoGui.value(u, ~distoCrossOverSynthDef, ~distoCrossOver, 666, 0, ~aux1Color, Dictionary.newFrom(
+~autoGui.value(u, ~distoCrossOverSynthDef, ~distoCrossOver, 41, 1, ~aux1Color, Dictionary.newFrom(
 	List[
 		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]
 	]
 ));
 
-~autoGui.value(u, ~noiseInjectionSnythDef, ~noiseInjection, 666, 0, ~aux1Color, Dictionary.newFrom(
+~autoGui.value(u, ~noiseInjectionSnythDef, ~noiseInjection, 45, 1, ~aux1Color, Dictionary.newFrom(
 	List[
 		"attack", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],
 		"release", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],

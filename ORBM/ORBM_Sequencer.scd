@@ -17,7 +17,7 @@ s.serverRunning.if({
 		name = ("unit" ++ (i + 1)).asSymbol;
 		~sequencer.put(name,
 			Penvir(
-				(pdefName: name, pdefPrevInstr: nil, pdefCcStart: 666, pdefMidiChan: i),
+				(pdefName: name, pdefPrevInstr: nil, pdefCcStart: 21, pdefMidiChan: i + 2),
 				Pdef(name, ~initPattern).quant_(~globalQuant);
 			)
 		);
