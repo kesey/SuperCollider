@@ -351,7 +351,7 @@ v = ScrollView(x, x.view.bounds);
 v.canvas = View();
 v.canvas.layout = VLayout();
 
-~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666, 0, Color.new255(139, 126, 102), Dictionary.newFrom(
+~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666, 0, Color.new255(205, 104, 57), Dictionary.newFrom(
 	List[
 		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
 		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
@@ -369,7 +369,7 @@ v.canvas.layout = VLayout();
 	]
 ));
 
-~autoGui.value(v, ~inputSigSynthDef, ~inputMic, 666, 0, Color.new255(139, 129, 76), Dictionary.newFrom(
+~autoGui.value(v, ~inputSigSynthDef, ~inputMic, 666, 0, Color.new255(238, 118, 0), Dictionary.newFrom(
 	List[
 		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
 		"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: 4), true],
