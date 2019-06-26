@@ -123,7 +123,7 @@
 		(midiChan).debug(synthDefName ++ " " ++ pdefName ++ " midi channel");
 
 		~synthWindow.put(id,
-			CompositeView(bounds: (arguments.size * 62)@110)
+			CompositeView(bounds: (arguments.size * 63)@110)
 			.scroll(autoScrolls: true)
 			.minHeight_(115)
 			.minWidth_(230)
@@ -256,10 +256,10 @@
 			{
 				// button creation
 				~autoGuiControl.put(controlId,
-					Button(synthWindow, Rect(10,110,40,25))
+					Button(synthWindow, Rect(10,110,60,25))
 					.states_([
-						[controlName, Color.black, Color.white],
-						["stop", Color.white, Color.grey]
+						[controlName ++ " on", Color.black, Color.white],
+						[controlName ++ " off", Color.white, Color.grey]
 					])
 					.action = {
 						arg guiControl;
