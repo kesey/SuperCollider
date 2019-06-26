@@ -351,9 +351,82 @@ v = ScrollView(x, x.view.bounds);
 v.canvas = View();
 v.canvas.layout = VLayout();
 
-~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85/*cc start*/, 0/*midi channel*/, Color.new255(107, 142, 35), Dictionary.newFrom(List["pan", ["none"], "attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.001), true], "buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i; var filePath; filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path); filePath.fileName.asString; }), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true], "startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: 0), true], "release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true], "amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]]));
+~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666, 0, Color.new255(139, 126, 102), Dictionary.newFrom(
+	List[
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
+		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.5), true],
+		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+		"lpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20000), true],
+		"band1freq", ["knob", ControlSpec(20, 20000, step: 1, default: 8000), true],
+		"band1db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band2freq", ["knob", ControlSpec(20, 20000, step: 1, default: 1200), true],
+		"band2db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band3freq", ["knob", ControlSpec(20, 20000, step: 1, default: 80), true],
+		"band3db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"hpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20), true]
+	]
+));
 
-~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, 0, Color.new255(205, 149, 12), Dictionary.newFrom(List["pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1.84), true], "gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "curve", ["knob", ControlSpec(-8, 8, step: 1, default: 0), true], "loopNode", ["knob", ControlSpec(0, 4, step: 1, default: 0), true], "attack", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.2), true], "release", ["knob", ControlSpec(0, 10, step: 0.01, default: 4), true], "envLevel1", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true], "envLevel2", ["knob", ControlSpec(0, 80, step: 0.1, default: 40), true], "envLevel3", ["knob", ControlSpec(0, 80, step: 0.1, default: 32), true], "envLevel4", ["knob", ControlSpec(0, 80, step: 0.1, default: 50), true], "envLevel5", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true], "envLevel6", ["knob", ControlSpec(0, 80, step: 0.1, default: 60), true], "envTime1", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true], "envTime2", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.3), true], "envTime3", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.25), true], "envTime4", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true], "envTime5", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true]]));
+~autoGui.value(v, ~inputSigSynthDef, ~inputMic, 666, 0, Color.new255(139, 129, 76), Dictionary.newFrom(
+	List[
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: 4), true],
+		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.5), true],
+		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+		"lpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20000), true],
+		"band1freq", ["knob", ControlSpec(20, 20000, step: 1, default: 8000), true],
+		"band1db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band2freq", ["knob", ControlSpec(20, 20000, step: 1, default: 1200), true],
+		"band2db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band3freq", ["knob", ControlSpec(20, 20000, step: 1, default: 80), true],
+		"band3db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"hpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20), true]
+	]
+));
+
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85/*cc start*/, 0/*midi channel*/, Color.new255(107, 142, 35), Dictionary.newFrom(
+	List[
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.001), true],
+		"buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i;
+			var filePath;
+			filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path);
+			filePath.fileName.asString;
+		}), true],
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true],
+		"startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: 0), true],
+		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
+		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]
+	]
+));
+
+~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 93, 0, Color.new255(205, 149, 12), Dictionary.newFrom(
+	List[
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
+		"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1.84), true],
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"curve", ["knob", ControlSpec(-8, 8, step: 1, default: 0), true],
+		"loopNode", ["knob", ControlSpec(0, 4, step: 1, default: 0), true],
+		"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.2), true],
+		"release", ["knob", ControlSpec(0, 10, step: 0.01, default: 4), true],
+		"envLevel1", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true],
+		"envLevel2", ["knob", ControlSpec(0, 80, step: 0.1, default: 40), true],
+		"envLevel3", ["knob", ControlSpec(0, 80, step: 0.1, default: 32), true],
+		"envLevel4", ["knob", ControlSpec(0, 80, step: 0.1, default: 50), true],
+		"envLevel5", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true],
+		"envLevel6", ["knob", ControlSpec(0, 80, step: 0.1, default: 60), true],
+		"envTime1", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
+		"envTime2", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.3), true],
+		"envTime3", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.25), true],
+		"envTime4", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true],
+		"envTime5", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true]
+	]
+));
 
 ////////////////////  Pdef Mute Gui
 
@@ -436,20 +509,64 @@ u.canvas = View();
 u.canvas.layout = VLayout();
 
 // Aux 2
-~autoGui.value(u, ~verbSynthDef, ~verb, 110, 0, ~aux2Color, Dictionary.newFrom(List["amp", ["none"], "drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]]));
+~autoGui.value(u, ~verbSynthDef, ~verb, 110, 0, ~aux2Color, Dictionary.newFrom(
+	List[
+		"amp", ["none"],
+		"drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]
+	]
+));
 
-~autoGui.value(u, ~flangingSynthDef, ~flanging, 666, 0, ~aux2Color, Dictionary.newFrom(List["fgfreq", ["slider", ControlSpec(0.01, 1000, step: 0.1, default: 0.1), true], "drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]]));
+~autoGui.value(u, ~flangingSynthDef, ~flanging, 666, 0, ~aux2Color, Dictionary.newFrom(
+	List[
+		"fgfreq", ["slider", ControlSpec(0.01, 1000, step: 0.1, default: 0.1), true],
+		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]
+	]
+));
 
-~autoGui.value(u, ~pitchShifterSynthDef, ~pitchShifter, 666, 0, ~aux2Color, Dictionary.newFrom(List["pitchRatio", ["slider", ControlSpec(0, 4, step: 0.01, default: 1), true], "drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]]));
+~autoGui.value(u, ~pitchShifterSynthDef, ~pitchShifter, 666, 0, ~aux2Color, Dictionary.newFrom(
+	List[
+		"pitchRatio", ["slider", ControlSpec(0, 4, step: 0.01, default: 1), true],
+		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]
+	]
+));
 
-~autoGui.value(u, ~quadDelaySynthDef, ~quadDelay, 115, 1, ~aux2Color, Dictionary.newFrom(List["tempoClock", ["none"], "amp", ["none"], "sync1", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync2", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync3", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "sync4", ["button", ControlSpec(0, 1, step: 1, default: 0), true], "pan1", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan2", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan3", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "pan4", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false], "drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.4), true]]));
+~autoGui.value(u, ~quadDelaySynthDef, ~quadDelay, 115, 1, ~aux2Color, Dictionary.newFrom(
+	List[
+		"tempoClock", ["none"],
+		"amp", ["none"],
+		"sync1", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"sync2", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"sync3", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"sync4", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"pan1", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
+		"pan2", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
+		"pan3", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
+		"pan4", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
+		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.4), true]
+	]
+));
 
 // Aux 1
-~autoGui.value(u, ~distoInsideOutSynthDef, ~distoInsideOut, 666, 0, ~aux1Color, Dictionary.newFrom(List["drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.5), true]]));
+~autoGui.value(u, ~distoInsideOutSynthDef, ~distoInsideOut, 666, 0, ~aux1Color, Dictionary.newFrom(
+	List[
+		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.5), true]
+	]
+));
 
-~autoGui.value(u, ~distoCrossOverSynthDef, ~distoCrossOver, 666, 0, ~aux1Color, Dictionary.newFrom(List["drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]]));
+~autoGui.value(u, ~distoCrossOverSynthDef, ~distoCrossOver, 666, 0, ~aux1Color, Dictionary.newFrom(
+	List[
+		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]
+	]
+));
 
-~autoGui.value(u, ~noiseInjectionSnythDef, ~noiseInjection, 666, 0, ~aux1Color, Dictionary.newFrom(List["attack", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true], "release", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true], "noiseType", ["knob", ControlSpec(0, 4, step: 1, default: 0), true], "drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.6), true]]));
+~autoGui.value(u, ~noiseInjectionSnythDef, ~noiseInjection, 666, 0, ~aux1Color, Dictionary.newFrom(
+	List[
+		"attack", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],
+		"release", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],
+		"noiseType", ["knob", ControlSpec(0, 4, step: 1, default: 0), true],
+		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.6), true]
+	]
+));
 
 "gui complete".postln;
 

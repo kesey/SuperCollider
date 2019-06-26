@@ -4,10 +4,12 @@
 
 ~defaultSong = {
 	{
-		~autoGuiControl.at("samplerStereostartPos").valueAction_(0.07);
-		~autoGuiControl.at("samplerStereorate").valueAction_(0.21);
-		~autoGuiControl.at("samplerStereorelease").valueAction_(2);
-		~autoGuiControl.at("samplerStereoattack").valueAction_(10);
+		~autoGuiControl.at("samplerStereo1012startPos").valueAction_(0.07);
+		~autoGuiControl.at("samplerStereo1012rate").valueAction_(0.21);
+		~autoGuiControl.at("samplerStereo1012attack").valueAction_(10);
+		~autoGuiControl.at("samplerStereo1012release").valueAction_(2);
+		~autoGuiControl.at("inputSig1011attack").valueAction_(6);
+		~autoGuiControl.at("inputSig1011release").valueAction_(3);
 	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
@@ -154,8 +156,8 @@
 			~channel[\aux22].valueAction_(0.14);
 			~channel[\aux13].valueAction_(0.05);
 		}.defer;
-		Pbindef(\unit7, \dur, Pn(Pseq([Pn(0.125, 13), 0.1875, 0.0625, 0.25, 0.21875, 0.15625], 2))).quant_(~sequenceQuant);
-		// Pbindef(\unit7, \dur, Pseq([Pn(0.125, 32), 0.3125, 0.0625, 0.25, 0.21875, 0.15625], inf)).quant_(~sequenceQuant);
+		// Pbindef(\unit7, \dur, Pn(Pseq([Pn(0.125, 13), 0.1875, 0.0625, 0.25, 0.21875, 0.15625], 2))).quant_(~sequenceQuant);
+		Pbindef(\unit7, \dur, Pseq([Pn(0.125, 32), 0.3125, 0.0625, 0.25, 0.21875, 0.15625], inf)).quant_(~sequenceQuant);
 		// Pbindef(\unit7, \dur, Pseq([Pn(0.125, 30), 0.3125, 0.0625, 0.5, 0.21875, 0.15625], inf)).quant_(~sequenceQuant);
 		38.0.wait;
 		{ ~mute.at("unit7").valueAction_(1); }.defer;
@@ -202,11 +204,11 @@
 
 ~song2 = {
 	{
-		~autoGuiControl.at("samplerStereostartPos").valueAction_(0);
-		~autoGuiControl.at("samplerStereorate").valueAction_(0.03);
-		~autoGuiControl.at("samplerStereorelease").valueAction_(2);
-		~autoGuiControl.at("samplerStereoattack").valueAction_(0.1);
-		~autoGuiControl.at("samplerStereoamp").valueAction_(0.8);
+		~autoGuiControl.at("samplerStereo1012startPos").valueAction_(0);
+		~autoGuiControl.at("samplerStereo1012rate").valueAction_(0.03);
+		~autoGuiControl.at("samplerStereo1012release").valueAction_(2);
+		~autoGuiControl.at("samplerStereo1012attack").valueAction_(0.1);
+		~autoGuiControl.at("samplerStereo1012amp").valueAction_(0.8);
 	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~pattern1);
@@ -219,26 +221,6 @@
 		~changePattern.value(Pdef(\unit1), ~pattern1);
 		~changePattern.value(Pdef(\unit2), ~pattern2);
 		8.0.wait;
-	}
-};
-
-~testSong = {
-	loop {
-		"0".postln;
-		~changePattern.value(Pdef(\unit1), ~testPattern1); // Kick
-		~changePattern.value(Pdef(\unit2), ~testPattern2); // Hat
-		~changePattern.value(Pdef(\unit3), ~testPattern3); // Bell
-		~changePattern.value(Pdef(\unit4), ~testPattern4); // Snare
-		4.0.wait;
-		"1".postln;
-		Pbindef(\unit1, \dur, Pseq([2, 2], inf)).quant_(~sequenceQuant);
-		4.0.wait;
-		"2".postln;
-		Pbindef(\unit1, \dur, Pseq([1, Pn(0.25, 4), 1, 1], inf)).quant_(~sequenceQuant);
-		4.0.wait;
-		"3".postln;
-		Pbindef(\unit1, \dur, Pseq([1, 0.5, 1, 0.125, 1, 0.25, 0.125], inf)).quant_(~sequenceQuant);
-		4.0.wait;
 	}
 };
 

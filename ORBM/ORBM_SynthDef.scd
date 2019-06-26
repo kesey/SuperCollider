@@ -1301,7 +1301,7 @@ SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 
 
 ///////////////////////////////////////  Input
 
-SynthDef(\inputSig, { arg out = 0, in = 0, pan = 0, hpfreq = 20, band1freq = 80, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 8000, band3rq = 1, band3db = 0, lpfreq = 20000, gate = 1, amp = 0.5, attack = 0.5, release = 1, doneAction = 2;
+~inputSigSynthDef = SynthDef(\inputSig, { arg out = 0, in = 0, lpfreq = 20000, band1freq = 8000, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 80, band3rq = 1, band3db = 0, hpfreq = 20, gate = 1, attack = 0.5, release = 1, amp = 0.5, pan = 0, delaytime = 0, doneAction = 2;
 	var input, sig;
 	input = SoundIn.ar(in);
 	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
@@ -1310,6 +1310,7 @@ SynthDef(\inputSig, { arg out = 0, in = 0, pan = 0, hpfreq = 20, band1freq = 80,
 	sig = BPeakEQ.ar(sig, Lag2.kr(band3freq.max(20).min(20000), 0.5), band3rq, band3db); // Band 3
 	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
 	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
+	sig = DelayL.ar(sig, 1, delaytime);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 

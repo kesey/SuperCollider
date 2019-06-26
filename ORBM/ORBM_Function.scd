@@ -112,7 +112,7 @@
 		if (instance.isSymbol, {
 			pdefName = instance.asString;
 		}, {
-			pdefName = "";
+			pdefName = UniqueID.next;
 			if (instance.isString, {
 				pdefName = instance;
 				instance = instance.asSymbol;
