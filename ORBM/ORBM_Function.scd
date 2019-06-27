@@ -180,7 +180,7 @@
 					arg guiControl;
 					if (instance.isSymbol,
 						{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
-						{ { instance.set(controlNameSymb, guiControl.value); }.fork(t, ~globalQuant); }
+						{ instance.set(controlNameSymb, guiControl.value); }
 					);
 					active.put(controlId, false);
 				}));
@@ -189,7 +189,7 @@
 					MIDIFunc.cc({ arg val, num, chan, src;
 						var guiControl, midiControl, threshold;
 						threshold = 0.5;
-						midiControl = val.linlin(0, 127, 0, list.at(("list" ++ i).asString).items.size - 1);
+						midiControl = val.linlin(0, 127, 0, ~autoGuiControl.at(controlId).items.size - 1);
 						{
 							guiControl = ~autoGuiControl.at(controlId).value;
 							if ( // soft takeover
@@ -198,7 +198,7 @@
 									active.put(controlId, true);
 									if (instance.isSymbol,
 										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
-										{ { instance.set(controlNameSymb, midiControl); }.fork(t, ~globalQuant); }
+										{ instance.set(controlNameSymb, midiControl); }
 									);
 									~autoGuiControl.at(controlId).value_(midiControl);
 								}
