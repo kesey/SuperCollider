@@ -351,7 +351,7 @@ v = ScrollView(x, x.view.bounds);
 v.canvas = View();
 v.canvas.layout = VLayout();
 
-~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666, 0, Color.new255(189, 183, 107, 240), Dictionary.newFrom(
+~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666/*cc start*/, 0/*midi channel*/, Color.new255(189, 183, 107, 240), Dictionary.newFrom(
 	List[
 		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
 		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
@@ -387,7 +387,7 @@ v.canvas.layout = VLayout();
 	]
 ));
 
-~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85/*cc start*/, 0/*midi channel*/, Color.new255(107, 142, 35), Dictionary.newFrom(
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, 0, Color.new255(205, 205, 0), Dictionary.newFrom(
 	List[
 		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
 		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.001), true],
@@ -405,7 +405,7 @@ v.canvas.layout = VLayout();
 	]
 ));
 
-~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 94, 0, Color.new255(205, 149, 12), Dictionary.newFrom(
+~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 94, 0, Color.new255(238, 230, 133), Dictionary.newFrom(
 	List[
 		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
 		"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1.84), true],
