@@ -400,7 +400,7 @@ SynthDef(\gatedreverb, {|in = 0, out =0 gate= 1 threshold= 0.1 amp=0.1|
 	OffsetOut.ar(out, Pan2.ar(snd, pan, amp));
 }).add;
 
-SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, amp = 1;
+~ikedaBassSynthDef = SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, amp = 1;
 	var env, sin, sig;
 	env = EnvGen.ar(Env(#[0, 0.5, 0.4, 0], #[0, 0.2, 0.01], -5), t_trig, doneAction: 2);
 	sin = SinOsc.ar(0, (Sweep.ar(t_trig, 2pi * [52.8, 740]) + (pi/3)).wrap(-pi, pi), #[2, 0.05]).mean.tanh;
@@ -1353,7 +1353,7 @@ SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
 	OffsetOut.ar(out,sig*amp);
 }).add;
 
-~prayerBellSynthDef = SynthDef(\prayer_bell, { |out = 0, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, level = 0.08, pan = 0, i_doneAction = 2|
+~prayerBellSynthDef = SynthDef(\prayerBell, { |out = 0, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, level = 0.08, pan = 0, i_doneAction = 2|
 	var sig, input, first, freqscale, mallet, sing;
 	freq = freq.max(20).min(5000);
 	freqscale = freq / 2434;

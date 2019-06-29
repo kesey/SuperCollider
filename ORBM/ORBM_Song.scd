@@ -171,7 +171,7 @@
 		Pbindef(\unit7, \dur, Pn(Pconst(5, Pseq([2/6, 0.0625, 0.125, 0.25, 2/3, 1], inf)))).quant_(~sequenceQuant);
 		20.0.wait;
 		{
-			~autoGuiControl.at("prayer_bellunit2freq").valueAction_(838);
+			~autoGuiControl.at("prayerBellunit2freq").valueAction_(838);
 			~autoGuiControl.at("samplerStereounit4startPos").valueAction_(0.05);
 			~autoGuiControl.at("t1kick2unit8pitch").valueAction_(0.5);
 			~autoGuiControl.at("t1kick2unit8rel").valueAction_(6.71);

@@ -5,8 +5,7 @@
 // call on server boot
 ~makeBuffers = { // create a dictionary with folders names under the Audio folder in the first key and sample number in the next key
 	b = Dictionary.new;
-	PathName(~path ++ "Audio").entries.do{
-		arg subfolder;
+	PathName(~path ++ "Audio").entries.do{ arg subfolder;
 		b.add(
 			subfolder.folderName.asSymbol ->
 			Array.fill(
@@ -25,6 +24,7 @@
 ~cleanup = { arg server;
 	Window.closeAll;
 	Buffer.freeAll;
+	MIDIdef.freeAll;
 	currentEnvironment.removeAll;
 	Pdef.removeAll;
 	Tdef.removeAll;
@@ -35,8 +35,7 @@
 // return an Array of Penvir use it in Ppar to play all the units
 ~listUnits = { arg sequencer;
 	var listUnits;
-	listUnits = sequencer.size.collect({
-		arg i;
+	listUnits = sequencer.size.collect({ arg i;
 		sequencer.at(("unit" ++ (i + 1)).asSymbol);
 	});
 	listUnits;
@@ -44,8 +43,7 @@
 
 // remove previous Pdef, use it when you reset sequencer
 ~resetPdefView = {
-	~synthWindow.keysValuesDo({
-		arg key, value;
+	~synthWindow.keysValuesDo({ arg key, value;
 		if(key.contains("unit"), {
 			value.removeAll;
 			value.remove;
@@ -54,16 +52,23 @@
 	});
 };
 
-~removePrevView = { arg synthWindow, synthWindowKey; // use it inside a defer function
+~removePrev = { arg synthWindowKey; // use it inside a defer function
 	var synthView;
-	if (synthWindow.includesKey(synthWindowKey), {
-		synthView = synthWindow.at(synthWindowKey);
+	if (~synthWindow.includesKey(synthWindowKey), {
+		synthView = ~synthWindow.at(synthWindowKey);
 		synthView.removeAll; // removes all children
 		synthView.remove; // remove the composite view
-		~autoGuiControl.keysValuesDo({ // remove controls no longer in use
-			arg key;
+		{ ~synthWindow.removeAt(synthWindowKey); }.fork(t, 0.2);
+
+		~autoGuiControl.keysDo({ arg key; // remove controls no longer in use
 			if(key.contains(synthWindowKey), {
 				~autoGuiControl.removeAt(key);
+			});
+		});
+
+		MIDIdef.all.keysDo({ arg key; // remove mididef no longer in use
+			if(key.contains(synthWindowKey), {
+				MIDIdef(key).free;
 			});
 		});
 	});
@@ -186,7 +191,7 @@
 				}));
 
 				if (midiMap, { // list midi map
-					MIDIFunc.cc({ arg val, num, chan, src;
+					MIDIdef.cc(controlId, { arg val, num, chan, src;
 						var guiControl, midiControl, threshold;
 						threshold = 0.5;
 						midiControl = val.linlin(0, 127, 0, ~autoGuiControl.at(controlId).items.size - 1);
@@ -225,7 +230,7 @@
 				}, layout: \vert, gap: 6@6));
 
 				if (midiMap, { // slider midi map
-					MIDIFunc.cc({ arg val, num, chan, src;
+					MIDIdef.cc(controlId, { arg val, num, chan, src;
 						var guiControl, midiControl, threshold, minValue, maxValue;
 						minValue = ~autoGuiControl.at(controlId).controlSpec.minval;
 						maxValue = ~autoGuiControl.at(controlId).controlSpec.maxval;
@@ -271,7 +276,7 @@
 				);
 
 				if (midiMap, { // button midi map
-					MIDIFunc.cc({ arg val, num, chan, src;
+					MIDIdef.cc(controlId, { arg val, num, chan, src;
 						var midiControl;
 						midiControl = val.linlin(0, 127, 0, 1);
 						{
@@ -298,7 +303,7 @@
 				}));
 
 				if (midiMap, { // knob midi map
-					MIDIFunc.cc({ arg val, num, chan, src;
+					MIDIdef.cc(controlId, { arg val, num, chan, src;
 						var guiControl, midiControl, threshold, minValue, maxValue;
 						minValue = ~autoGuiControl.at(controlId).controlSpec.minval;
 						maxValue = ~autoGuiControl.at(controlId).controlSpec.maxval;
@@ -329,7 +334,9 @@
 
 		if (instance.isSymbol, {
 			// removes all the children of the view and destroys them then remove the composite view
-			Button(synthWindow, Rect(10,110,20,20)).states_([["X", Color.white, Color.red]]).action = { synthWindow.removeAll; synthWindow.remove; };
+			Button(synthWindow, Rect(10,110,20,20)).states_([["X", Color.white, Color.red]]).action = {
+				~removePrev.value(id);
+			};
 		});
 	}, {
 		"autoGui wrong arguments".postln;
