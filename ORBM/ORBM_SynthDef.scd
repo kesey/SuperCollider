@@ -278,7 +278,7 @@ SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay
 	input = InFeedback.ar(in, 2);
 	input = Mix.ar([input, LocalIn.ar(2)]);
 	sig = input;
-	sig = FreeVerb2.ar(sig[0], sig[1], drywet, \room.kr(1), \damp.kr(0.4));
+	sig = FreeVerb2.ar(sig[0], sig[1], Lag2.kr(drywet), \room.kr(1), \damp.kr(0.4));
 	LocalOut.ar(feedback * sig);
 	ReplaceOut.ar(out, sig * Lag2.kr(amp));
 }).add;

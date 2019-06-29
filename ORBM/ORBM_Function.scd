@@ -334,7 +334,7 @@
 
 		if (instance.isSymbol, {
 			// removes all the children of the view and destroys them then remove the composite view
-			Button(synthWindow, Rect(10,110,20,20)).states_([["X", Color.white, Color.red]]).action = {
+			Button(synthWindow, Rect(10,110,20,20)).states_([["X", Color.white, Color.new255(255, 48, 48)]]).action = {
 				~removePrev.value(id);
 			};
 		});
