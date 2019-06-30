@@ -568,6 +568,4 @@ u.canvas.layout = VLayout();
 	]
 ));
 
-"gui complete".postln;
-
 )

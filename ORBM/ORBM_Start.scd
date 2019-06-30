@@ -62,7 +62,6 @@ if (MIDIClient.destinations[2].notNil, {
 ~sequenceQuant = ~globalQuant.max(0.125); // avoid 0
 ~synthWindow = Dictionary.new;
 ~autoGuiControl = Dictionary.new;
-~active = Dictionary.new;
 ~patternType = Dictionary.new;
 
 ~aux1Color = Color.new255(205, 205, 193);
@@ -97,6 +96,30 @@ s.waitForBoot({
 	this.executeFile(~path ++ "ORBM_Routing.scd");
 	s.sync;
 	this.executeFile(~path ++ "ORBM_Pattern.scd");
+	s.sync;
+
+	~pdefNumber = 8; // number of pdef or units
+	~pdefNumber = ~pdefNumber.max(1).min(12); // limit number of pdef
+
+	~sequencer = Dictionary.new;
+
+	~pdefNumber.do({ // sequencer creation with pdefNumber of units
+		arg i;
+		var name;
+		name = ("unit" ++ (i + 1)).asSymbol;
+		~sequencer.put(name,
+			Penvir(
+				(pdefName: name, pdefPrevInstr: nil, pdefCcStart: 21, pdefMidiChan: i + 2),
+				Pdef(name, ~initPattern).quant_(~globalQuant);
+			)
+		);
+	});
+
+	p = Ppar(~listUnits.value(~sequencer), inf); // all units in parallel
+
+	this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
+	s.sync;
+	this.executeFile(~path ++ "ORBM_Song.scd"); // Gui need to exist before executing ORBM_Song.scd
 	s.sync;
 	"init complete".postln;
 });
