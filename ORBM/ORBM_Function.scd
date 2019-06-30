@@ -210,7 +210,7 @@
 							);
 						}.defer;
 					}, ccStart, midiChan);
-					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
+					(ccStart).debug(synthDefName ++ " " ++ pdefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
 
@@ -251,7 +251,7 @@
 							}
 						);
 					}, ccStart, midiChan);
-					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
+					(ccStart).debug(synthDefName ++ " " ++ pdefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
 
@@ -283,7 +283,7 @@
 							~autoGuiControl.at(controlId).valueAction_(midiControl);
 						}.defer;
 					}, ccStart, midiChan);
-					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
+					(ccStart).debug(synthDefName ++ " " ++ pdefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
 
@@ -324,7 +324,7 @@
 							}
 						);
 					}, ccStart, midiChan);
-					(ccStart).debug(synthDefName ++ " " ++ controlName ++ " cc number");
+					(ccStart).debug(synthDefName ++ " " ++ pdefName ++ " " ++ controlName ++ " cc number");
 					ccStart = ccStart + 1;
 				});
 			};

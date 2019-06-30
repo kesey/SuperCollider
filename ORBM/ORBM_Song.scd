@@ -4,12 +4,12 @@
 
 ~defaultSong = {
 	{
-		~autoGuiControl.at("samplerStereo1012startPos").valueAction_(0.07);
-		~autoGuiControl.at("samplerStereo1012rate").valueAction_(0.21);
-		~autoGuiControl.at("samplerStereo1012attack").valueAction_(10);
-		~autoGuiControl.at("samplerStereo1012release").valueAction_(2);
-		~autoGuiControl.at("inputSig1011attack").valueAction_(6);
-		~autoGuiControl.at("inputSig1011release").valueAction_(3);
+		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.07);
+		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.21);
+		~autoGuiControl.at("samplerStereo1019attack").valueAction_(10);
+		~autoGuiControl.at("samplerStereo1019release").valueAction_(2);
+		~autoGuiControl.at("inputSig1018attack").valueAction_(6);
+		~autoGuiControl.at("inputSig1018release").valueAction_(3);
 	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
@@ -204,11 +204,11 @@
 
 ~song2 = {
 	{
-		~autoGuiControl.at("samplerStereo1012startPos").valueAction_(0);
-		~autoGuiControl.at("samplerStereo1012rate").valueAction_(0.03);
-		~autoGuiControl.at("samplerStereo1012release").valueAction_(2);
-		~autoGuiControl.at("samplerStereo1012attack").valueAction_(0.1);
-		~autoGuiControl.at("samplerStereo1012amp").valueAction_(0.8);
+		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0);
+		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.03);
+		~autoGuiControl.at("samplerStereo1019release").valueAction_(2);
+		~autoGuiControl.at("samplerStereo1019attack").valueAction_(0.1);
+		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.8);
 	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~pattern1);

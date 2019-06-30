@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////  Gui
 
-///////////////////////////////////////  Mixer
+///////////////////////////////////////  Mixer Window
 
 var channelMaster, mixerMidiChan, pdefGuiView, pdMuteCcStart, pdMuteMidiChan;
 
@@ -15,12 +15,12 @@ mixerMidiChan = mixerMidiChan.max(0).min(15);
 
 ~channel = IdentityDictionary.new;
 
-w = Window("Mixer",Rect(0, 0, 850, 725), scroll: true);
+w = Window("Mixer",Rect(0, 8, 850, 725), scroll: true);
 w.front;
 //w.alwaysOnTop_(true);
 w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 
-///////////////////////////////////////  Channel
+////////////////////  Channel
 
 ~channelNumber.do { arg i;
 	var bgColor;
@@ -341,166 +341,9 @@ channelMaster.decorator.nextLine;
 	{ ~master.set(\level, level.value); }.fork(t, ~globalQuant);
 }, layout: 'vert', margin: 39@0).setColors(stringColor: Color.white);
 
-///////////////////////////////////////  SynthDef Gui
+///////////////////////////////////////  Fx Window
 
-x = Window("SynthDef", Rect(0, 0, 1200, 725));
-x.layout = VLayout();
-x.front;
-
-v = ScrollView(x, x.view.bounds);
-v.canvas = View();
-v.canvas.layout = VLayout();
-
-~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 666/*cc start*/, 0/*midi channel*/, Color.new255(189, 183, 107, 240), Dictionary.newFrom(
-	List[
-		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
-		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
-		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.5), true],
-		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
-		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
-		"lpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20000), true],
-		"band1freq", ["knob", ControlSpec(20, 20000, step: 1, default: 8000), true],
-		"band1db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
-		"band2freq", ["knob", ControlSpec(20, 20000, step: 1, default: 1200), true],
-		"band2db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
-		"band3freq", ["knob", ControlSpec(20, 20000, step: 1, default: 80), true],
-		"band3db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
-		"hpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20), true]
-	]
-));
-
-~autoGui.value(v, ~inputSigSynthDef, ~inputMic, 666, 0, Color.new255(205, 198, 115, 255), Dictionary.newFrom(
-	List[
-		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
-		"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: 4), true],
-		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.5), true],
-		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
-		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
-		"lpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20000), true],
-		"band1freq", ["knob", ControlSpec(20, 20000, step: 1, default: 8000), true],
-		"band1db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
-		"band2freq", ["knob", ControlSpec(20, 20000, step: 1, default: 1200), true],
-		"band2db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
-		"band3freq", ["knob", ControlSpec(20, 20000, step: 1, default: 80), true],
-		"band3db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
-		"hpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20), true]
-	]
-));
-
-~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, 0, Color.new255(205, 205, 0), Dictionary.newFrom(
-	List[
-		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
-		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.001), true],
-		"buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i;
-			var filePath;
-			filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path);
-			filePath.fileName.asString;
-		}), true],
-		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
-		"loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
-		"rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true],
-		"startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: 0), true],
-		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
-		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]
-	]
-));
-
-~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 94, 0, Color.new255(238, 230, 133), Dictionary.newFrom(
-	List[
-		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
-		"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1.84), true],
-		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
-		"curve", ["knob", ControlSpec(-8, 8, step: 1, default: 0), true],
-		"loopNode", ["knob", ControlSpec(0, 4, step: 1, default: 0), true],
-		"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.2), true],
-		"release", ["knob", ControlSpec(0, 10, step: 0.01, default: 4), true],
-		"envLevel1", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true],
-		"envLevel2", ["knob", ControlSpec(0, 80, step: 0.1, default: 40), true],
-		"envLevel3", ["knob", ControlSpec(0, 80, step: 0.1, default: 32), true],
-		"envLevel4", ["knob", ControlSpec(0, 80, step: 0.1, default: 50), true],
-		"envLevel5", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true],
-		"envLevel6", ["knob", ControlSpec(0, 80, step: 0.1, default: 60), true],
-		"envTime1", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
-		"envTime2", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.3), true],
-		"envTime3", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.25), true],
-		"envTime4", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true],
-		"envTime5", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true]
-	]
-));
-
-////////////////////  Pdef Mute Gui
-
-pdMuteCcStart = 1;
-pdMuteMidiChan = 0; // 0 for midi channel 1
-pdMuteMidiChan = pdMuteMidiChan.max(0).min(15);
-(pdMuteMidiChan).debug("units mute midi channel");
-
-~mute = Dictionary.new;
-~activePdefMute = Dictionary.new;
-
-pdefGuiView = CompositeView(bounds: (~pdefNumber * 62)@110)
-.scroll(autoScrolls: true)
-.minHeight_(115)
-.minWidth_(780)
-.background_(Color.grey);
-
-pdefGuiView.layout = HLayout();
-
-// Pdef Mute
-~pdefNumber.do({ arg i;
-	var pdefNameString, pdefNameSymbol;
-
-	pdefNameString = ("unit" ++ (i + 1)).asString;
-	pdefNameSymbol = pdefNameString.asSymbol;
-	~activePdefMute.put(pdefNameString, false);
-
-	~mute.put(pdefNameString,
-		Button()
-		.minHeight_(60)
-		.states_([
-			["mute " ++ pdefNameString, Color.black, Color.white],
-			["unmute " ++ pdefNameString, Color.white, Color.new255(48, 48, 48)]
-		])
-		.action = { arg guiControl;
-			var type, state;
-			type = \rest;
-			if(guiControl.value > 0,
-				{
-					state = true;
-				},
-				{
-					if(~patternType.includesKey(pdefNameString),
-						{ type = ~patternType.at(pdefNameString); }
-					);
-					state = false;
-				}
-			);
-			if(Pdef(pdefNameSymbol).source.notNil,
-				{ Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant); }
-			);
-			~activePdefMute.put(pdefNameString, state);
-		}
-	);
-
-	// button midi map
-	MIDIFunc.cc({ arg val, num, chan, src;
-		var midiControl;
-		midiControl = val.linlin(0, 127, 0, 1);
-		{
-			~mute.at(pdefNameString).valueAction_(midiControl);
-		}.defer;
-	}, pdMuteCcStart, pdMuteMidiChan);
-	(pdMuteCcStart).debug(pdefNameString ++ " mute cc number");
-	pdMuteCcStart = pdMuteCcStart + 1;
-
-	pdefGuiView.layout.add(~mute.at(pdefNameString));
-});
-
-v.canvas.layout.insert(pdefGuiView);
-
-///////////////////////////////////////  Fx Gui
-
-y = Window("Fx", Rect(250, 120, 820, 520));
+y = Window("Fx", Rect(250, 0, 820, 420));
 y.layout = VLayout();
 y.front;
 
@@ -567,5 +410,161 @@ u.canvas.layout = VLayout();
 		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.6), true]
 	]
 ));
+
+///////////////////////////////////////  SynthDef Window
+
+x = Window("SynthDef", Rect(600, 30, 800, 725));
+x.layout = VLayout();
+x.front;
+
+v = ScrollView(x, x.view.bounds);
+v.canvas = View();
+v.canvas.layout = VLayout();
+
+~autoGui.value(v, ~inputSigSynthDef, ~inputSoftPop, 100/*cc start*/, 14/*midi channel*/, Color.new255(189, 183, 107, 240), Dictionary.newFrom(
+	List[
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
+		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.5), true],
+		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+		"lpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20000), true],
+		"band1freq", ["knob", ControlSpec(20, 20000, step: 1, default: 8000), true],
+		"band1db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band2freq", ["knob", ControlSpec(20, 20000, step: 1, default: 1200), true],
+		"band2db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band3freq", ["knob", ControlSpec(20, 20000, step: 1, default: 80), true],
+		"band3db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"hpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20), true]
+	]
+));
+
+~autoGui.value(v, ~inputSigSynthDef, ~inputMic, 100, 15, Color.new255(205, 198, 115, 255), Dictionary.newFrom(
+	List[
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: 4), true],
+		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.5), true],
+		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+		"lpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20000), true],
+		"band1freq", ["knob", ControlSpec(20, 20000, step: 1, default: 8000), true],
+		"band1db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band2freq", ["knob", ControlSpec(20, 20000, step: 1, default: 1200), true],
+		"band2db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"band3freq", ["knob", ControlSpec(20, 20000, step: 1, default: 80), true],
+		"band3db", ["knob", ControlSpec(-60, 60, step: 1, default: 0), true],
+		"hpfreq", ["knob", ControlSpec(20, 20000, step: 1, default: 20), true]
+	]
+));
+
+~autoGui.value(v, ~samplerStereoSynthDef, ~samplerStereo, 85, 0, Color.new255(205, 205, 0), Dictionary.newFrom(
+	List[
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+		"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: 0.001), true],
+		"buffer", ["List", Array.fill(b[\Bowed_Empty_Sweep_Slow].size, { arg i;
+			var filePath;
+			filePath = PathName.new(b[\Bowed_Empty_Sweep_Slow][i].path);
+			filePath.fileName.asString;
+		}), true],
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"loop", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true],
+		"startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: 0), true],
+		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
+		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]
+	]
+));
+
+~autoGui.value(v, ~sinBassSynthDef, ~sinBass, 94, 0, Color.new255(238, 230, 133), Dictionary.newFrom(
+	List[
+		"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
+		"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: 1.84), true],
+		"gate", ["button", ControlSpec(0, 1, step: 1, default: 0), true],
+		"curve", ["knob", ControlSpec(-8, 8, step: 1, default: 0), true],
+		"loopNode", ["knob", ControlSpec(0, 4, step: 1, default: 0), true],
+		"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.2), true],
+		"release", ["knob", ControlSpec(0, 10, step: 0.01, default: 4), true],
+		"envLevel1", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true],
+		"envLevel2", ["knob", ControlSpec(0, 80, step: 0.1, default: 40), true],
+		"envLevel3", ["knob", ControlSpec(0, 80, step: 0.1, default: 32), true],
+		"envLevel4", ["knob", ControlSpec(0, 80, step: 0.1, default: 50), true],
+		"envLevel5", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true],
+		"envLevel6", ["knob", ControlSpec(0, 80, step: 0.1, default: 60), true],
+		"envTime1", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
+		"envTime2", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.3), true],
+		"envTime3", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.25), true],
+		"envTime4", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true],
+		"envTime5", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true]
+	]
+));
+
+////////////////////  Pdef Mute
+
+pdMuteCcStart = 1;
+pdMuteMidiChan = 0; // 0 for midi channel 1
+pdMuteMidiChan = pdMuteMidiChan.max(0).min(15);
+(pdMuteMidiChan).debug("units mute midi channel");
+
+~mute = Dictionary.new;
+~activePdefMute = Dictionary.new;
+
+pdefGuiView = CompositeView(bounds: (~pdefNumber * 62)@110)
+.scroll(autoScrolls: true)
+.minHeight_(115)
+.minWidth_(780)
+.background_(Color.grey);
+
+pdefGuiView.layout = HLayout();
+
+~pdefNumber.do({ arg i;
+	var pdefNameString, pdefNameSymbol;
+
+	pdefNameString = ("unit" ++ (i + 1)).asString;
+	pdefNameSymbol = pdefNameString.asSymbol;
+	~activePdefMute.put(pdefNameString, false);
+
+	~mute.put(pdefNameString,
+		Button()
+		.minHeight_(60)
+		.states_([
+			["mute " ++ pdefNameString, Color.black, Color.white],
+			["unmute " ++ pdefNameString, Color.white, Color.new255(48, 48, 48)]
+		])
+		.action = { arg guiControl;
+			var type, state;
+			type = \rest;
+			if(guiControl.value > 0,
+				{
+					state = true;
+				},
+				{
+					if(~patternType.includesKey(pdefNameString),
+						{ type = ~patternType.at(pdefNameString); }
+					);
+					state = false;
+				}
+			);
+			if(Pdef(pdefNameSymbol).source.notNil,
+				{ Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant); }
+			);
+			~activePdefMute.put(pdefNameString, state);
+		}
+	);
+
+	// button midi map
+	MIDIFunc.cc({ arg val, num, chan, src;
+		var midiControl;
+		midiControl = val.linlin(0, 127, 0, 1);
+		{
+			~mute.at(pdefNameString).valueAction_(midiControl);
+		}.defer;
+	}, pdMuteCcStart, pdMuteMidiChan);
+	(pdMuteCcStart).debug(pdefNameString ++ " mute cc number");
+	pdMuteCcStart = pdMuteCcStart + 1;
+
+	pdefGuiView.layout.add(~mute.at(pdefNameString));
+});
+
+v.canvas.layout.insert(pdefGuiView);
 
 )
