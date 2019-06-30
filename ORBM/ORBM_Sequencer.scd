@@ -73,12 +73,3 @@ Tdef(\song, ~song2).play(t, quant: 1);
 
 
 )
-
-
-p = Pdef(\myPdef,
-	Pbind(
-		\type, \note,
-		\degree, Pseq(#[0, 0, 4, 4, 5, 5, 4], inf),
-		\dur, 0.5
-	)
-).play;
