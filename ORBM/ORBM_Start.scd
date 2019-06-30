@@ -7,8 +7,6 @@
 // Server.supernova; // Switches the server program to supernova. Check ParGroup how to make use of multicore hardware with the supernova server.
 Server.scsynth; // This is the default server
 Server.default = s = Server.local;
-ServerTree.removeAll;
-ServerQuit.removeAll;
 /********Multi-Client Setups***********/
 // s.addr = NetAddr("168.192.1.20", 57110); // in case of distant server, args are IP and port number
 // s.options.maxLogins = 2; // 2 users on the same server
@@ -60,11 +58,18 @@ if (MIDIClient.destinations[2].notNil, {
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
 ~globalQuant = 0.125;
 ~globalQuant = ~globalQuant.max(0.0625); // avoid 0
+~sequenceQuant = 1;
+~sequenceQuant = ~globalQuant.max(0.125); // avoid 0
 ~synthWindow = Dictionary.new;
+~autoGuiControl = Dictionary.new;
 ~patternType = Dictionary.new;
 
 ~aux1Color = Color.new255(205, 205, 193);
 ~aux2Color = Color.new255(238, 238, 209);
+
+n = 60; // Tempo in beat per minutes
+t = TempoClock.default;
+t.tempo = n / 60; // TempoClock by default in beat per seconds
 
 ////////////////////////////////// 5. define specific functions
 
@@ -72,17 +77,9 @@ this.executeFile(~path ++ "ORBM_Function.scd");
 
 ////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
 
-ServerBoot.removeAll;
-ServerBoot.add({
-	~makeBuffers.value;
-});
+ServerBoot.add(~makeBuffers, s);
 
-ServerTree.removeAll;
-
-ServerQuit.removeAll;
-ServerQuit.add({
-	~cleanup.value;
-});
+ServerQuit.add(~cleanup, s);
 
 ////////////////////////////////// 7. boot
 
@@ -95,12 +92,34 @@ s.waitForBoot({
 	s.newBusAllocators;
 	// s.plotTree; // node tree
 	this.executeFile(~path ++ "ORBM_SynthDef.scd");
-	s.sync;
+	s.sync; // wait for previous code compilation is done
 	this.executeFile(~path ++ "ORBM_Routing.scd");
 	s.sync;
 	this.executeFile(~path ++ "ORBM_Pattern.scd");
 	s.sync;
-	this.executeFile(~path ++ "ORBM_Song.scd");
+
+	~pdefNumber = 8; // number of pdef or units
+	~pdefNumber = ~pdefNumber.max(1).min(12); // limit number of pdef
+
+	~sequencer = Dictionary.new;
+
+	~pdefNumber.do({ // sequencer creation with pdefNumber of units
+		arg i;
+		var name;
+		name = ("unit" ++ (i + 1)).asSymbol;
+		~sequencer.put(name,
+			Penvir(
+				(pdefName: name, pdefPrevInstr: nil, pdefCcStart: 21, pdefMidiChan: i + 2),
+				Pdef(name, ~initPattern).quant_(~globalQuant);
+			)
+		);
+	});
+
+	p = Ppar(~listUnits.value(~sequencer), inf); // all units in parallel
+
+	this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
+	s.sync;
+	this.executeFile(~path ++ "ORBM_Song.scd"); // Gui need to exist before executing ORBM_Song.scd
 	s.sync;
 	"init complete".postln;
 });

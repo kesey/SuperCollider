@@ -72,4 +72,247 @@ SynthDef(\conga, { arg out=0, amp=0.1, gate=1, pan=0, spread=0.8, freq=200, done
 	sig = Splay.ar(sig, spread, amp, pan);
 	Out.ar(out, sig);
 }).add;
+
+SynthDef(\PMCrotale, {
+	arg out = 0, freq = 261, tone = 3, art = 1, amp = 0.8, pan = 0;
+	var env, sig, mod;
+
+	env = Env.perc(0, art);
+	mod = 5 + (1/IRand(2, 6));
+
+	sig = PMOsc.ar(freq, mod*freq,
+		pmindex: EnvGen.kr(env, timeScale: art, levelScale: tone),
+		mul: EnvGen.kr(env, timeScale: art, levelScale: 0.3));
+
+
+
+	sig = sig * EnvGen.kr(env, timeScale: 1.3*art, levelScale: Rand(0.1, 0.5), doneAction:2);
+	sig = Pan2.ar(sig, pan, amp);
+	Out.ar(out, sig);
+
+}).add;
+
+SynthDef(\prayer_bell, { |out = 0, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, level = 0.08, pan = 0, i_doneAction = 2|
+	var sig, input, first, freqscale, mallet, sing;
+	freq = freq.max(20).min(5000);
+	freqscale = freq / 2434;
+	decayscale = decayscale.min(1);
+	freqscale = Lag3.kr(freqscale, lag);
+	decayscale = Lag3.kr(decayscale, lag);
+
+	mallet = LPF.ar(Trig.ar(t_trig, SampleDur.ir)!2, 10000 * freqscale);
+	sing = LPF.ar(
+		LPF.ar(
+			{
+				PinkNoise.ar * Integrator.kr(sing_switch * 0.001, 0.999).linexp(0, 1, 0.01, 1) * amp
+			} ! 2,
+			2434 * freqscale
+		) + Dust.ar(0.1), 10000 * freqscale
+	) * LFNoise1.kr(0.5).range(-45, -30).dbamp;
+	input = mallet + (sing_switch.clip(0, 1) * sing);
+
+
+	sig = DynKlank.ar(`[
+		[
+			(first = LFNoise1.kr(0.5).range(2424, 2444)) + Line.kr(20, 0, 0.5),
+			first + LFNoise1.kr(0.5).range(1,3),
+			LFNoise1.kr(1.5).range(5435, 5440) - Line.kr(35, 0, 1),
+			LFNoise1.kr(1.5).range(5480, 5485) - Line.kr(10, 0, 0.5),
+			LFNoise1.kr(2).range(8435, 8445) + Line.kr(15, 0, 0.05),
+			LFNoise1.kr(2).range(8665, 8670),
+			LFNoise1.kr(2).range(8704, 8709),
+			LFNoise1.kr(2).range(8807, 8817),
+			LFNoise1.kr(2).range(9570, 9607),
+			LFNoise1.kr(2).range(10567, 10572) - Line.kr(20, 0, 0.05),
+			LFNoise1.kr(2).range(10627, 10636) + Line.kr(35, 0, 0.05),
+			LFNoise1.kr(2).range(14689, 14697) - Line.kr(10, 0, 0.05)
+		],
+		[
+			LFNoise1.kr(1).range(-10, -5).dbamp,
+			LFNoise1.kr(1).range(-20, -10).dbamp,
+			LFNoise1.kr(1).range(-12, -6).dbamp,
+			LFNoise1.kr(1).range(-12, -6).dbamp,
+			-20.dbamp,
+			-20.dbamp,
+			-20.dbamp,
+			-25.dbamp,
+			-10.dbamp,
+			-20.dbamp,
+			-20.dbamp,
+			-25.dbamp
+		],
+		[
+			20 * freqscale.pow(0.2),
+			20 * freqscale.pow(0.2),
+			5,
+			5,
+			0.6,
+			0.5,
+			0.3,
+			0.25,
+			0.4,
+			0.5,
+			0.4,
+			0.6
+		] * freqscale.reciprocal.pow(0.5)
+	], input, freqscale, 0, decayscale);
+	DetectSilence.ar(sig, doneAction: i_doneAction);
+	sig = Pan2.ar(sig, pan, level);
+	Out.ar(out, sig);
+}).add;
+
+SynthDef(\waveguideFlute, { arg scl = 0.2, freq = 440, ipress = 0.9, ibreath = 0.09, ifeedbk1 = 0.4, ifeedbk2 = 0.4, dur = 1, gate = 1, amp = 2;
+
+	var kenv1, kenv2, kenvibr, kvibr, sr, cr, block;
+	var poly, signalOut, ifqc;
+	var aflow1, asum1, asum2, afqc, atemp1, ax, apoly, asum3, avalue, atemp2, aflute1;
+	var fdbckArray;
+
+	sr = SampleRate.ir;
+	cr = ControlRate.ir;
+	block = cr.reciprocal;
+
+	ifqc = freq;
+
+	// noise envelope
+	kenv1 = EnvGen.kr(Env.new(
+		[ 0.0, 1.1 * ipress, ipress, ipress, 0.0 ], [ 0.06, 0.2, dur - 0.46, 0.2 ], 'linear' )
+	);
+	// overall envelope
+	kenv2 = EnvGen.kr(Env.new(
+		[ 0.0, amp, amp, 0.0 ], [ 0.1, dur - 0.02, 0.1 ], 'linear' ), doneAction: 2
+	);
+	// vibrato envelope
+	kenvibr = EnvGen.kr(Env.new( [ 0.0, 0.0, 1, 1, 0.0 ], [ 0.5, 0.5, dur - 1.5, 0.5 ], 'linear') );
+
+	// create air flow and vibrato
+	aflow1 = LFClipNoise.ar( sr, kenv1 );
+	kvibr = SinOsc.ar( 5, 0, 0.1 * kenvibr );
+
+	asum1 = ( ibreath * aflow1 ) + kenv1 + kvibr;
+	afqc = ifqc.reciprocal - ( asum1/20000 ) - ( 9/sr ) + ( ifqc/12000000 ) - block;
+
+	fdbckArray = LocalIn.ar( 1 );
+
+	aflute1 = fdbckArray;
+	asum2 = asum1 + ( aflute1 * ifeedbk1 );
+
+	//ax = DelayL.ar( asum2, ifqc.reciprocal * 0.5, afqc * 0.5 );
+	ax = DelayC.ar( asum2, ifqc.reciprocal - block * 0.5, afqc * 0.5 - ( asum1/ifqc/cr ) + 0.001 );
+
+	apoly = ax - ( ax.cubed );
+	asum3 = apoly + ( aflute1 * ifeedbk2 );
+	avalue = LPF.ar( asum3, 2000 );
+
+	aflute1 = DelayC.ar( avalue, ifqc.reciprocal - block, afqc );
+
+	fdbckArray = [ aflute1 ];
+
+	LocalOut.ar( fdbckArray );
+
+	signalOut = avalue;
+
+	OffsetOut.ar( 0, [ signalOut * kenv2, signalOut * kenv2 ] );
+
+}).add;
+
+SynthDef(\beating, {arg out = 0, freq = 440, amp = 0.1, art = 1;
+	var env, snd1, snd2;
+	env = EnvGen.ar(Env.perc(0.01, art), doneAction: 2);
+	snd1 = SinOsc.ar(freq);
+	snd2 = SinOsc.ar(Line.kr(freq+15, freq, art));
+	Out.ar(out, Pan2.ar(Mix([snd1, snd2]), 0, amp*env))
+}).add;
+
+SynthDef(\justwannahavefun,{|out= 0 freq = 440 amp = 0.1 ringTime=10.0 pan=(-0.1)|
+
+	var impulse, filter, env;
+
+  	impulse = Impulse.ar(0);
+
+	filter = Ringz.ar(impulse,(freq.cpsmidi + (Rand(0.2,1.2)*SinOsc.kr(Rand(10,50)))).midicps,ringTime);
+
+	env = EnvGen.ar(Env([0.0,1.0,1.0,0.0],[0.001,0.04,0.04]),doneAction:2);
+
+	Out.ar(out,Pan2.ar((filter.softclip(0.9))*env*amp,pan));
+
+}).add;
+
+SynthDef(\marimba1, { arg out = 0, freq = 440, amp = 0.4;
+	var snd, env;
+	env = Env.linen(0.015, 1, 0.5, amp).kr(doneAction: 2);
+	snd = BPF.ar(Saw.ar(0), freq, 0.02);
+	snd = BLowShelf.ar(snd, 220, 0.81, 6);
+	snd = snd * env;
+	OffsetOut.ar(out, Splay.ar(snd));
+}).add;
+
+SynthDef(\noisyTone, { arg out = 0, freq = 440, amp = 0.2, pan = 0.5;
+	var snd, env;
+	env = Env.perc(0.02, 0.1).kr(doneAction: 2);
+	snd = Mix(LFPulse.ar(
+		freq: freq * [1, 5/2],
+		iphase: 0.0,
+		width: 0.5,
+		mul: amp));
+	snd = snd * env ;
+	OffsetOut.ar(out, Pan2.ar(snd, pan));
+}).add;
+
+SynthDef(\ping_mh,{arg out=0,freq=440,amp=0.2,dur=0.1,attack=0.001,pan=0;
+    var sig,freq2;
+    freq=freq*rrand(1,1.01);
+    freq2=freq*rrand(1,1.01);
+    e=EnvGen.ar(Env.perc(attack,dur,curve:-4),doneAction:2);
+    sig=SinOsc.ar([freq,freq2],0,amp*e);
+    sig=Pan2.ar(sig,pan);
+    OffsetOut.ar(out,sig)
+}).add;
+
+SynthDef(\plucking, {arg amp = 0.1, freq = 440, decay = 5, coef = 0.1;
+var env, snd;
+env = EnvGen.kr(Env.linen(0, decay, 0), doneAction: 2);
+snd = Pluck.ar(
+        in: WhiteNoise.ar(amp),
+        trig: Impulse.kr(0),
+
+        maxdelaytime: 0.1,
+        delaytime: freq.reciprocal,
+        decaytime: decay,
+        coef: coef);
+    OffsetOut.ar(0, [snd, snd]);
+}).add;
+
+SynthDef(\pwmbling,{|out= 0 freq = 440 amp = 0.1 gate=1 lforate = 4.85 lfowidth= 0.5 cutoff= 12000 rq=0.25 pan = 0.0|
+
+	var lfo, pulse, filter, env;
+	var basefreq =  ((freq.cpsmidi)+[0,12.12]).midicps;
+
+	lfo = LFTri.kr(lforate*[1,1.01],Rand(0,2.0)!2);
+
+	pulse = Pulse.ar(basefreq,lfo*lfowidth+0.5);
+
+	env = EnvGen.ar(Env.adsr(0.0,1.0,0.2,1.5),gate,doneAction:2);
+
+	filter = RLPF.ar(pulse,(cutoff*(env.squared))+100,rq);
+
+	OffsetOut.ar(out,Pan2.ar(Mix(filter)*env*amp,pan));
+
+}).add;
+
+SynthDef(\ressquares,{|out= 0 freq = 440 amp = 0.1 gate=1 cutoff=8000 rq=0.8 pan=(-0.1)|
+
+	var pulse, filter, env;
+
+	//2 cents detune for second oscillator
+	pulse = Mix(Pulse.ar( ((freq.cpsmidi)+[0,0.02]).midicps, 0.5))*0.5;
+
+	filter =  BLowPass.ar(pulse,100+cutoff,rq);
+
+	env = EnvGen.ar(Env.adsr(0.002,0.1,1.0,0.2),gate,doneAction:2);
+
+	OffsetOut.ar(out,Pan2.ar(filter*env*amp,pan));
+
+}).add;
+
 )

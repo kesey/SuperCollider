@@ -27,10 +27,10 @@ masterBus = Bus.audio(s, 2);
 };
 
 // Permanent Synth
-/*s.bind { ~inputMic = Synth(\InputSig, [\in, 0, \out, ~channelBus[1], \amp, 4, \attack, 6, \release, 3, \gate, 0, \doneAction, 0], synthGroup) }; // s.bind consider server latency
-s.bind { ~inputSoftPop = Synth(\InputSig, [\in, 2, \out, ~channelBus[1], \amp, 0.5, \attack, 6, \release, 3, \gate, 0, \doneAction, 0], synthGroup) };*/
-s.bind { ~samplerStereo = Synth(\samplerStereo, [\out, ~channelBus[1], \gate, 0, \buffer, b[\Bowed_Empty_Sweep_Slow][15].bufnum, \startPos, 0.07, \rate, 0.21, \release, 2, \amp, 0.23, \attack, 10, \doneAction, 0], synthGroup) };
-s.bind { ~sinBass = Synth(\sinBass, [\out, ~channelBus[0], \gate, 0, \amp, 1.84, \doneAction, 0], synthGroup) };
+s.bind { ~inputMic = Synth(\inputSig, [\in, 0, \out, ~channelBus[1], \amp, 4, \gate, 0, \doneAction, 0], synthGroup) }; // s.bind consider server latency
+s.bind { ~inputSoftPop = Synth(\inputSig, [\in, 2, \out, ~channelBus[1], \amp, 0.5, \gate, 0, \doneAction, 0], synthGroup) };
+s.bind { ~samplerStereo = Synth(\samplerStereo, [\out, ~channelBus[1], \gate, 0, \buffer, b[\Bowed_Empty_Sweep_Slow][15].bufnum, \amp, 0.23, \doneAction, 0], synthGroup) };
+s.bind { ~sinBass = Synth(\sinBass, [\out, ~channelBus[0], \amp, 1.84, \gate, 0, \doneAction, 0], synthGroup) };
 
 // Fx
 aux1Bus = Bus.audio(s, 2);
@@ -43,10 +43,10 @@ s.bind { ~distoInsideOut = Synth(\distoInsideOut, [\in, aux1Bus, \out, ~channelB
 
 // Aux 2
 ~quadDelay = Synth(\quadDelay, [\in, ~aux2, \out, aux2Bus], aux2Group, addAction: 'addToHead');
-~updateTempo.value(~quadDelay, TempoClock.default);
+~updateTempo.value(~quadDelay, TempoClock.default); // use it to keep sync when tempo change
 s.bind { ~pitchShifter = Synth(\pitchShifter, [\in, aux2Bus, \out, aux2Bus], ~quadDelay, addAction: 'addAfter'); };
 s.bind { ~flanging = Synth(\flanging, [\in, aux2Bus, \out, aux2Bus], ~pitchShifter, addAction: 'addAfter'); };
-s.bind { ~verb = Synth(\verb, [\in, aux2Bus, \out, ~channelBus[3], \drywet, 1, \amp, 0.75], aux2Group, addAction: 'addToTail') };
+s.bind { ~verb = Synth(\verb, [\in, aux2Bus, \out, ~channelBus[3], \amp, 0.75], aux2Group, addAction: 'addToTail') };
 
 // s.meter; // level meter
 
