@@ -67,9 +67,10 @@ Synth(\mutantFric, [\gate, 1]);
 Synth(\mutantFric, [\gate, 0]);
 
 Pbind(
-	\instrument, \mutantFric,
+	\instrument, \tweetSynth,
 	\dur, 4,
-	\amp, 1
+	\amp, 1,
+	\freq, 25
 ).play;
 
 play{
@@ -122,13 +123,170 @@ Synth(\tweetBassLeak, [\t_trig, 0]);
 Pbind(
 	\instrument, \tweetBassLeak,
 	\dur, 4,
-	\amp, 1
+	\amp, 1,
+	\sustain, Pseq([4, 1, 2, 4], inf)
 ).play;
 
-play{i=Impulse.ar(_);SinOsc.ar(i.(2).lagud(0,0.4)*360,Integrator.ar(Integrator.ar(i.(64).lag(LFNoise1.ar(2!2,2,2))*99,0.9),0.99).fold2(pi))};
+play{
+	i = Impulse.ar(_);
+	SinOsc.ar(
+		i.(2).lagud(0,0.4)*360,
+		Integrator.ar(
+			Integrator.ar(
+				i.(64).lag(LFNoise1.ar(2!2,2,2))*99,
+				0.9
 
-play{LocalOut.ar(k=LeakDC.ar(Integrator.ar(Pulse.ar(pi/[1,2.57],[0.54,0.46]),(1-LocalIn.ar(2)).fold(0,[0.9,0.85])).wrap2(pi).sin));k.mean!2};
+			),
+			0.99
+		).fold2(pi)
+	)
+};
 
-{n=LFNoise0.ar(_);f=[60,61];tanh(BBandPass.ar(max(max(n.(4),l=n.(6)),SinOsc.ar(f*ceil(l*9).lag(0.1))*0.7),f,n.(1).abs/2)*700*l.lag(1))}.play;
+(
+SynthDef(\tweetKickInt, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, amp = 1, doneAction = 2;
+	var sig, freq, phase, env, i;
+	i = Impulse.ar(_);
+	freq = i.(2).lagud(0,0.4)*360;
+	phase = Integrator.ar(
+		Integrator.ar(
+			i.(64).lag(LFNoise1.ar(2!2,2,2))*99,
+			0.9
+		),
+		0.99
+	).fold2(pi);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = SinOsc.ar(freq, phase, env);
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
 
-play{LocalOut.ar(k=tanh(500*(PinkNoise.ar(1!2)**(8/(LagUD.ar(y=LocalIn.ar(2).range(0,0.9)+0.1,0,0.2))))));Splay.ar(k,1-y)};
+(
+Pbind(
+	\instrument, \tweetKickInt,
+	\dur, 1,
+	\amp, 1,
+	\sustain, Pseq([4, 1, 2, 4], inf)
+).play;
+)
+
+play{
+	LocalOut.ar(
+		k = LeakDC.ar(
+			Integrator.ar(
+				Pulse.ar(pi/[1,2.57],[0.54,0.46]),
+				(1-LocalIn.ar(2)).fold(0,[0.9,0.85])
+			).wrap2(pi).sin
+		)
+	);
+	k.mean!2;
+};
+
+(
+SynthDef(\tweetFogAttack, { arg out = 0, t_trig = 1, feedBack = 0.2, attack = 0.01, release = 2, amp = 1, doneAction;
+	var sig, env, coef;
+	sig = Pulse.ar(pi/[1,2.57],[0.54,0.46]);
+	coef = (1-LocalIn.ar(2)).fold(0,[0.9,0.85]);
+	sig = LeakDC.ar(Integrator.ar(sig, coef).wrap2(pi).sin);
+	LocalOut.ar(sig);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = (sig.mean!2) * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \tweetFogAttack,
+	\dur, 1,
+	\amp, 1,
+	\sustain, Pseq([4, 1, 2, 4], inf)
+).play;
+)
+
+{
+	n = LFNoise0.ar(_);
+	f=[60,61];
+	tanh(
+		BBandPass.ar(
+			max(
+				max(n.(4),l=n.(6)),
+				SinOsc.ar(f*ceil(l*9).lag(0.1))*0.7
+			),
+			f,
+			n.(1).abs/2
+		)*700*l.lag(1)
+	)
+}.play;
+
+(
+SynthDef(\tweetAnaBass, { arg out = 0, t_trig = 1, freq = 60, attack = 0.01, release = 2, amp = 1, pan = 0, doneAction = 2;
+	var sig, env, bw;
+	bw = LFNoise0.ar(_);
+	sig = max(
+		max(bw.(4),l=bw.(6)),
+		SinOsc.ar(freq * ceil(l*9).lag(0.1))*0.7
+	);
+	sig = tanh(
+		BBandPass.ar(sig, freq, bw.(1).abs/2)*700*l.lag(1)
+	);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \tweetAnaBass,
+	\dur, 1,
+	\amp, 1,
+	\sustain, Pseq([4, 1, 2, 4], inf),
+	\freq, [60, 61]
+).play;
+)
+
+(
+play{
+	LocalOut.ar(
+		k = tanh(
+			500*(
+				PinkNoise.ar(1!2)**(8/
+					(
+						LagUD.ar(
+							y=LocalIn.ar(2).range(0,0.9)+0.1,
+							0,
+							0.2
+						)
+					)
+				)
+			)
+		)
+	);
+	Splay.ar(k,1-y);
+};
+)
+
+// you have to test and copy
+(
+SynthDef(\tweetErosion, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, feedBack = 1, amp = 1, doneAction = 2;
+	var sig, env, input, div;
+	input = LocalIn.ar(2).range(0,0.9)+0.1;
+	div = LagUD.ar(input, 0, 0.2);
+	sig = PinkNoise.ar(1!2);
+	sig = tanh(500*(sig**(8/div)));
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	LocalOut.ar(sig * feedBack);
+	sig = Splay.ar(sig,1-input);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \tweetErosion,
+	\dur, 4,
+	\amp, 2,
+	\sustain, Pseq([4, 1, 2, 4], inf)
+).play;
+)

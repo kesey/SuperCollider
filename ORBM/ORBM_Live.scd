@@ -7,7 +7,7 @@ this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Star
 /////////// Sequencer + Song transport
 
 ( // Play Both
-Tdef(\song, ~defaultSong).play(t, true, ~sequenceQuant);
+Tdef(\song, ~song2).play(t, true, ~sequenceQuant);
 if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~sequenceQuant); });
 )
 

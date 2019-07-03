@@ -144,7 +144,7 @@
 			~mute.at("unit6").valueAction_(1);
 			~mute.at("unit8").valueAction_(1);
 		}.defer;
-		//TempoClock.default.sched(5, { TempoClock.default.tempo = 118 / 60 });
+		// TempoClock.default.sched(5, { TempoClock.default.tempo = 118 / 60 });
 		Pbindef(\unit7, \dur, Pseq([0.125, 4.875], inf)).quant_(~sequenceQuant);
 		~changePattern.value(Pdef(\unit2), ~defaultPattern9);
 		~changePattern.value(Pdef(\unit4), ~defaultPattern10);
@@ -153,7 +153,7 @@
 		{
 			~channel[\aux10].valueAction_(0.01);
 			~channel[\aux21].valueAction_(0.45);
-			~channel[\aux22].valueAction_(0.14);
+			~channel[\aux22].valueAction_(0.06);
 			~channel[\aux13].valueAction_(0.05);
 		}.defer;
 		// Pbindef(\unit7, \dur, Pn(Pseq([Pn(0.125, 13), 0.1875, 0.0625, 0.25, 0.21875, 0.15625], 2))).quant_(~sequenceQuant);
@@ -211,16 +211,15 @@
 		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.8);
 	}.defer;
 	loop {
-		~changePattern.value(Pdef(\unit1), ~pattern1);
-		~changePattern.value(Pdef(\unit2), ~pattern2);
-		12.0.wait;
-		~changePattern.value(Pdef(\unit1), ~pattern2);
-		~changePattern.value(Pdef(\unit2), ~pattern1);
+		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		~changePattern.value(Pdef(\unit3), ~song2Pattern3);
+		~changePattern.value(Pdef(\unit4), ~song2Pattern4);
+		~changePattern.value(Pdef(\unit5), ~song2Pattern5);
+		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
+		~changePattern.value(Pdef(\unit7), ~song2Pattern7);
+		~changePattern.value(Pdef(\unit8), ~song2Pattern8);
 		16.0.wait;
-		//TempoClock.default.sched(4, { TempoClock.default.tempo = 118 / 60 });
-		~changePattern.value(Pdef(\unit1), ~pattern1);
-		~changePattern.value(Pdef(\unit2), ~pattern2);
-		8.0.wait;
 	}
 };
 
