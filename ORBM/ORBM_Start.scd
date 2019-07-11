@@ -56,20 +56,20 @@ if (MIDIClient.destinations[2].notNil, {
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
-~globalQuant = 0.125;
+~globalQuant = 1; // use a multiple of signature
 ~globalQuant = ~globalQuant.max(0.0625); // avoid 0
-~sequenceQuant = 1;
-~sequenceQuant = ~globalQuant.max(0.125); // avoid 0
 ~synthWindow = Dictionary.new;
 ~autoGuiControl = Dictionary.new;
 ~patternType = Dictionary.new;
+~controlBus = Dictionary.new;
+~active = Dictionary.new;
+~firstTime = Dictionary.new;
 
 ~aux1Color = Color.new255(205, 205, 193);
 ~aux2Color = Color.new255(238, 238, 209);
 
-n = 60; // Tempo in beat per minutes
 t = TempoClock.default;
-t.tempo = n / 60; // TempoClock by default in beat per seconds
+t.tempo = 60 / 60; // TempoClock by default in beat per seconds
 
 ////////////////////////////////// 5. define specific functions
 
