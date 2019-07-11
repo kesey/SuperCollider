@@ -52,6 +52,14 @@
 	});
 };
 
+~cleanDict = { arg dict, synthWindowKey;
+	dict.keysDo({ arg key; // remove control no longer in use
+		if(key.contains(synthWindowKey), {
+			dict.removeAt(key);
+		});
+	});
+};
+
 ~removePrev = { arg synthWindowKey; // use it inside a defer function
 	var synthView;
 	if (~synthWindow.includesKey(synthWindowKey), {
@@ -60,9 +68,14 @@
 		synthView.remove; // remove the composite view
 		{ ~synthWindow.removeAt(synthWindowKey); }.fork(t, 0.2);
 
-		~autoGuiControl.keysDo({ arg key; // remove controls no longer in use
+		~cleanDict.value(~autoGuiControl, synthWindowKey);
+		~cleanDict.value(~active, synthWindowKey);
+		~cleanDict.value(~firstTime, synthWindowKey);
+
+		~controlBus.keysDo({ arg key; // remove control bus no longer in use
 			if(key.contains(synthWindowKey), {
-				~autoGuiControl.removeAt(key);
+				~controlBus.at(key).free;
+				~controlBus.removeAt(key);
 			});
 		});
 
@@ -85,11 +98,17 @@
 	});
 	~patternType.put(pdefNameString, type);
 
+	~firstTime.keysDo({ arg key; // reset control bus creation
+		if(key.contains(pdefNameString), {
+			~firstTime.put(key, true);
+		});
+	});
+
 	if (~activePdefMute.at(pdefNameString), {
-		Pdef(pdefNameSymbol, pattern).quant_(~sequenceQuant);
-		Pbindef(pdefNameSymbol, \type, \rest).quant_(~sequenceQuant / 2);
+		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
+		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant / 2);
 	}, {
-		Pdef(pdefNameSymbol, pattern).quant_(~sequenceQuant);
+		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
 	});
 };
 
@@ -101,6 +120,16 @@
 	})
 	// clean up garbage when the clock is stopped
 	.put(\stop, { updater.remove; });
+};
+
+~pdefUpdate = { arg controlId, instance, controlNameSymb, value;
+	if (~firstTime.at(controlId), {
+		~controlBus.put(controlId, Bus.control(s, 1).set(value));
+		Pbindef(instance, controlNameSymb, ~controlBus.at(controlId).asMap).quant_(~globalQuant);
+		~firstTime.put(controlId, false);
+	}, {
+		~controlBus.at(controlId).set(value);
+	});
 };
 
 // automatic GUI creation and midi mapping
@@ -128,7 +157,7 @@
 		(midiChan).debug(synthDefName ++ " " ++ pdefName ++ " midi channel");
 
 		~synthWindow.put(id,
-			CompositeView(bounds: (arguments.size * 63)@110)
+			CompositeView(bounds: (arguments.size * 64)@110)
 			.scroll(autoScrolls: true)
 			.minHeight_(115)
 			.minWidth_(230)
@@ -145,11 +174,9 @@
 		.align_(\center);
 		synthWindow.decorator.nextLine;
 
-		active = Dictionary.new;
-
-		arguments.do({
-			arg control, i;
+		arguments.do({ arg control, i;
 			var caseFind, controlName, controlNameSymb, controlType, controlSpec, midiMap, controlId;
+
 			caseFind = false;
 			controlName = control.name.asString;
 			controlId = (id ++ controlName).asString;
@@ -180,14 +207,15 @@
 			{ controlType == "list" and: caseFind.not }
 			{
 				// list creation
-				active.put(controlId, false);
+				~active.put(controlId, false);
+				~firstTime.put(controlId, true);
 				~autoGuiControl.put(controlId, EZListView(synthWindow, 60@70, controlName, controlSpec, {
 					arg guiControl;
 					if (instance.isSymbol,
-						{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
+						{ ~pdefUpdate.value(controlId, instance, controlNameSymb, guiControl.value); },
 						{ instance.set(controlNameSymb, guiControl.value); }
 					);
-					active.put(controlId, false);
+					~active.put(controlId, false);
 				}));
 
 				if (midiMap, { // list midi map
@@ -198,11 +226,11 @@
 						{
 							guiControl = ~autoGuiControl.at(controlId).value;
 							if ( // soft takeover
-								(active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
+								(~active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 								{
-									active.put(controlId, true);
+									~active.put(controlId, true);
 									if (instance.isSymbol,
-										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
+										{ ~pdefUpdate.value(controlId, instance, controlNameSymb, midiControl); },
 										{ instance.set(controlNameSymb, midiControl); }
 									);
 									~autoGuiControl.at(controlId).value_(midiControl);
@@ -219,14 +247,15 @@
 			{ controlType == "slider" and: caseFind.not }
 			{
 				// slider creation
-				active.put(controlId, false);
+				~active.put(controlId, false);
+				~firstTime.put(controlId, true);
 				~autoGuiControl.put(controlId, EZSlider(synthWindow, 60@70, controlName, controlSpec, {
 					arg guiControl;
 					if (instance.isSymbol,
-						{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
-						{ { instance.set(controlNameSymb, guiControl.value); }.fork(t, ~globalQuant); }
+						{ ~pdefUpdate.value(controlId, instance, controlNameSymb, guiControl.value); },
+						{ instance.set(controlNameSymb, guiControl.value); }
 					);
-					active.put(controlId, false);
+					~active.put(controlId, false);
 				}, layout: \vert, gap: 6@6));
 
 				if (midiMap, { // slider midi map
@@ -238,13 +267,13 @@
 						midiControl = val.linlin(0, 127, minValue, maxValue);
 						guiControl = ~autoGuiControl.at(controlId).value;
 						if ( // soft takeover
-							(active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
+							(~active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 							{
-								active.put(controlId, true);
+								~active.put(controlId, true);
 								{
 									if (instance.isSymbol,
-										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
-										{ { instance.set(controlNameSymb, midiControl); }.fork(t, ~globalQuant); }
+										{ ~pdefUpdate.value(controlId, instance, controlNameSymb, midiControl); },
+										{ instance.set(controlNameSymb, midiControl); }
 									);
 									~autoGuiControl.at(controlId).value_(midiControl);
 								}.defer;
@@ -260,6 +289,7 @@
 			{ /*"trigger trig gate t_trig t_gate loop mute start stop on off".contains(controlName) or: */controlType == "button" and: caseFind.not } // in this case create button
 			{
 				// button creation
+				~firstTime.put(controlId, true);
 				~autoGuiControl.put(controlId,
 					Button(synthWindow, Rect(10,110,60,25))
 					.states_([
@@ -269,7 +299,7 @@
 					.action = {
 						arg guiControl;
 						if (instance.isSymbol,
-							{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
+							{ ~pdefUpdate.value(controlId, instance, controlNameSymb, guiControl.value); },
 							{ instance.set(controlNameSymb, guiControl.value); }
 						);
 					}
@@ -292,14 +322,15 @@
 			{  controlType == "knob" or: caseFind.not } // default case create knob
 			{
 				// knob creation
-				active.put(controlId, false);
+				~active.put(controlId, false);
+				~firstTime.put(controlId, true);
 				~autoGuiControl.put(controlId, EZKnob(synthWindow, 60@70, controlName, controlSpec, {
 					arg guiControl;
 					if (instance.isSymbol,
-						{ Pbindef(instance, controlNameSymb, guiControl.value).quant_(~globalQuant); },
-						{ { instance.set(controlNameSymb, guiControl.value); }.fork(t, ~globalQuant); }
+						{ ~pdefUpdate.value(controlId, instance, controlNameSymb, guiControl.value); },
+						{ instance.set(controlNameSymb, guiControl.value); }
 					);
-					active.put(controlId, false);
+					~active.put(controlId, false);
 				}));
 
 				if (midiMap, { // knob midi map
@@ -311,13 +342,13 @@
 						midiControl = val.linlin(0, 127, minValue, maxValue);
 						guiControl = ~autoGuiControl.at(controlId).value;
 						if ( // soft takeover
-							(active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
+							(~active.at(controlId) or: ((midiControl > (guiControl - threshold)) and: (midiControl < (guiControl + threshold)))),
 							{
-								active.put(controlId, true);
+								~active.put(controlId, true);
 								{
 									if (instance.isSymbol,
-										{ Pbindef(instance, controlNameSymb, midiControl).quant_(~globalQuant); },
-										{ { instance.set(controlNameSymb, midiControl); }.fork(t, ~globalQuant); }
+										{ ~pdefUpdate.value(controlId, instance, controlNameSymb, midiControl); },
+										{ instance.set(controlNameSymb, midiControl); }
 									);
 									~autoGuiControl.at(controlId).value_(midiControl);
 								}.defer;

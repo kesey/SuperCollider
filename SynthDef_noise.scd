@@ -171,4 +171,28 @@ SynthDef(\mutantFric, { arg out = 0, amp = 1, spec1 = 0.00001, spec2 = 0.03, noi
 	OffsetOut.ar(out, Splay.ar(sig * amp));
 }).add;
 
+SynthDef(\tweetFogAttack, { arg out = 0, t_trig = 1, feedBack = 0.2, attack = 0.01, release = 2, amp = 1, doneAction;
+	var sig, env, coef;
+	sig = Pulse.ar(pi/[1,2.57],[0.54,0.46]);
+	coef = (1-LocalIn.ar(2)).fold(0,[0.9,0.85]);
+	sig = LeakDC.ar(Integrator.ar(sig, coef).wrap2(pi).sin);
+	LocalOut.ar(sig);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = (sig.mean!2) * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\tweetErosion, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, feedBack = 1, amp = 1, doneAction = 2;
+	var sig, env, input, div;
+	input = LocalIn.ar(2).range(0,0.9)+0.1;
+	div = LagUD.ar(input, 0, 0.2);
+	sig = PinkNoise.ar(1!2);
+	sig = tanh(500*(sig**(8/div)));
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	LocalOut.ar(sig * feedBack);
+	sig = Splay.ar(sig,1-input);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

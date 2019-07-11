@@ -488,4 +488,20 @@ SynthDef(\tweetBassLeak, { arg out = 0, t_trig = 1, amp = 1, attack = 0.01, rele
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\tweetKickInt, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, amp = 1, doneAction = 2;
+	var sig, freq, phase, env, i;
+	i = Impulse.ar(_);
+	freq = i.(2).lagud(0,0.4)*360;
+	phase = Integrator.ar(
+		Integrator.ar(
+			i.(64).lag(LFNoise1.ar(2!2,2,2))*99,
+			0.9
+		),
+		0.99
+	).fold2(pi);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = SinOsc.ar(freq, phase, env);
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

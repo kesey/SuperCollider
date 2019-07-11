@@ -59,4 +59,19 @@ SynthDef(\moogbasstone2,{ arg out = 0, freq = 440, amp = 0.1, gate = 1, attackTi
 
 }).add;
 
+SynthDef(\tweetAnaBass, { arg out = 0, t_trig = 1, freq = 60, attack = 0.01, release = 2, amp = 1, pan = 0, doneAction = 2;
+	var sig, env, bw;
+	bw = LFNoise0.ar(_);
+	sig = max(
+		max(bw.(4),l=bw.(6)),
+		SinOsc.ar(freq * ceil(l*9).lag(0.1))*0.7
+	);
+	sig = tanh(
+		BBandPass.ar(sig, freq, bw.(1).abs/2)*700*l.lag(1)
+	);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

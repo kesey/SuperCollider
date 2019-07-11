@@ -7,8 +7,8 @@ this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Star
 /////////// Sequencer + Song transport
 
 ( // Play Both
-Tdef(\song, ~defaultSong).play(t, true, ~sequenceQuant);
-if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~sequenceQuant); });
+Tdef(\song, ~song2).play(t, true, ~globalQuant);
+if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~globalQuant); });
 )
 
 ( // Stop Both
@@ -24,16 +24,16 @@ Tdef(\song).reset;
 
 /////////// Song transport
 
-Tdef(\song, ~testSong).play(t, true, ~sequenceQuant); // Play Song
+Tdef(\song, ~song2).play(t, true, ~globalQuant); // Play Song
 
 Tdef(\song).pause;
-Tdef(\song).resume(t, ~sequenceQuant);
+Tdef(\song).resume(t, ~globalQuant);
 Tdef(\song).stop;
 Tdef(\song).reset;
 
 /////////// Sequencer transport
 
-if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~sequenceQuant); }); // Play Sequencer
+if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~globalQuant); }); // Play Sequencer
 ~sequencerTransport.stop; // Stop Sequencer
 
 ( // Reset Sequencer
@@ -43,11 +43,11 @@ if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: 
 
 ///////////////////////////////////////  Playground
 
-Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~sequenceQuant);
+Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
 ~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
-Tdef(\song, ~song2).play(t, quant: ~sequenceQuant);
-Tdef(\song, ~testSong).play(t, quant: ~sequenceQuant);
+Tdef(\song, ~song2).play(t, quant: ~globalQuant);
+Tdef(\song, ~defaultSong).play(t, quant: ~globalQuant);
 { ~samplerStereo.set(\out, ~channelBus[0]); }.fork(t, ~globalQuant);
 
 (
