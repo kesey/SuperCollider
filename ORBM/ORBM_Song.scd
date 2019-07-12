@@ -4,6 +4,7 @@
 
 ~defaultSong = {
 	{
+		t.tempo = 60 / 60;
 		~globalQuant = 1; // multiple of 5 for 5/4 signature
 		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.07);
 		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.21);
@@ -207,22 +208,27 @@
 	{
 		t.tempo = 62 / 60;
 		~globalQuant = 3; // multiple of 3 for 3/4 signature
-		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(11);
+		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(38);
 		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0);
 		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.17);
 		~autoGuiControl.at("samplerStereo1019release").valueAction_(2);
 		~autoGuiControl.at("samplerStereo1019attack").valueAction_(0.1);
 		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.44);
+
+		~autoGuiControl.at("noiseInjection1016drywet").valueAction_(-0.84);
+		~autoGuiControl.at("noiseInjection1016attack").valueAction_(0.01);
+		~autoGuiControl.at("noiseInjection1016release").valueAction_(2.17);
+		~autoGuiControl.at("noiseInjection1016noiseType").valueAction_(0);
 	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
 		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
 		~changePattern.value(Pdef(\unit3), ~song2Pattern3);
-		~changePattern.value(Pdef(\unit4), ~song2Pattern4); // ~song2Pattern9
+		~changePattern.value(Pdef(\unit4), ~song2Pattern9);
 		~changePattern.value(Pdef(\unit5), ~song2Pattern5);
 		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song2Pattern7);
-		~changePattern.value(Pdef(\unit8), ~song2Pattern8); // ~song2Pattern11
+		~changePattern.value(Pdef(\unit8), ~song2Pattern11);
 		12.0.wait;
 	}
 };

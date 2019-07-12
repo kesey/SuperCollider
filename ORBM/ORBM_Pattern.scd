@@ -632,7 +632,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song2Pattern8 = Pbind(
 	\instrument, \cymbalic_mcld,
-	\dur, Pseq([Pn(0.125, 5), 0.375, Pn(0.125, 5), 0.375, 0.75, 0.25], inf),
+	\dur, Pseq([Pn(0.125, 5), 0.375, Pn(0.125, 5), 0.375, 0.75, 0.25], inf), // (0.125 * 5) + 0.375 + (0.125 * 5) + 0.375 + 0.75 + 0.25 == 3
 	\amp, 0.01,
 	\relLow, 2,
 	\relHi, 6,
@@ -669,10 +669,9 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 ~song2Pattern9 = Pbind(
 	\instrument, \oneclap_thor,
 	\dur, Pseq([Rest(0.5), 2.5, 3]/2, inf),
-	\amp, 0.006,
-	\filterfreq, Pseq([1000, 320, 3300], inf),
-	\rq, 0.06,
-	\attackTime, 0.02,
+	\filterfreq, 422,
+	\rq, 0.15,
+	[\attackTime, \amp], Pseq([Pn([0.02, 0.006], 3), [0.04, 0.003]], inf),
 	\releaseTime, 0.03,
 	\pan, Pwhite(-0.5, 0.5, inf),
 	\out, ~channelBus[1],
@@ -690,7 +689,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 				~autoGui.value(v, ~oneclapSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
 					"t_trig", ["none"],
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
-					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
+					"amp", ["knob", ControlSpec(0, 1, step: 0.001, default: event.at(\amp)), true],
 					"filterfreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\filterfreq)), true],
 					"rq", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\rq)), true],
 					"attackTime", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\attackTime)), true],
@@ -751,9 +750,11 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\instrument, \mutantFric,
 	\dur, Pseq([1.5,0.75], inf),
 	\amp, 0.15,
-	\noisefreq, Pseg(Pseq([1000, 240, 9340, 2620]), Pseq([0.2, 0.8, 0.01]), \sine, inf),
+	\noiseFreq, 3,
 	\release, Pseq([0.04, 0.4], inf),
 	\attack, 0.25,
+	\spec1, 0.00001,
+	\spec2, 0.03,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -769,9 +770,11 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 				~autoGui.value(v, ~mutantFricSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
 					"gate", ["none"],
 					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
-					"noisefreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\noisefreq)), true],
-					"release", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\release)), true],
-					"attack", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\attack)), true]
+					"noiseFreq", ["knob", ControlSpec(1, 1000, step: 1, default: event.at(\noisefreq)), true],
+					"release", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+					"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
+					"spec1", ["knob", ControlSpec(0.00001, 10, step: 0.01, default: event.at(\spec1)), true],
+					"spec2", ["knob", ControlSpec(0.01, 10, step: 0.01, default: event.at(\spec2)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;

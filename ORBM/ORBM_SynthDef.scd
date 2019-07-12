@@ -29,7 +29,7 @@ SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level
 	sig = sig * level.curvelin(0, 1, 0, 1, log(10));
 	sig = Limiter.ar(sig);
 	Out.ar(out, sig);
-	Out.ar(out+2, sig);
+	Out.ar(out+2, sig); // use it to feed external gear with signal
 }).add;
 
 ///////////////////////////////////////  Fx
@@ -1236,7 +1236,7 @@ SynthDef(\res, { | out=0 gate=1 freq=40 fltBus pan=0|
 ~mutantFricSynthDef = SynthDef(\mutantFric, { arg out = 0, amp = 1, spec1 = 0.00001, spec2 = 0.03, noiseFreq = 3, gate = 1, attack = 0.01, release = 1, doneAction = 2;
 	var friction, sig;
 	friction = Array.fill(5, {
-		[spec1, spec2].asSpec.map(LFNoise2.kr(noiseFreq))
+		[spec1.max(0.00001), spec2.max(0.03)].asSpec.map(LFNoise2.kr(noiseFreq))
 	});
 	sig = Friction.ar(LFTri.ar(50), friction: friction, mass: friction*30000);
 	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, doneAction: doneAction);
