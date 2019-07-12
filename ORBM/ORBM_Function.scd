@@ -109,6 +109,7 @@
 		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant / 2);
 	}, {
 		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
+		Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant / 2);
 	});
 };
 

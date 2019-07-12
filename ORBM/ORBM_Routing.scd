@@ -43,7 +43,7 @@ s.bind { ~distoInsideOut = Synth(\distoInsideOut, [\in, aux1Bus, \out, ~channelB
 
 // Aux 2
 ~quadDelay = Synth(\quadDelay, [\in, ~aux2, \out, aux2Bus], aux2Group, addAction: 'addToHead');
-~updateTempo.value(~quadDelay, TempoClock.default); // use it to keep sync when tempo change
+~updateTempo.value(~quadDelay, t); // use it to keep sync when tempo change
 s.bind { ~pitchShifter = Synth(\pitchShifter, [\in, aux2Bus, \out, aux2Bus], ~quadDelay, addAction: 'addAfter'); };
 s.bind { ~flanging = Synth(\flanging, [\in, aux2Bus, \out, aux2Bus], ~pitchShifter, addAction: 'addAfter'); };
 s.bind { ~verb = Synth(\verb, [\in, aux2Bus, \out, ~channelBus[3], \amp, 0.75], aux2Group, addAction: 'addToTail') };
