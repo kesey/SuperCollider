@@ -1287,7 +1287,7 @@ SynthDef(\tweetErosion, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, f
 
 ///////////////////////////////////////  Sampler
 
-~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1, doneAction = 2;
+~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, gate = 1, amp = 1, pan = 0, attack = 0.001, release = 1, buffer = 0, rate = 1, startPos = 0, loop = 0, doneAction = 2;
 	var sig, env;
 	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
 	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.kr(buffer)*startPos, loop, doneAction) * env;
@@ -1305,7 +1305,7 @@ SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 
 
 ///////////////////////////////////////  Input
 
-~inputSigSynthDef = SynthDef(\inputSig, { arg out = 0, in = 0, lpfreq = 20000, band1freq = 8000, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 80, band3rq = 1, band3db = 0, hpfreq = 20, gate = 1, attack = 0.5, release = 1, pan = 0, amp = 0.5, delaytime = 0, doneAction = 2;
+~inputSigSynthDef = SynthDef(\inputSig, { arg out = 0, in = 0, gate = 1, amp = 0.5, pan = 0, attack = 0.5, release = 1, delaytime = 0, lpfreq = 20000, band1freq = 8000, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 80, band3rq = 1, band3db = 0, hpfreq = 20, doneAction = 2;
 	var input, sig;
 	input = SoundIn.ar(in);
 	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
