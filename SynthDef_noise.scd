@@ -195,4 +195,89 @@ SynthDef(\tweetErosion, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, f
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\harshTexture, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Impulse.ar(8).lag(0.3)!2;
+	10.do {
+		sig = LeakDC.ar(
+			AllpassC.ar(
+				sig,
+				1,
+				LFNoise0.ar(8).range(1e-5,0.2),
+				-0.15,
+				LFNoise0.ar(8).range(1,3)
+			)
+		).tanh;
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\ultraHiSummer, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Blip.ar(
+		[16e3,16150],
+		2,
+		LFTri.ar(
+			Duty.ar(
+				LFNoise0.ar(0.2,4,6),
+				0,
+				Dseq([70,30,0],inf)
+			)
+		).clip(0,1)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\ambiantPic, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LFNoise2.kr(22,5,9);
+	sig = CombC.ar(
+		Splay.ar(
+			Gendy3.ar(
+				[4,2],
+				[0.5,1],
+				[1/9,1/4]*sig,
+				[1/2,1/8]*sig,
+				(9,49..199)
+			)
+		),
+		5,
+		[0.13,0.1],
+		[sig/2,sig/2.1]
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\attBreath, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = TDuty.kr(Dseq([1,1,4,2,2]/8,inf));
+	sig = Resonz.ar(
+		Crackle.ar!2,
+		Demand.kr(sig,0,Dseq([250,8e3],inf)),
+		Demand.kr(sig,0,Dwhite(0.01,0.5,inf))
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\attWind, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = TDuty.kr(Dseq([1,1,4,2,2]/8,inf));
+	sig = Resonz.ar(
+		WhiteNoise.ar!2,
+		Demand.kr(sig,0,Dseq([250,8e3],inf)),
+		Demand.kr(sig,0,Dwhite(0.01,0.5,inf))
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

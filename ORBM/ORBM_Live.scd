@@ -48,7 +48,7 @@ Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globa
 
 Tdef(\song, ~song2).play(t, quant: ~globalQuant);
 Tdef(\song, ~defaultSong).play(t, quant: ~globalQuant);
-{ ~samplerStereo.set(\out, ~channelBus[0]); }.fork(t, ~globalQuant);
+~samplerStereo.set(\out, ~channelBus[0]);
 
 (
 

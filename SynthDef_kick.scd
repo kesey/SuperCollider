@@ -504,4 +504,20 @@ SynthDef(\tweetKickInt, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, a
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef (\kickParallax) {
+	arg len = 0.3, pan = 0, amp = 1, freq = 55;
+	var sig, env_amp, env_freq;
+
+	env_amp  = Env.perc (0.01, len - 0.01, amp);
+	env_amp  = EnvGen.kr (env_amp, doneAction: 2);
+
+	env_freq = Env.perc (0, 0.02, 1);
+	env_freq = EnvGen.ar (env_freq);
+
+	sig = SinOsc.ar (freq + (44100 ** env_freq), 0, env_amp);
+	sig = Pan2.ar (sig, pan);
+
+	Out.ar (0, sig);
+}.add;
+
 )

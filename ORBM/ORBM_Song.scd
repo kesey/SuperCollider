@@ -226,9 +226,9 @@
 		~changePattern.value(Pdef(\unit3), ~song2Pattern3);
 		~changePattern.value(Pdef(\unit4), ~song2Pattern9);
 		~changePattern.value(Pdef(\unit5), ~song2Pattern5);
-		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
+		~changePattern.value(Pdef(\unit6), ~song2Pattern14);
 		~changePattern.value(Pdef(\unit7), ~song2Pattern7);
-		~changePattern.value(Pdef(\unit8), ~song2Pattern11);
+		~changePattern.value(Pdef(\unit8), ~song2Pattern13);
 		12.0.wait;
 	}
 };
