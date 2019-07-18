@@ -210,4 +210,14 @@ SynthDef(\tweetSynth, { arg out = 0, amp = 1, freq = 25, t_trig = 1, attack = 0.
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\scratchi, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, waveForm, trig;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	waveForm = SinOsc.ar(1/2,[0,1],3,1);
+	trig = Impulse.ar([waveForm+0.2,waveForm]);
+	sig = FreeVerb.ar(Decay.ar(trig,waveForm,MoogFF.ar(SinOsc.ar(([waveForm.asin])*50),400)).softclip/2);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

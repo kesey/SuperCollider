@@ -1,19 +1,3 @@
-{a=LocalIn.ar;LocalOut.ar(Mix.ar(x=SinOsc.ar((Decay.ar(Impulse.ar([4,4.005]),1e3*a.abs)*50), a).distort));x;}.play;//tryingharder_to_noavail
-{f=LocalIn.ar(2).tanh;k=Latch.kr(f[0].abs,Impulse.kr(0.5));LocalOut.ar(f+AllpassN.ar(Pulse.ar([2,3],k*0.01+1e-6,0.9),1,k*0.3,100*k));f}.play
-play{f=LocalIn.ar(2).tanh;k=Latch.kr(f[0].abs,Impulse.kr(1/4));LocalOut.ar(f+CombC.ar(Blip.ar([4,6],100*k+50,0.9),1,k*0.3,50*f));f}//44.1kHz
-Pspawner({|r|f={|t|r.par(Pbindf(Pbind(\note,Pseq([-1,1,6,8,9,1,-1,8,6,1,9,8]+5,319)),\dur,t))};f.(1/6);r.wait(12);f.(0.1672)}).play//s.reich
-play{t=Impulse.ar(75);Sweep.ar(t,150).fold(0,1)*PlayBuf.ar(1,Buffer.read(s,"s*/*".pathMatch[2]),1,t,Demand.ar(t,0,Dbrown(0,2e5,2e3,inf)))!2}
-play{f={LocalBuf(512)};r={|k,m|RecordBuf.ar(Pulse.ar(8,m,6e3),k)};r.(a=f.(),0.99);r.(b=f.(),0.99001);Out.ar(0,IFFT([a,b]).tanh)};//44.1kHz:)
-
-play{LocalOut.ar(x=DelayC.ar(LPF.ar(LFNoise0.ar(8)**2+LocalIn.ar(2).tanh.round(0.05),6e3),1,LFNoise0.ar(8!2).range(1e-4,0.02)));x.tanh}//#sc
-
-
-play{t=Impulse.ar(8)*LFNoise1.ar(2);CombL.ar(Saw.ar([3,4],Decay.ar(t,0.1)).tanh,1,TRand.ar(0,0.01,t).round(15e-4),TRand.ar(-30,30,t))};//#sc
-
-play{q=[0,3,5,7,10];t=Impulse.kr(4)*LFNoise0.kr>0;PitchShift.ar(Saw.ar(Demand.kr(t,0,Drand((q+12++q+33).midicps,inf)),Decay.kr(t,3)),7,2)!2}
-
-play{(HPF.ar(LFNoise1.ar(2),[10,10.1])*100).tanh}// #supercollider yay! (be very careful with this one, very loud)
-
 play{
 	t = [0,3,5,7,10,12]+30;
 	a = Demand.kr(
@@ -533,3 +517,160 @@ play{BPF.ar(SoundIn.ar(0),Array.geom(16,120,1.5),0.005,2).sum.dup} // kind of EZ
 play{FreeVerb.ar(CombC.ar(SoundIn.ar(0).softclip,1,1/120,1),0.4,1,1).dup}//easy hall/resonator fx for my lap steel guitar #supercollider
 play{SinOsc.ar(Latch.ar(SinOsc.kr(0.75).range(0,12).round.midiratio*[200,400*SinOsc.kr(0.01).range(1,4)],TDuty.kr(Dseq([1,2]/8,inf))))} //ye
 play{t=TDuty.kr(Drand(([1,2,3]/8),inf));SinOsc.ar(Demand.kr(t,0,Drand((50,53..71).midicps,inf))*[1,1.5]*LFPulse.kr(0.5).range(1,2)).dup}
+
+{
+	Splay.ar(
+		SinOsc.ar(
+			Array.fill(100,{\freq.asSpec.map(LFNoise2.kr(0.001))})
+		)
+	)
+}.play;
+
+(
+SynthDef(\glauk, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(
+		SinOsc.ar(
+			Array.fill(100,{\freq.asSpec.map(LFNoise2.kr(0.001))})
+		)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \glauk,
+	\dur, 4,
+	\amp, 2,
+	\release, 10
+).play;
+)
+
+{
+	x = Array.fill(3,{Array.fill(50,{[40,150].asSpec.map(LFNoise2.kr(0.01))})});
+	Splay.ar(SinOsc.ar(x[0]+SinOsc.ar(x[1],0,x[2]-39)));
+}.play;
+
+(
+SynthDef(\lust, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, ctrl;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	ctrl = Array.fill(3,{Array.fill(50,{[40,150].asSpec.map(LFNoise2.kr(0.01))})});
+	sig = Splay.ar(SinOsc.ar(ctrl[0]+SinOsc.ar(ctrl[1],0,ctrl[2]-39)));
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \lust,
+	\dur, 4,
+	\amp, 2,
+	\release, 10
+).play;
+)
+
+{Out.ar([0,1],e=Trig.ar(Dust.ar(10));e=TRand.kr(100,10000,e);e=SinOsc.ar(e).round(SinOsc.ar(Line.kr(0,100,30))))}.play; // #supercollider :D
+
+play{
+	Splay.ar(
+		Array.fill(15,{Ringz.ar(Dust.ar(Rand(1,10)), Rand(50,9000).round(100), 2)},
+			1,
+			0.5,
+			0
+		)
+	)
+} // #supercollider tweets = good idea!!!
+
+(
+SynthDef(\scinty, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(
+		Array.fill(15,{Ringz.ar(Dust.ar(Rand(1,10)), Rand(50,9000).round(100), 2)},
+			1,
+			0.5,
+			0
+		)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \scinty,
+	\dur, 4,
+	\amp, 0.2,
+	\release, 10
+).play;
+)
+
+{120.do{z=1e3;x={rrand(0.1,5)}!8;{{Klank.ar(`[x*z,x/60,2],LFNoise2.ar)*EnvGen.kr(Env.sine(2),doneAction:2)}!2}.play;1.wait;}}.fork
+
+play{
+	x = 165;
+	b = SinOsc;
+	p = Trig.ar(Saw.ar(x),1);
+	y = b.ar(p * x);
+	z = b.ar(p);
+	(GVerb.ar(GrainIn.ar(2,y,y/2,z,p*z,-1),9))/9;
+}//basso gettato #SuperCollider
+
+(
+SynthDef(\bublybub, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, x = 165, doneAction = 2;
+	var sig, env, waveForm, freq, dur, input;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	waveForm = SinOsc;
+	freq = Trig.ar(Saw.ar(x),1);
+	dur = waveForm.ar(freq * x);
+	input = waveForm.ar(freq);
+	sig = GVerb.ar(GrainIn.ar(2,dur,dur/2,input,freq*input,-1),9);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \bublybub,
+	\dur, 4,
+	\amp, 0.2,
+	\release, 10,
+	\x, 165
+).play;
+)
+
+{
+	var r = SinOsc.ar(1/2,[0,1],3,1),
+	s = Impulse.ar([r+0.2,r]);
+	FreeVerb.ar(Decay.ar(s,r,MoogFF.ar(SinOsc.ar(([r.asin])*50),400)).softclip/2)
+}.play;
+
+(
+SynthDef(\scratchi, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, waveForm, trig;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	waveForm = SinOsc.ar(1/2,[0,1],3,1);
+	trig = Impulse.ar([waveForm+0.2,waveForm]);
+	sig = FreeVerb.ar(Decay.ar(trig,waveForm,MoogFF.ar(SinOsc.ar(([waveForm.asin])*50),400)).softclip/2);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \scratchi,
+	\dur, 4,
+	\amp, 1,
+	\release, 10
+).play;
+)
+
+{var d=Demand.kr(Impulse.kr(2),0,LFTri.kr(1,0,2,1));(Ringz.ar(Dust.ar([d,d+1]),d**d,1)+Decay.ar(Impulse.ar(4),0.5,SinOsc.ar(50!2)));}.play;

@@ -325,7 +325,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 ~song2Pattern1 = Pbind(
 	\instrument, \kick808,
 	[\dur, \lag], Pseq([[Rest(0.75), 0], [0.75, 0], [0.5, 0], [0.75, 0.002], [0.25, 0], [Rest(0.5), 0], [0.75, 0], [0.5, 0.002], [1, 0], [0.25, 0.002]], inf),
-	//\timingOffset, 0.75, // 0.75+0.75+0.5+0.75+0.25+0.5+0.75+1+0.25+0.5
+	//\timingOffset, 0.75, // 0.75+0.75+0.5+0.75+0.25+0.5+0.75+1+0.25+0.5 == 6
 	\envL1, 0,
     \envL2, 0.94,
 	\envL3, 0,
@@ -814,10 +814,10 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song2Pattern13 = Pbind(
 	\instrument, \attBreath,
-	\dur, Pseq([Pn(0.125, 10), 0.5], inf),
+	\dur, Pseq([Pn(0.125, 17), 0.5, 0.125, 0.25], inf), // (0.125 * 17) + 0.5 + 0.125 + 0.25 == 3
 	\attack, 0.01,
 	\release, Pseq([1, 0.25, 2, 0.8], inf),
-	\amp, Pseq([0.04, 0.03, 0.05, 0.04, 0.02], inf),
+	\amp, Pseq([0.02, 0.01, 0.03, 0.02, 0.01], inf),
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -845,10 +845,10 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song2Pattern14 = Pbind(
 	\instrument, \attWind,
-	\dur, Pseq([3, 6, 3], inf),
+	\dur, 3,
 	\attack, 0.01,
-	\release, Pseq([2, 3, 1.2, 2, 0.6], inf),
-	\amp, 0.1,
+	\release, Pseq([1.5, 3], inf),
+	\amp, 0.07,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -862,6 +862,37 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 			{
 				~removePrev.value(synthWindowKey);
 				~autoGui.value(v, ~attWindSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"t_trig", ["none"],
+					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
+					"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
+					"release", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~song2Pattern15 = Pbind(
+	\instrument, \glauk,
+	\dur, Pseq([1, 2], inf),
+	\attack, 0.01,
+	\release, Pseq([1.5, 3], inf),
+	\amp, 0.06,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~glaukSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
 					"t_trig", ["none"],
 					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
 					"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],

@@ -213,12 +213,21 @@
 		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.17);
 		~autoGuiControl.at("samplerStereo1019release").valueAction_(2);
 		~autoGuiControl.at("samplerStereo1019attack").valueAction_(0.1);
-		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.44);
+		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.7);
 
 		~autoGuiControl.at("noiseInjection1016drywet").valueAction_(-0.84);
 		~autoGuiControl.at("noiseInjection1016attack").valueAction_(0.01);
 		~autoGuiControl.at("noiseInjection1016release").valueAction_(2.17);
 		~autoGuiControl.at("noiseInjection1016noiseType").valueAction_(0);
+
+		/*~mute.at("unit1").valueAction_(1);
+		~mute.at("unit2").valueAction_(1);
+		~mute.at("unit3").valueAction_(1);
+		~mute.at("unit4").valueAction_(1);
+		~mute.at("unit5").valueAction_(1);
+		~mute.at("unit6").valueAction_(1);
+		// ~mute.at("unit7").valueAction_(0);
+		~mute.at("unit8").valueAction_(1);*/
 	}.defer;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
@@ -226,10 +235,22 @@
 		~changePattern.value(Pdef(\unit3), ~song2Pattern3);
 		~changePattern.value(Pdef(\unit4), ~song2Pattern9);
 		~changePattern.value(Pdef(\unit5), ~song2Pattern5);
-		~changePattern.value(Pdef(\unit6), ~song2Pattern14);
+		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song2Pattern7);
-		~changePattern.value(Pdef(\unit8), ~song2Pattern13);
+		~changePattern.value(Pdef(\unit8), ~song2Pattern11); // ~song2Pattern8
 		12.0.wait;
+		Pbindef(\unit5, \dur, Pseq([Rest(0.5), 0.125, 0.25, 0.5, 1.5, 0.125], inf)).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit6), ~song2Pattern14); // 0.5 + 0.125 + 0.25 + 0.5 + 1.625 == 3
+		12.0.wait;
+		Pbindef(\unit1, \dur, Pseq([0.5, 0.25, Rest(0.75), 0.5, 0.75, 1, 0.75, 0.25, 0.5, 0.75], inf));
+		~changePattern.value(Pdef(\unit8), ~song2Pattern13); // 0.5 + 0.25 + 0.75 + 0.5 + 0.75 + 1 + 0.75 + 0.25 + 0.5 + 0.75 == 6
+		12.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song2Pattern15);
+		6.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
+		6.0.wait;
+		~changePattern.value(Pdef(\unit5), ~song2Pattern5);
+		24.0.wait;
 	}
 };
 

@@ -1672,6 +1672,44 @@ SynthDef(\ressquares,{|out= 0 freq = 440 amp = 0.1 gate=1 cutoff=8000 rq=0.8 pan
 
 }).add;
 
+~glaukSynthDef = SynthDef(\glauk, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(
+		SinOsc.ar(
+			Array.fill(100,{\freq.asSpec.map(LFNoise2.kr(0.001))})
+		)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\scinty, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(
+		Array.fill(15,{Ringz.ar(Dust.ar(Rand(1,10)), Rand(50,9000).round(100), 2)},
+			1,
+			0.5,
+			0
+		)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\bublybub, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, x = 165, doneAction = 2;
+	var sig, env, waveForm, freq, dur, input;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	waveForm = SinOsc;
+	freq = Trig.ar(Saw.ar(x),1);
+	dur = waveForm.ar(freq * x);
+	input = waveForm.ar(freq);
+	sig = GVerb.ar(GrainIn.ar(2,dur,dur/2,input,freq*input,-1),9);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 ///////////////////////////////////////  Sequence
 
 SynthDef(\virgo, { arg out = 0, feedback = 7.5, freq1 = 32, freq2 = 33, amp = 0.2, delaytime = 2, decaytime = 40, gate = 1, attack = 0.01, release = 1, doneAction = 2;
@@ -1684,6 +1722,16 @@ SynthDef(\virgo, { arg out = 0, feedback = 7.5, freq1 = 32, freq2 = 33, amp = 0.
 	LocalOut.ar(sig);
 	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, doneAction: doneAction);
 	OffsetOut.ar(out, sig);
+}).add;
+
+SynthDef(\scratchi, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, waveForm, trig;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	waveForm = SinOsc.ar(1/2,[0,1],3,1);
+	trig = Impulse.ar([waveForm+0.2,waveForm]);
+	sig = FreeVerb.ar(Decay.ar(trig,waveForm,MoogFF.ar(SinOsc.ar(([waveForm.asin])*50),400)).softclip/2);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
 }).add;
 
 ///////////////////////////////////////  Rimshot
