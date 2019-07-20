@@ -280,4 +280,14 @@ SynthDef(\attWind, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\tweetWindy, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, i, x;
+	i = SinOsc;
+	x = {exprand(0.1,0.01)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar({[PinkNoise,BrownNoise,GrayNoise].choose.ar*i.ar(i.ar(0.01).range(x,x))}!9);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

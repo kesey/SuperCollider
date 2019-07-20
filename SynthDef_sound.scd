@@ -220,4 +220,16 @@ SynthDef(\scratchi, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\tweetCheul, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, freq;
+	freq = {rrand(1, 2.1)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Klank.ar(
+			`[{exprand(100,1000)}.dup(50)],
+			Saw.ar(MouseX.kr(3, LFPulse.kr(6/3,0,1/5).range(3,3000),1),0.0005)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

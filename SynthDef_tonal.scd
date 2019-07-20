@@ -353,4 +353,21 @@ SynthDef(\bublybub, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\chdegaulleabout, { arg out = 0, amp = 1, pan =0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = SinOsc.ar(LFNoise1.kr(0.01).exprange(100,{exprand(300,10000)}!120)).mean;
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\stairs, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, freq;
+	freq = {rrand(1, 2.1)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(SinOsc.ar(SinOsc.ar(0.02 * (freq!8)).sum.round(freq!8) * (freq!8+1) + 1 * 100)) * 0.1;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

@@ -673,4 +673,121 @@ Pbind(
 ).play;
 )
 
-{var d=Demand.kr(Impulse.kr(2),0,LFTri.kr(1,0,2,1));(Ringz.ar(Dust.ar([d,d+1]),d**d,1)+Decay.ar(Impulse.ar(4),0.5,SinOsc.ar(50!2)));}.play;
+
+/*eclecticity*/ Ndef(\x, { SinOsc.ar(BrownNoise.ar(30!2, 200), Ndef(\x).ar * LFNoise1.kr(1!2,1,1)) }).play;
+{SinOsc.ar(XLine.kr(0.001,1,120).range(100,{exprand(300,10000)}!120)).mean}.play;//chdegaulle
+
+{
+	(SinOsc.ar(LFNoise1.kr(0.01).exprange(100,{exprand(300,10000)}!120)).mean)!2
+}.play;//chdegaulleabout
+
+(
+SynthDef(\chdegaulleabout, { arg out = 0, amp = 1, pan =0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = SinOsc.ar(LFNoise1.kr(0.01).exprange(100,{exprand(300,10000)}!120)).mean;
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \chdegaulleabout,
+	\dur, 4,
+	\amp, 1,
+	\release, 10
+).play;
+)
+
+var f={rrand(0.2, 2.0)}; {Splay.ar(SinOsc.ar(SinOsc.ar(0.02 * (f!8)).sum.round(f!8) * (f!8+1) * 100)) * 0.1}.play;//stairs #supercollider
+
+var f={rrand(1, 2.1)}; {Splay.ar(SinOsc.ar(SinOsc.ar(0.02 * (f!8)).sum.round(f!8) * (f!8+1) + 1 * 100)) * 0.1}.play;//stairs #supercollider
+
+(
+SynthDef(\stairs, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, freq;
+	freq = {rrand(1, 2.1)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(SinOsc.ar(SinOsc.ar(0.02 * (freq!8)).sum.round(freq!8) * (freq!8+1) + 1 * 100)) * 0.1;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \stairs,
+	\dur, 4,
+	\amp, 1,
+	\release, 10
+).play;
+)
+
+{{PinkNoise.ar*LFSaw.ar(0-Duty.kr(1,0, Dseq((2**(0,1..5) ++ [3,3]).scramble,inf)),1).range(0,1).squared.squared}.dup}.play// #supercollider
+
+{t=HPZ1.kr(LFNoise0.kr(4));{Pulse.ar((t*10000+0.0001).lag(0, 0.1))}.dup+(SinOsc.ar([220, 330])*Integrator.kr(t))*0.1}.play;// #supercollider
+
+{
+	{
+		Klank.ar(
+			`[{exprand(100,1000)}.dup(50)],
+			Saw.ar(MouseX.kr(3, LFPulse.kr(6/3,0,1/5).range(3,3000),1),0.0005)
+		)
+	}.dup
+
+}.play;// #supercollider
+
+(
+SynthDef(\tweetCheul, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, freq;
+	freq = {rrand(1, 2.1)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Klank.ar(
+			`[{exprand(100,1000)}.dup(50)],
+			Saw.ar(MouseX.kr(3, LFPulse.kr(6/3,0,1/5).range(3,3000),1),0.0005)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \tweetCheul,
+	\dur, 4,
+	\amp, 1,
+	\release, 10
+).play;
+)
+
+Pbind(\type,\set,\id,{|freq|Saw.ar(freq+[0,1])/10}.play.nodeID,\midinote,Pseq("supercollider!!!".ascii,inf),\dur,1/4).play//#supercollider
+
+{LocalOut.ar(a=DynKlank.ar(`[LocalIn.ar.clip2(LFPulse.kr([1,2,1/8]).sum/2)**100*100],Impulse.ar(10)));HPF.ar(a).clip2!2}.play//#supercollider
+
+i=LFPulse;k=[100,1];{i.ar(i.kr(5).lag(0.1).linexp(0,1,50,Duty.kr(0.1,0,Dseq([k,Dxrand(11.fib,28)],inf).midicps)))/9}.play;// #supercollider
+
+i=SinOsc;x={exprand(0.1,0.01)};{Splay.ar({[PinkNoise,BrownNoise,GrayNoise].choose.ar*i.ar(i.ar(0.01).range(x,x))}!9)}.play// #supercollider
+
+(
+SynthDef(\tweetWindy, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, i, x;
+	i = SinOsc;
+	x = {exprand(0.1,0.01)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar({[PinkNoise,BrownNoise,GrayNoise].choose.ar*i.ar(i.ar(0.01).range(x,x))}!9);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \tweetWindy,
+	\dur, 4,
+	\amp, 1,
+	\release, 10
+).play;
+)
+
+play{a=Duty.kr(0.1,0,Dseq(fib(32).wrap(20,55).midicps,inf));HPF.ar(LeakDC.ar(Splay.ar(LFCub.ar([-1,a,a/3,-2])))*9).clip2/9};//#supercollider
