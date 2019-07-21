@@ -113,6 +113,14 @@
 	});
 };
 
+~songInit = {
+	var unit;
+	~pdefNumber.do({ arg i;
+		unit = \unit ++ (1 + i).asSymbol;
+		~changePattern.value(Pdef(unit), ~initPattern);
+	});
+};
+
 // use it with SynthDef sync on a clock like sync delay
 ~updateTempo = { arg synth, tempoClock;
 	var updater;

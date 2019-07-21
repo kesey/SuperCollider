@@ -13,6 +13,7 @@
 		~autoGuiControl.at("inputSig1018attack").valueAction_(6);
 		~autoGuiControl.at("inputSig1018release").valueAction_(3);
 	}.defer;
+	~songInit.value;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
@@ -181,14 +182,7 @@
 		}.defer;
 		Pbindef(\unit8, \dur, 2.5, /*\timingOffset, 0.5*/).quant_(~globalQuant);
 		20.0.wait;
-		~changePattern.value(Pdef(\unit1), ~initPattern);
-		~changePattern.value(Pdef(\unit2), ~initPattern);
-		~changePattern.value(Pdef(\unit3), ~initPattern);
-		~changePattern.value(Pdef(\unit4), ~initPattern);
-		~changePattern.value(Pdef(\unit5), ~initPattern);
-		~changePattern.value(Pdef(\unit6), ~initPattern);
-		~changePattern.value(Pdef(\unit7), ~initPattern);
-		~changePattern.value(Pdef(\unit8), ~initPattern);
+		~songInit.value;
 		{
 			~mute.at("unit1").valueAction_(0);
 			//~mute.at("unit3").valueAction_(0);
@@ -229,6 +223,7 @@
 		// ~mute.at("unit7").valueAction_(0);
 		~mute.at("unit8").valueAction_(1);*/
 	}.defer;
+	~songInit.value;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
 		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
