@@ -520,4 +520,17 @@ SynthDef (\kickParallax) {
 	Out.ar (0, sig);
 }.add;
 
+SynthDef(\tabass, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, rangeMin = 0.4, rangeMax = 0.45, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LFTri.ar(1);
+	20.do{
+		sig = BAllPass.ar(sig,80,1);
+		sig = ((sig+0.02)*LFNoise0.kr(1/2).range(rangeMin, rangeMax)*8).tanh;
+		sig = LeakDC.ar(sig,0.995);
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

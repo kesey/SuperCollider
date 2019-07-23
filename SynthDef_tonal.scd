@@ -370,4 +370,21 @@ SynthDef(\stairs, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\claudTweet, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, x;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LFTri.ar(
+		Duty.ar(Dseq([3,1]/12,inf),
+			0,
+			Dseq(
+				x = (3..6);
+				allTuples(x/.t x).flat*[100,200,400]++0
+			)
+		)
+	);
+	sig = GVerb.ar(sig, 25, 5)/5;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

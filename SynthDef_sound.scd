@@ -232,4 +232,34 @@ SynthDef(\tweetCheul, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
+SynthDef(\2001, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = PinkNoise.ar(1);
+	20.do{
+		sig = BBandStop.ar(sig, LFNoise1.kr(0.05.rand).exprange(40,15000), exprand(0.1,2));
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\seqTwit, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, input;
+	input = LocalIn.ar(2) * 7.5 + Saw.ar([32,33],0.2);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = CombN.ar(
+		BPF.ar(
+			input,
+			2**LFNoise0.kr(4/3,4)*300,
+			0.1
+		).distort,
+		2,
+		2,
+		40
+	);
+	LocalOut.ar(sig);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

@@ -720,6 +720,19 @@ SynthDef (\kickParallax) { arg amp = 1, pan = 0, len = 0.3, freq = 55;
 	Out.ar (0, sig);
 }.add;
 
+~tabassSynthDef = SynthDef(\tabass, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LFTri.ar(1);
+	20.do{
+		sig = BAllPass.ar(sig,80,1);
+		sig = ((sig+0.02)*LFNoise0.kr(1/2)*6).tanh;
+		sig = LeakDC.ar(sig,0.995);
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 ///////////////////////////////////////  Snare
 
 SynthDef(\sd, { | out = 0, amp = 1 |
@@ -1385,6 +1398,19 @@ SynthDef(\ambiantPic, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\dStowell, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, freq = 6/3, width = 1/5, doneAction = 2;
+	var sig, env, spec, input;
+	spec = `[{exprand(100,1000)}.dup(50)];
+	input = Saw.ar(
+		LFPulse.kr(freq,0,width).range(3,3000),
+		0.0005
+	);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Klank.ar(spec, input);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 ///////////////////////////////////////  Sampler
 
 ~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, gate = 1, amp = 1, pan = 0, attack = 0.001, release = 1, buffer = 0, rate = 1, startPos = 0, loop = 0, doneAction = 2;
@@ -1716,6 +1742,53 @@ SynthDef(\chdegaulleabout, { arg out = 0, amp = 1, pan =0, t_trig = 1, attack = 
 	sig = SinOsc.ar(LFNoise1.kr(0.01).exprange(100,{exprand(300,10000)}!120)).mean;
 	sig = sig * env;
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+~t2001SynthDef = SynthDef(\t2001, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = PinkNoise.ar(1);
+	20.do{
+		sig = BBandStop.ar(sig, LFNoise1.kr(0.05.rand).exprange(40,15000), exprand(0.1,2));
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\seqTwit, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, input;
+	input = LocalIn.ar(2) * 7.5 + Saw.ar([32,33],0.2);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = CombN.ar(
+		BPF.ar(
+			input,
+			2**LFNoise0.kr(4/3,4)*300,
+			0.1
+		).distort,
+		2,
+		2,
+		40
+	);
+	LocalOut.ar(sig);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\claudTweet, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, x;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LFTri.ar(
+		Duty.ar(Dseq([3,1]/12,inf),
+			0,
+			Dseq(
+				x = (3..6);
+				allTuples(x/.t x).flat*[100,200,400]++0
+			)
+		)
+	);
+	sig = GVerb.ar(sig, 25, 5)/5;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
 }).add;
 
 ///////////////////////////////////////  Sequence
