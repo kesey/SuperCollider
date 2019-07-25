@@ -720,10 +720,10 @@ SynthDef (\kickParallax) { arg amp = 1, pan = 0, len = 0.3, freq = 55;
 	Out.ar (0, sig);
 }.add;
 
-~tabassSynthDef = SynthDef(\tabass, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+~tabassSynthDef = SynthDef(\tabass, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, freq = 1, doneAction = 2;
 	var sig, env;
 	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
-	sig = LFTri.ar(1);
+	sig = LFTri.ar(freq);
 	20.do{
 		sig = BAllPass.ar(sig,80,1);
 		sig = ((sig+0.02)*LFNoise0.kr(1/2)*6).tanh;
@@ -735,15 +735,15 @@ SynthDef (\kickParallax) { arg amp = 1, pan = 0, len = 0.3, freq = 55;
 
 ///////////////////////////////////////  Snare
 
-SynthDef(\sd, { | out = 0, amp = 1 |
+~sdSynthDef = SynthDef(\sd, { | out = 0, amp = 1, att = 0, rel = 0.05, freq = 200, ffreq = 12000 |
 	var osc1, osc2, env;
 	osc1 = WhiteNoise.ar;
-	osc2 = FSinOsc.ar(200);
-	env = EnvGen.kr(Env.perc(0, 0.05), doneAction: 2);
-	OffsetOut.ar(out, Pan2.ar(LPF.ar(Mix([osc1, osc2]), 12000), 0, env*amp));
+	osc2 = FSinOsc.ar(freq);
+	env = EnvGen.kr(Env.perc(att, 0.05), doneAction: 2);
+	OffsetOut.ar(out, Pan2.ar(LPF.ar(Mix([osc1, osc2]), ffreq), 0, env*amp));
 }).add;
 
-SynthDef(\snare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;
+SynthDef(\snare, { arg out=0, amp=0.1, pan = 0, tu=1, t_gate=1, freq=200, doneAction = 2;
 	var sig;
 	var env = EnvGen.ar(Env.perc(0.01,0.1));
 	var enf = EnvGen.ar(Env([600,1057,230],[0.01,0.01],-4));
@@ -752,8 +752,8 @@ SynthDef(\snare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;
 	sig = RHPF.ar(sig, \hpf.kr(170)*tu, \rq.kr(0.5));
 	sig = sig + Mix.ar(BPF.ar(sig,[327,430],[0.5,0.5])*0.1);
 	sig = RLPF.ar(sig, \lpf.kr(15100)*tu, \rq.kr(0.5));
-	sig = sig * EnvGen.ar(Env.perc(0.01,\rel.kr(0.1),-4),gate,doneAction:2);
-	OffsetOut.ar(out, sig*amp);
+	sig = sig * EnvGen.ar(Env.perc(0.01,\rel.kr(0.1),-4),t_gate,doneAction: doneAction);
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
 SynthDef(\snarenew, { arg out=0,tu=1, amp=0.1, t_gate=1, pan=0, freq=200;
@@ -815,7 +815,7 @@ SynthDef(\jungleSnare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200,kracte
 	OffsetOut.ar(out, sig*amp);
 }).add;
 
-SynthDef(\t5snare, { arg out=0,tu=1, amp=0.3, t_gate=1, pan=0, freq=200,snd;
+~t5snareSynthDef = SynthDef(\t5snare, { arg out=0, amp=0.3, tu=1, t_gate=1, pan=0, freq=200,snd;
 	var sig;
 	var env = EnvGen.ar(Env.perc(0.01,1));
 	var enf = EnvGen.ar(Env([600,177,230],[0.01,0.1],-4));
@@ -1289,7 +1289,7 @@ SynthDef(\tweetSynth, { arg out = 0, amp = 1, freq = 25, t_trig = 1, attack = 0.
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\tweetFogAttack, { arg out = 0, t_trig = 1, feedBack = 0.2, attack = 0.01, release = 2, amp = 1, doneAction;
+SynthDef(\tweetFogAttack, { arg out = 0, t_trig = 1, feedBack = 0.2, attack = 0.01, release = 2, amp = 1, doneAction = 2;
 	var sig, env, coef;
 	sig = Pulse.ar(pi/[1,2.57],[0.54,0.46]);
 	coef = (1-LocalIn.ar(2)).fold(0,[0.9,0.85]);
@@ -1317,7 +1317,7 @@ SynthDef(\harshTexture, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, relea
 	var sig, env;
 	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
 	sig = Impulse.ar(8).lag(0.3)!2;
-	10.do {
+	5.do {
 		sig = LeakDC.ar(
 			AllpassC.ar(
 				sig,
@@ -1398,7 +1398,7 @@ SynthDef(\ambiantPic, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\dStowell, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, freq = 6/3, width = 1/5, doneAction = 2;
+~dStowellSynthDef = SynthDef(\dStowell, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, freq = 6/3, width = 1/5, doneAction = 2;
 	var sig, env, spec, input;
 	spec = `[{exprand(100,1000)}.dup(50)];
 	input = Saw.ar(
@@ -1475,15 +1475,15 @@ SynthDef(\notes2,{arg out=0,gate =1,notes=68,at = 0.01,sus=0.4,snd=18;
 	//Out.ar(snd,sig*env);
 }).add;
 
-SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
-	var env  = EnvGen.ar(Env.perc(0,release),gate,doneAction:2);
+SynthDef(\sinus,{arg out = 0, amp = 0.5, freq = 100, t_gate = 1, release = 0.1, lfo = 1, doneAction = 2;
+	var env  = EnvGen.ar(Env.perc(0,release), t_gate, doneAction: doneAction);
 	var sig = SinOsc.ar(freq.midicps+(432-69.midicps)*SinOsc.kr(lfo),0,env);
 	sig = HPF.ar(sig,100);
 	sig = CompanderD.ar(sig,0.3,0.3,1.5,0.0001,0.01);
 	OffsetOut.ar(out,sig*amp);
 }).add;
 
-~prayerBellSynthDef = SynthDef(\prayerBell, { |out = 0, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, level = 0.08, pan = 0, i_doneAction = 2|
+~prayerBellSynthDef = SynthDef(\prayerBell, { |out = 0, t_trig = 1, amp = 0.5, pan = 0, sing_switch = 0, freq = 2434, decayscale = 1, lag = 10, level = 0.08, i_doneAction = 2|
 	var sig, input, first, freqscale, mallet, sing;
 	freq = freq.max(20).min(5000);
 	freqscale = freq / 2434;
@@ -1552,7 +1552,7 @@ SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
 	Out.ar(out, sig);
 }).add;
 
-SynthDef(\waveguideFlute, { arg scl = 0.2, freq = 440, ipress = 0.9, ibreath = 0.09, ifeedbk1 = 0.4, ifeedbk2 = 0.4, dur = 1, gate = 1, amp = 2;
+~waveguideFluteSynthDef = SynthDef(\waveguideFlute, { arg amp = 2, scl = 0.2, freq = 440, ipress = 0.9, ibreath = 0.09, ifeedbk1 = 0.4, ifeedbk2 = 0.4, dur = 1;
 
 	var kenv1, kenv2, kenvibr, kvibr, sr, cr, block;
 	var poly, signalOut, ifqc;
@@ -1744,32 +1744,13 @@ SynthDef(\chdegaulleabout, { arg out = 0, amp = 1, pan =0, t_trig = 1, attack = 
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
-~t2001SynthDef = SynthDef(\t2001, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+SynthDef(\t2001, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
 	var sig, env;
 	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
 	sig = PinkNoise.ar(1);
 	20.do{
 		sig = BBandStop.ar(sig, LFNoise1.kr(0.05.rand).exprange(40,15000), exprand(0.1,2));
 	};
-	sig = sig * env;
-	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
-}).add;
-
-SynthDef(\seqTwit, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
-	var sig, env, input;
-	input = LocalIn.ar(2) * 7.5 + Saw.ar([32,33],0.2);
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
-	sig = CombN.ar(
-		BPF.ar(
-			input,
-			2**LFNoise0.kr(4/3,4)*300,
-			0.1
-		).distort,
-		2,
-		2,
-		40
-	);
-	LocalOut.ar(sig);
 	sig = sig * env;
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
@@ -1787,6 +1768,22 @@ SynthDef(\claudTweet, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release
 		)
 	);
 	sig = GVerb.ar(sig, 25, 5)/5;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\ambitek, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Saw.ar([50,50.1]);
+	2.do{|i|
+		var f = 2 ** (8 - i);
+		sig = BRF.ar(
+			AllpassN.ar(sig,1,0.1/(12-i),2),
+			80 ** TRand.ar(0,1,Impulse.ar(f/32,1/2)).lag(1/f) * 80,
+			2
+		);
+	};
 	sig = sig * env;
 	OffsetOut.ar(out, sig * amp);
 }).add;
@@ -1811,6 +1808,29 @@ SynthDef(\scratchi, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	waveForm = SinOsc.ar(1/2,[0,1],3,1);
 	trig = Impulse.ar([waveForm+0.2,waveForm]);
 	sig = FreeVerb.ar(Decay.ar(trig,waveForm,MoogFF.ar(SinOsc.ar(([waveForm.asin])*50),400)).softclip/2);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+~seqPureSynthDef = SynthDef(\seqPure, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar({|i|
+		RLPF.ar(0.6**i*40*Impulse.ar(2**i/32,1/2),4**LFNoise0.kr(1/16)*300,5e-3).sin;
+	}!8);
+	2.do{
+		sig = FreeVerb2.ar(*sig++[0.1,1,1]);
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\seqModul, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, buffer;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	buffer = LocalBuf(1e5,2).clear;
+	sig = BufRd.ar(2,buffer,Phasor.ar(0,1,0,1e5))*0.6;
+	BufWr.ar(Blip.ar([1,1.01],10)/5+sig,buffer,LFNoise1.ar(0.2)+1*5e4);
 	sig = sig * env;
 	OffsetOut.ar(out, sig * amp);
 }).add;
