@@ -546,7 +546,7 @@ pdefGuiView.layout = HLayout();
 				}
 			);
 			if(Pdef(pdefNameSymbol).source.notNil,
-				{ Pbindef(pdefNameSymbol, \type, type)/*.quant_(~globalQuant);*/ }
+				{ Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant); }
 			);
 			~activePdefMute.put(pdefNameString, state);
 		}

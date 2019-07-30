@@ -202,11 +202,11 @@
 	{
 		t.tempo = 82 / 60;
 		~globalQuant = 4;
-		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(22);
-		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0);
-		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.36);
+		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(3);
+		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.26);
+		~autoGuiControl.at("samplerStereo1019rate").valueAction_(1);
 		~autoGuiControl.at("samplerStereo1019release").valueAction_(2);
-		~autoGuiControl.at("samplerStereo1019attack").valueAction_(0.1);
+		~autoGuiControl.at("samplerStereo1019attack").valueAction_(1.84);
 		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.05);
 
 		~autoGuiControl.at("noiseInjection1016drywet").valueAction_(-0.84);
@@ -222,9 +222,68 @@
 		~changePattern.value(Pdef(\unit4), ~song2Pattern4);
 		~changePattern.value(Pdef(\unit5), ~song2Pattern5);
 		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
-		~changePattern.value(Pdef(\unit7), ~song2Pattern7);
+		// ~changePattern.value(Pdef(\unit7), ~song2Pattern7);
 		~changePattern.value(Pdef(\unit8), ~song2Pattern8);
-		8.0.wait;
+		31.0.wait;
+		{
+			~mute.at("unit1").valueAction_(1);
+		}.defer;
+		1.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		~changePattern.value(Pdef(\unit7), ~song2Pattern7);
+		3.0.wait;
+		{
+			~mute.at("unit7").valueAction_(1);
+			~mute.at("unit1").valueAction_(0);
+		}.defer;
+		1.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		15.0.wait;
+		{
+			~mute.at("unit7").valueAction_(0);
+			~mute.at("unit1").valueAction_(1);
+		}.defer;
+		1.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		3.0.wait;
+		{
+			~mute.at("unit7").valueAction_(1);
+			~mute.at("unit1").valueAction_(0);
+		}.defer;
+		1.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		7.0.wait;
+		{
+			~mute.at("unit7").valueAction_(0);
+			~mute.at("unit1").valueAction_(1);
+		}.defer;
+		1.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		3.0.wait;
+		{
+			~mute.at("unit7").valueAction_(1);
+			~mute.at("unit1").valueAction_(0);
+		}.defer;
+		1.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		3.0.wait;
+		{
+			~mute.at("unit7").valueAction_(0);
+			~mute.at("unit1").valueAction_(1);
+			~mute.at("unit5").valueAction_(1);
+			~mute.at("unit4").valueAction_(1);
+		}.defer;
+		1.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		7.0.wait;
+		{
+			~mute.at("unit7").valueAction_(1);
+			~mute.at("unit1").valueAction_(0);
+			~mute.at("unit5").valueAction_(0);
+			~mute.at("unit4").valueAction_(0);
+		}.defer;
+		1.0.wait;
 	}
 };
 
