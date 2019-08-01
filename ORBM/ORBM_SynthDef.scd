@@ -739,7 +739,7 @@ SynthDef (\kickParallax) { arg amp = 1, pan = 0, len = 0.3, freq = 55;
 	var osc1, osc2, env;
 	osc1 = WhiteNoise.ar;
 	osc2 = FSinOsc.ar(freq);
-	env = EnvGen.kr(Env.perc(att, 0.05), doneAction: 2);
+	env = EnvGen.kr(Env.perc(att, rel), doneAction: 2);
 	OffsetOut.ar(out, Pan2.ar(LPF.ar(Mix([osc1, osc2]), ffreq), 0, env*amp));
 }).add;
 
@@ -1126,11 +1126,11 @@ var sig = CuspN.ar(
 	OffsetOut.ar(out,sig*env0);
 }).add;
 
-~noise2newSynthDef = SynthDef(\noise2new,{arg out = 0, rel = 1, a = 0.2, pan = 0, del1 = 10, del2 = 20;
+~noise2newSynthDef = SynthDef(\noise2new,{arg out = 0, amp = 1, att = 0.01, rel = 1, div = 0.2, pan = 0, del1 = 10, del2 = 20;
 	var env, sig;
-	env =  EnvGen.ar(Env.new([0.1, 1, 0.3, 0], [0.01, rel], [-4, -2, -4]), doneAction:2);
+	env =  EnvGen.ar(Env.new([0.1, 1, 0.3, 0], [att, rel], [-4, -2, -4]), doneAction:2);
 	sig = CuspN.ar(
-        SampleRate.ir/a,
+        SampleRate.ir/div,
         LFNoise2.kr([4,4],1.5,1.5),
         LFNoise2.kr([0.2,0.2],1.5,1.5),
         LFNoise2.kr([2,2],0.5,1.5),
@@ -1142,6 +1142,7 @@ var sig = CuspN.ar(
     //sig = PitchShift.ar(sig,0.2,1*a);
     sig = Compander.ar(sig,In.ar(0,1),0.01,1,0.01,0.01,0.1);
     sig = sig.tanh;
+	sig = Pan2.ar(sig, pan, amp);
     OffsetOut.ar(out, sig * env);
 }).add;
 
