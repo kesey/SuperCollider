@@ -104,11 +104,10 @@
 		});
 	});
 
+	Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
 	if (~activePdefMute.at(pdefNameString), {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
 		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant);
 	}, {
-		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
 		Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant);
 	});
 };

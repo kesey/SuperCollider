@@ -7,6 +7,11 @@ this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Star
 /////////// Sequencer + Song transport
 
 ( // Play Both
+
+/*~globalQuant = 1; // !!! change globalQuant before song !!!
+Tdef(\song, ~defaultSong).play(t, true, ~globalQuant);*/
+
+~globalQuant = 4; // !!! change globalQuant before song !!!
 Tdef(\song, ~song2).play(t, true, ~globalQuant);
 if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~globalQuant); });
 )

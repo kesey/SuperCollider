@@ -2,10 +2,9 @@
 
 ///////////////////////////////////////  Song
 
-~defaultSong = {
+~defaultSong = { // ~globalQuant = 1; // !!! change globalQuant before song !!!
+	t.tempo = 60 / 60;
 	{
-		t.tempo = 60 / 60;
-		~globalQuant = 1; // multiple of 5 for 5/4 signature
 		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.07);
 		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.21);
 		~autoGuiControl.at("samplerStereo1019attack").valueAction_(10);
@@ -198,10 +197,9 @@
 	}
 };
 
-~song2 = {
+~song2 = { // ~globalQuant = 4; // !!! change globalQuant before song !!!
+	t.tempo = 82 / 60;
 	{
-		t.tempo = 82 / 60;
-		~globalQuant = 4;
 		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(22);
 		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.3);
 		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.27);
@@ -284,7 +282,7 @@
 			\rel, 0.01,
 			\ffreq, 7948
 		).quant_(~globalQuant);
-		Pbindef(\unit1, // change key value (synchro whith changePattern)
+		Pbindef(\unit1,
 			\amp, 0.8,
 			\tu, 0.75,
 			\envL1, 0.62,
