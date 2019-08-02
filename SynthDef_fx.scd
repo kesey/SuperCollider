@@ -108,7 +108,7 @@ SynthDef(\chorus, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	sig = HPF.ar(sig, \hpf.kr(50));
 	sig = SelectX.ar(\mix.kr(0.5), [in, sig]);
 	sig = sig * EnvGen.ar(\adsr.kr( Env.adsr(0.01,0.1,0.8,0.1) ),gate,doneAction:2);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\Chorus1, { arg in = 0, out = 0, lpfreq = 6000, rq = 1, drywet = 0.5, level = 1;
@@ -209,7 +209,7 @@ SynthDef(\quadDelay, { arg in = 0, out = 0, delayamp1 = 1, delaypan1 = 0, sync1 
 
 	LocalOut.ar(sig * feedBack);
 	sig = XFade2.ar(input, sig, dryWet, amp);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, dryWet = 0.4, pan = 0, amp = 0.5;
@@ -223,7 +223,7 @@ SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, d
 
     LocalOut.ar(delay * feedBack);
 	sig = XFade2.ar(input, delay, dryWet, amp);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\echo, { arg freq=200, pan=0, amp=0.1;
@@ -244,7 +244,7 @@ SynthDef(\echo, { arg freq=200, pan=0, amp=0.1;
 	sig = sig * \gain.kr(1);
 	//sig = SelectX.ar(mix, [in, sig]);
 	sig = in + sig;
-	Out.ar(\outbus.kr(0), sig);
+	ReplaceOut.ar(\outbus.kr(0), sig);
 }).add;
 
 SynthDef(\drumy, { arg freq=200, pan=0, amp=0.1;
@@ -255,7 +255,7 @@ SynthDef(\drumy, { arg freq=200, pan=0, amp=0.1;
 	sig = Compander.ar(sig, in, \cpt.kr(0.4), \cpbelow.kr(1.001), \cpabove.kr(0.9), \cpclamp.kr(0.01), \cprelax.kr(0.1));
 	sig = sig * \gain.kr(1);
 	sig = SelectX.ar(\mix.kr(1), [in, sig]);
-	Out.ar(\outbus.kr(0), sig);
+	ReplaceOut.ar(\outbus.kr(0), sig);
 }).add;
 
 ///////////////////////////////////////  Stutter
@@ -318,7 +318,7 @@ SynthDef(\rdStutter, { arg out = 0, time= 0.1, mix=0, rate=1;
 	sig = stutter.(sig, reset, time, rate, \maxdelay.ir(10));
 	sig = SelectX.ar(mix, [in, sig]);
 	sig = sig * \gain.kr(1);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 // "scrambler" -- randomly samples from recent audio
@@ -345,7 +345,7 @@ SynthDef(\allreverb, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	LocalOut.ar(sig);
 	sig = sig * EnvGen.ar(Env.adsr(0.01,0.1,0.8,0.1),gate,doneAction:2);
 	sig = SelectX.ar(\mix.kr(0.5), [in, sig]);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\allreverbf, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
@@ -364,7 +364,7 @@ SynthDef(\allreverbf, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	LocalOut.ar(fbsig);
 	sig = sig * EnvGen.ar(Env.adsr(0.4,0.1,0.8,0.1),gate,doneAction:2);
 	sig = SelectX.ar(\mix.kr(0.5), [in, sig]);
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\allreverbif, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
@@ -384,7 +384,7 @@ SynthDef(\allreverbif, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	LocalOut.ar(fbsig);
 	sig = sig * EnvGen.ar(Env.adsr(0.4,0.1,0.8,0.1),gate,doneAction:2);
 	sig = sig + in;
-	Out.ar(out, sig);
+	ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\reverbCraum, {
@@ -421,7 +421,7 @@ SynthDef(\gatedreverb, {|in = 0, out =0 gate= 1 threshold= 0.1 amp=0.1|
 	// chain of 4 allpass delays on each of two channels (8 total) :
 	a.do({ y = AllpassN.ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) });
 
-	Out.ar(out,Pan2.ar(y,0)*env*amp);
+	ReplaceOut.ar(out,Pan2.ar(y,0)*env*amp);
 
 }).add;
 
@@ -436,7 +436,7 @@ SynthDef(\SchroederReverb, { arg in = 0, out = 0, preDelay = 0.048, maxCombDelay
 	4.do({
 		delay = AllpassN.ar(delay, allPassMaxDelay, [Rand(0, 0.05), Rand(0, 0.05)], allPassDecay);
 	});
-    Out.ar(
+    ReplaceOut.ar(
         out,
         sig + (0.2 * delay)
     );

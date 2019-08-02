@@ -315,4 +315,89 @@ SynthDef(\ressquares,{|out= 0 freq = 440 amp = 0.1 gate=1 cutoff=8000 rq=0.8 pan
 
 }).add;
 
+SynthDef(\glauk, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(
+		SinOsc.ar(
+			Array.fill(100,{\freq.asSpec.map(LFNoise2.kr(0.001))})
+		)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\scinty, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(
+		Array.fill(15,{Ringz.ar(Dust.ar(Rand(1,10)), Rand(50,9000).round(100), 2)},
+			1,
+			0.5,
+			0
+		)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\bublybub, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, x = 165, doneAction = 2;
+	var sig, env, waveForm, freq, dur, input;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	waveForm = SinOsc;
+	freq = Trig.ar(Saw.ar(x),1);
+	dur = waveForm.ar(freq * x);
+	input = waveForm.ar(freq);
+	sig = GVerb.ar(GrainIn.ar(2,dur,dur/2,input,freq*input,-1),9);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\chdegaulleabout, { arg out = 0, amp = 1, pan =0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = SinOsc.ar(LFNoise1.kr(0.01).exprange(100,{exprand(300,10000)}!120)).mean;
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\stairs, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, freq;
+	freq = {rrand(1, 2.1)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar(SinOsc.ar(SinOsc.ar(0.02 * (freq!8)).sum.round(freq!8) * (freq!8+1) + 1 * 100)) * 0.1;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\claudTweet, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, x;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LFTri.ar(
+		Duty.ar(Dseq([3,1]/12,inf),
+			0,
+			Dseq(
+				x = (3..6);
+				allTuples(x/.t x).flat*[100,200,400]++0
+			)
+		)
+	);
+	sig = GVerb.ar(sig, 25, 5)/5;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\seqPure, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Splay.ar({|i|
+		RLPF.ar(0.6**i*40*Impulse.ar(2**i/32,1/2),4**LFNoise0.kr(1/16)*300,5e-3).sin;
+	}!8);
+	2.do{
+		sig = FreeVerb2.ar(*sig++[0.1,1,1]);
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

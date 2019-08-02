@@ -7,6 +7,7 @@
 // Server.supernova; // Switches the server program to supernova. Check ParGroup how to make use of multicore hardware with the supernova server.
 Server.scsynth; // This is the default server
 Server.default = s = Server.local;
+Server.program = Server.program + "-B 127.0.0.1"; // fix network security issue in scsynth and supernova works with SC 3.8 and after
 /********Multi-Client Setups***********/
 // s.addr = NetAddr("168.192.1.20", 57110); // in case of distant server, args are IP and port number
 // s.options.maxLogins = 2; // 2 users on the same server

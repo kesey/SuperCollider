@@ -13,6 +13,7 @@
 		~autoGuiControl.at("inputSig1018attack").valueAction_(6);
 		~autoGuiControl.at("inputSig1018release").valueAction_(3);
 	}.defer;
+	~songInit.value;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 		~changePattern.value(Pdef(\unit6), ~defaultPattern6);
@@ -181,14 +182,7 @@
 		}.defer;
 		Pbindef(\unit8, \dur, 2.5, /*\timingOffset, 0.5*/).quant_(~globalQuant);
 		20.0.wait;
-		~changePattern.value(Pdef(\unit1), ~initPattern);
-		~changePattern.value(Pdef(\unit2), ~initPattern);
-		~changePattern.value(Pdef(\unit3), ~initPattern);
-		~changePattern.value(Pdef(\unit4), ~initPattern);
-		~changePattern.value(Pdef(\unit5), ~initPattern);
-		~changePattern.value(Pdef(\unit6), ~initPattern);
-		~changePattern.value(Pdef(\unit7), ~initPattern);
-		~changePattern.value(Pdef(\unit8), ~initPattern);
+		~songInit.value;
 		{
 			~mute.at("unit1").valueAction_(0);
 			//~mute.at("unit3").valueAction_(0);
@@ -206,31 +200,115 @@
 
 ~song2 = {
 	{
-		t.tempo = 62 / 60;
-		~globalQuant = 3; // multiple of 3 for 3/4 signature
-		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(38);
-		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0);
-		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.17);
-		~autoGuiControl.at("samplerStereo1019release").valueAction_(2);
-		~autoGuiControl.at("samplerStereo1019attack").valueAction_(0.1);
-		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.44);
+		t.tempo = 82 / 60;
+		~globalQuant = 4;
+		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(22);
+		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.3);
+		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.27);
+		~autoGuiControl.at("samplerStereo1019release").valueAction_(1.47);
+		~autoGuiControl.at("samplerStereo1019attack").valueAction_(2.11);
+		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.8);
 
 		~autoGuiControl.at("noiseInjection1016drywet").valueAction_(-0.84);
 		~autoGuiControl.at("noiseInjection1016attack").valueAction_(0.01);
 		~autoGuiControl.at("noiseInjection1016release").valueAction_(2.17);
 		~autoGuiControl.at("noiseInjection1016noiseType").valueAction_(0);
+		~mute.at("unit7").valueAction_(1);
 	}.defer;
+	~songInit.value;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
 		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
 		~changePattern.value(Pdef(\unit3), ~song2Pattern3);
-		~changePattern.value(Pdef(\unit4), ~song2Pattern9);
+		~changePattern.value(Pdef(\unit4), ~song2Pattern4);
 		~changePattern.value(Pdef(\unit5), ~song2Pattern5);
 		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song2Pattern7);
-		~changePattern.value(Pdef(\unit8), ~song2Pattern11);
+		~changePattern.value(Pdef(\unit8), ~song2Pattern8);
+		16.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		4.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		Pbindef(\unit1, // change key value (synchro whith changePattern)
+			\amp, 0.8,
+			\tu, 0.75,
+			\envL1, 0.62,
+			\envL2, 0.01,
+			\envL3, 0.69,
+			\envT1, 0.44,
+			\envT2, 0.17,
+			\envfL1, 245,
+			\envfL2, 270,
+			\envfL3, 120,
+			\envfT1, 0.18,
+			\envfT2, 0.29,
+			\envfT3, 1,
+		).quant_(~globalQuant);
+		8.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		4.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		8.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		Pbindef(\unit6,
+			\amp, 0.065,
+			\att, 0.26,
+			\rel, 0.01,
+			\ffreq, 7948
+		).quant_(~globalQuant);
+		Pbindef(\unit2,
+			\release, Pseq([0.6, 0.3, 0.42, 0.16, 0.5, 0.42, 0.16, 0.7], inf),
+			\freq, 0.01,
+			\dur, Pseq([0.125, 0.125, 0.5, 0.25], inf) // 0.125+ 0.125+ 0.5+ 0.25 == 1
+		).quant_(~globalQuant);
+		8.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		~changePattern.value(Pdef(\unit3), ~song2Pattern12);
+		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
+		28.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		4.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		~changePattern.value(Pdef(\unit4), ~song2Pattern11);
+		Pbindef(\unit6,
+			\amp, 0.065,
+			\att, 0.26,
+			\rel, 0.01,
+			\ffreq, 7948
+		).quant_(~globalQuant);
+		Pbindef(\unit1, // change key value (synchro whith changePattern)
+			\amp, 0.8,
+			\tu, 0.75,
+			\envL1, 0.62,
+			\envL2, 0.01,
+			\envL3, 0.69,
+			\envT1, 0.44,
+			\envT2, 0.17,
+			\envfL1, 245,
+			\envfL2, 270,
+			\envfL3, 120,
+			\envfT1, 0.18,
+			\envfT2, 0.29,
+			\envfT3, 1,
+		).quant_(~globalQuant);
 		12.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		Pbindef(\unit2,
+			\release, Pseq([0.6, 0.3, 0.42, 0.16, 0.5, 0.42, 0.16, 0.7], inf),
+			\freq, 0.01,
+			\dur, Pseq([0.125, 0.125, 0.5, 0.25], inf) // 0.125+ 0.125+ 0.5+ 0.25 == 1
+		).quant_(~globalQuant);
+		4.0.wait;
 	}
 };
 
-)
+) // 16+ 4+ 8+ 4+ 8+ 8+ 28+ 4+ 12+ 4 == 96 

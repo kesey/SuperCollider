@@ -106,10 +106,18 @@
 
 	if (~activePdefMute.at(pdefNameString), {
 		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
-		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant / 2);
+		Pbindef(pdefNameSymbol, \type, \rest).quant_(~globalQuant);
 	}, {
 		Pdef(pdefNameSymbol, pattern).quant_(~globalQuant);
-		Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant / 2);
+		Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant);
+	});
+};
+
+~songInit = {
+	var unit;
+	~pdefNumber.do({ arg i;
+		unit = (\unit ++ (1 + i)).asSymbol;
+		~changePattern.value(Pdef(unit), ~initPattern);
 	});
 };
 

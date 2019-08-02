@@ -210,4 +210,56 @@ SynthDef(\tweetSynth, { arg out = 0, amp = 1, freq = 25, t_trig = 1, attack = 0.
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\scratchi, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, waveForm, trig;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	waveForm = SinOsc.ar(1/2,[0,1],3,1);
+	trig = Impulse.ar([waveForm+0.2,waveForm]);
+	sig = FreeVerb.ar(Decay.ar(trig,waveForm,MoogFF.ar(SinOsc.ar(([waveForm.asin])*50),400)).softclip/2);
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\tweetCheul, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, freq;
+	freq = {rrand(1, 2.1)};
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Klank.ar(
+			`[{exprand(100,1000)}.dup(50)],
+			Saw.ar(MouseX.kr(3, LFPulse.kr(6/3,0,1/5).range(3,3000),1),0.0005)
+	);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\2001, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = PinkNoise.ar(1);
+	20.do{
+		sig = BBandStop.ar(sig, LFNoise1.kr(0.05.rand).exprange(40,15000), exprand(0.1,2));
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\seqTwit, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env, input;
+	input = LocalIn.ar(2) * 7.5 + Saw.ar([32,33],0.2);
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = CombN.ar(
+		BPF.ar(
+			input,
+			2**LFNoise0.kr(4/3,4)*300,
+			0.1
+		).distort,
+		2,
+		2,
+		40
+	);
+	LocalOut.ar(sig);
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

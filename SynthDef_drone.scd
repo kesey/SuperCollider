@@ -359,4 +359,20 @@ SynthDef(\drone13, { arg out=0, freq=200, pan=0, amp=0.1;
 	Out.ar(out, sig);
 }).add;
 
+SynthDef(\ambitek, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = Saw.ar([50,50.1]);
+	4.do{|i|
+		var f = 2 ** (8 - i);
+		sig = BRF.ar(
+			AllpassN.ar(sig,1,0.1/(12-i),2),
+			80 ** TRand.ar(0,1,Impulse.ar(f/32,1/2)).lag(1/f) * 80,
+			2
+		);
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
 )

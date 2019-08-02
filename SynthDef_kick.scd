@@ -504,4 +504,33 @@ SynthDef(\tweetKickInt, { arg out = 0, t_trig = 1, attack = 0.01, release = 2, a
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef (\kickParallax) {
+	arg len = 0.3, pan = 0, amp = 1, freq = 55;
+	var sig, env_amp, env_freq;
+
+	env_amp  = Env.perc (0.01, len - 0.01, amp);
+	env_amp  = EnvGen.kr (env_amp, doneAction: 2);
+
+	env_freq = Env.perc (0, 0.02, 1);
+	env_freq = EnvGen.ar (env_freq);
+
+	sig = SinOsc.ar (freq + (44100 ** env_freq), 0, env_amp);
+	sig = Pan2.ar (sig, pan);
+
+	Out.ar (0, sig);
+}.add;
+
+SynthDef(\tabass, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, rangeMin = 0.4, rangeMax = 0.45, doneAction = 2;
+	var sig, env;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = LFTri.ar(1);
+	20.do{
+		sig = BAllPass.ar(sig,80,1);
+		sig = ((sig+0.02)*LFNoise0.kr(1/2).range(rangeMin, rangeMax)*8).tanh;
+		sig = LeakDC.ar(sig,0.995);
+	};
+	sig = sig * env;
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

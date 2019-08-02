@@ -355,7 +355,8 @@ u.canvas.layout = VLayout();
 ~autoGui.value(u, ~verbSynthDef, ~verb, 111, 0, ~aux2Color, Dictionary.newFrom(
 	List[
 		"amp", ["none"],
-		"drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true]
+		"drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true],
+		"amount", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), false],
 	]
 ));
 
@@ -545,7 +546,7 @@ pdefGuiView.layout = HLayout();
 				}
 			);
 			if(Pdef(pdefNameSymbol).source.notNil,
-				{ Pbindef(pdefNameSymbol, \type, type)/*.quant_(~globalQuant);*/ }
+				{ Pbindef(pdefNameSymbol, \type, type).quant_(~globalQuant); }
 			);
 			~activePdefMute.put(pdefNameString, state);
 		}
