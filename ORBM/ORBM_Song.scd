@@ -269,14 +269,46 @@
 		8.0.wait;
 		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
 		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
-		~changePattern.value(Pdef(\unit3), ~song2Pattern11);
+		~changePattern.value(Pdef(\unit3), ~song2Pattern12);
 		~changePattern.value(Pdef(\unit6), ~song2Pattern6);
-		14.0.wait;
+		28.0.wait;
 		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
 		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
-		~changePattern.value(Pdef(\unit3), ~song2Pattern3);
-		2.0.wait;
+		4.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern2);
+		~changePattern.value(Pdef(\unit4), ~song2Pattern11);
+		Pbindef(\unit6,
+			\amp, 0.065,
+			\att, 0.26,
+			\rel, 0.01,
+			\ffreq, 7948
+		).quant_(~globalQuant);
+		Pbindef(\unit1, // change key value (synchro whith changePattern)
+			\amp, 0.8,
+			\tu, 0.75,
+			\envL1, 0.62,
+			\envL2, 0.01,
+			\envL3, 0.69,
+			\envT1, 0.44,
+			\envT2, 0.17,
+			\envfL1, 245,
+			\envfL2, 270,
+			\envfL3, 120,
+			\envfT1, 0.18,
+			\envfT2, 0.29,
+			\envfT3, 1,
+		).quant_(~globalQuant);
+		12.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song2Pattern10);
+		~changePattern.value(Pdef(\unit2), ~song2Pattern9);
+		Pbindef(\unit2,
+			\release, Pseq([0.6, 0.3, 0.42, 0.16, 0.5, 0.42, 0.16, 0.7], inf),
+			\freq, 0.01,
+			\dur, Pseq([0.125, 0.125, 0.5, 0.25], inf) // 0.125+ 0.125+ 0.5+ 0.25 == 1
+		).quant_(~globalQuant);
+		4.0.wait;
 	}
 };
 
-) // 16+ 4+ 8+ 4+ 8+ 8+ 14+ 2 == 64
+) // 16+ 4+ 8+ 4+ 8+ 8+ 28+ 4+ 12+ 4 == 96 

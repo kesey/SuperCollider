@@ -781,7 +781,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song2Pattern11 = Pbind(
 	\instrument, \sinBass,
-	\amp, 0.8,
+	\amp, 0.6,
 	\dur, 2,
 	\curve, 0,
 	\loopNode, 0,
@@ -840,10 +840,10 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 ~song2Pattern12 = Pbind(
 	\instrument, \samplerStereo,
 	\buffer, b[\Bowed_Empty_Sweep_Slow][1].bufnum,
-	\dur, 5,
-	\amp, 2,
+	\dur, 4,
+	\amp, 1.2,
 	\rate, 0.06,
-	\startPos, 0.04,
+	\startPos, 0.08,
 	\attack, 2.2,
 	\release, 2,
 	\out, ~channelBus[1],
