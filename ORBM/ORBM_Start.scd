@@ -89,40 +89,43 @@ s.serverRunning.not.if({ s.boot });
 ////////////////////////////////// 8. actions to perform once boot is completed
 
 s.waitForBoot({
-	"server boot complete".postln;
-	s.newBusAllocators;
-	// s.plotTree; // node tree
-	this.executeFile(~path ++ "ORBM_SynthDef.scd");
-	s.sync; // wait for previous code compilation is done
-	this.executeFile(~path ++ "ORBM_Routing.scd");
-	s.sync;
-	this.executeFile(~path ++ "ORBM_Pattern.scd");
-	s.sync;
+	if (~init.isNil, {
+		"server boot complete".postln;
+		s.newBusAllocators;
+		// s.plotTree; // node tree
+		this.executeFile(~path ++ "ORBM_SynthDef.scd");
+		s.sync; // wait for previous code compilation is done
+		this.executeFile(~path ++ "ORBM_Routing.scd");
+		s.sync;
+		this.executeFile(~path ++ "ORBM_Pattern.scd");
+		s.sync;
 
-	~pdefNumber = 8; // number of pdef or units
-	~pdefNumber = ~pdefNumber.max(1).min(12); // limit number of pdef
+		~pdefNumber = 8; // number of pdef or units
+		~pdefNumber = ~pdefNumber.max(1).min(12); // limit number of pdef
 
-	~sequencer = Dictionary.new;
+		~sequencer = Dictionary.new;
 
-	~pdefNumber.do({ // sequencer creation with pdefNumber of units
-		arg i;
-		var name;
-		name = ("unit" ++ (i + 1)).asSymbol;
-		~sequencer.put(name,
-			Penvir(
-				(pdefName: name, pdefPrevInstr: nil, pdefCcStart: 21, pdefMidiChan: i + 2),
-				Pdef(name, ~initPattern);
-			)
-		);
+		~pdefNumber.do({ // sequencer creation with pdefNumber of units
+			arg i;
+			var name;
+			name = ("unit" ++ (i + 1)).asSymbol;
+			~sequencer.put(name,
+				Penvir(
+					(pdefName: name, pdefPrevInstr: nil, pdefCcStart: 21, pdefMidiChan: i + 2),
+					Pdef(name, ~initPattern);
+				)
+			);
+		});
+
+		p = Ppar(~listUnits.value(~sequencer), inf); // all units in parallel
+
+		this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
+		s.sync;
+		this.executeFile(~path ++ "ORBM_Song.scd"); // Gui need to exist before executing ORBM_Song.scd
+		s.sync;
+		"init complete".postln;
+		~init = true;
 	});
-
-	p = Ppar(~listUnits.value(~sequencer), inf); // all units in parallel
-
-	this.executeFile(~path ++ "ORBM_Gui.scd"); // ~pdefNumber need to exist before executing ORBM_Gui.scd
-	s.sync;
-	this.executeFile(~path ++ "ORBM_Song.scd"); // Gui need to exist before executing ORBM_Song.scd
-	s.sync;
-	"init complete".postln;
 });
 
 )
