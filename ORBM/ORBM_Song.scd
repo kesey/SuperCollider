@@ -309,4 +309,68 @@
 	}
 };
 
-) // 16+ 4+ 8+ 4+ 8+ 8+ 28+ 4+ 12+ 4 == 96 
+~song3 = {// ~globalQuant = 7; // !!! change globalQuant before song !!!
+	t.tempo = 142 / 60;
+	{
+		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.68);
+		~autoGuiControl.at("samplerStereo1019attack").valueAction_(2.11);
+		~autoGuiControl.at("samplerStereo1019release").valueAction_(1);
+		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(2);
+		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.2);
+		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.08);
+
+		~autoGuiControl.at("sinBass1020amp").valueAction_(0.34);
+		~autoGuiControl.at("sinBass1020attack").valueAction_(0.2);
+		~autoGuiControl.at("sinBass1020release").valueAction_(4);
+		~autoGuiControl.at("sinBass1020envLevel1").valueAction_(0);
+		~autoGuiControl.at("sinBass1020envLevel2").valueAction_(28);
+		~autoGuiControl.at("sinBass1020envLevel3").valueAction_(64);
+		~autoGuiControl.at("sinBass1020envLevel4").valueAction_(16);
+		~autoGuiControl.at("sinBass1020envLevel5").valueAction_(48.3);
+		~autoGuiControl.at("sinBass1020envLevel6").valueAction_(37.5);
+		~autoGuiControl.at("sinBass1020envTime1").valueAction_(0.1);
+		~autoGuiControl.at("sinBass1020envTime2").valueAction_(0.3);
+		~autoGuiControl.at("sinBass1020envTime3").valueAction_(0.5);
+		~autoGuiControl.at("sinBass1020envTime4").valueAction_(0.39);
+		~autoGuiControl.at("sinBass1020envTime5").valueAction_(0.14);
+
+		~autoGuiControl.at("quadDelay1013drywet").valueAction_(0.4);
+		~autoGuiControl.at("quadDelay1013feedBack").valueAction_(0.2);
+		~autoGuiControl.at("quadDelay1013sync1").valueAction_(1);
+		~autoGuiControl.at("quadDelay1013sync2").valueAction_(1);
+		~autoGuiControl.at("quadDelay1013sync3").valueAction_(1);
+		~autoGuiControl.at("quadDelay1013sync4").valueAction_(1);
+		~autoGuiControl.at("quadDelay1013amp4").valueAction_(0);
+
+		~autoGuiControl.at("pitchShifter1012drywet").valueAction_(0.5);
+		~autoGuiControl.at("pitchShifter1012pitchRatio").valueAction_(1.98);
+		~autoGuiControl.at("pitchShifter1012pitchDisper").valueAction_(0.18);
+		~autoGuiControl.at("pitchShifter1012timeDisper").valueAction_(0.76);
+
+		~autoGuiControl.at("flanging1011drywet").valueAction_(-0.02);
+		~autoGuiControl.at("flanging1011fgfreq").valueAction_(102.4);
+		~autoGuiControl.at("flanging1011fdback").valueAction_(0.12);
+
+		~autoGuiControl.at("verb1010drywet").valueAction_(0);
+
+		~channel.at(\level2).valueAction_(0.08);
+	}.defer;
+	~songInit.value;
+	loop {
+		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song3Pattern2);
+		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
+		~changePattern.value(Pdef(\unit4), ~song3Pattern4);
+		~changePattern.value(Pdef(\unit5), ~song3Pattern5);
+		~changePattern.value(Pdef(\unit6), ~song3Pattern6);
+		~changePattern.value(Pdef(\unit7), ~song3Pattern7);
+		~changePattern.value(Pdef(\unit8), ~song3Pattern8);
+		14.0.wait;
+		Pbindef(\unit3,
+			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf) // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+		).quant_(~globalQuant);
+		7.0.wait;
+	}
+}
+
+) // 16+ 4+ 8+ 4+ 8+ 8+ 28+ 4+ 12+ 4 == 96

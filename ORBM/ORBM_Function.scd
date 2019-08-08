@@ -3,7 +3,7 @@
 ///////////////////////////////////////  Function
 
 // call on server boot
-~makeBuffers = { // create a dictionary with folders names under the Audio folder in the first key and sample number in the next key
+~makeBuffers = { // create a dictionary with folders names under the Audio folder in the first key and sample number in the next
 	b = Dictionary.new;
 	PathName(~path ++ "Audio").entries.do{ arg subfolder;
 		b.add(
