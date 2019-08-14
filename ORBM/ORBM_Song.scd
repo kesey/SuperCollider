@@ -312,14 +312,14 @@
 ~song3 = {// ~globalQuant = 7; // !!! change globalQuant before song !!!
 	t.tempo = 142 / 60;
 	{
-		~autoGuiControl.at("samplerStereo1019amp").valueAction_(0.68);
+		~autoGuiControl.at("samplerStereo1019amp").valueAction_(1);
 		~autoGuiControl.at("samplerStereo1019attack").valueAction_(2.11);
 		~autoGuiControl.at("samplerStereo1019release").valueAction_(1);
 		~autoGuiControl.at("samplerStereo1019buffer").valueAction_(2);
 		~autoGuiControl.at("samplerStereo1019rate").valueAction_(0.2);
 		~autoGuiControl.at("samplerStereo1019startPos").valueAction_(0.08);
 
-		~autoGuiControl.at("sinBass1020amp").valueAction_(0.34);
+		~autoGuiControl.at("sinBass1020amp").valueAction_(0.4);
 		~autoGuiControl.at("sinBass1020attack").valueAction_(0.2);
 		~autoGuiControl.at("sinBass1020release").valueAction_(4);
 		~autoGuiControl.at("sinBass1020envLevel1").valueAction_(0);
@@ -365,12 +365,58 @@
 		~changePattern.value(Pdef(\unit6), ~song3Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song3Pattern7);
 		~changePattern.value(Pdef(\unit8), ~song3Pattern8);
+		28.0.wait;
+		Pbindef(\unit1,
+			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+		).quant_(~globalQuant);
+		Pbindef(\unit3,
+			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\att, 0.17
+		).quant_(~globalQuant);
+		//~changePattern.value(Pdef(\unit5), ~song3Pattern11);
+		~changePattern.value(Pdef(\unit8), ~song3Pattern13);
+		Pbindef(\unit7,
+			\dur, Pseq([0.875, Rest(0.21875), 1.75, 0.21875, 0.4375], inf), // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+			\release, Pseq([0.01, 0.02, 0.01, 0.02, 0.03], inf),
+		).quant_(~globalQuant);
+		14.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
+		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
+		//~changePattern.value(Pdef(\unit5), ~song3Pattern5);
+		~changePattern.value(Pdef(\unit8), ~song3Pattern8);
+		~changePattern.value(Pdef(\unit7), ~song3Pattern7);
+		14.0.wait;
+		Pbindef(\unit1,
+			\dur, Pseq([2.625, 1.75, Rest(0.875), 0.875, Rest(0.875)], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+		).quant_(~globalQuant);
+		Pbindef(\unit2,
+			\dur, Pseq([1.75, 3.5, Rest(0.875), Rest(0.875)], inf)
+		).quant_(~globalQuant);
+		Pbindef(\unit3,
+			\dur, Pseq([Rest(0.875), 1.75, 0.875, 1.25, Rest(0.875), 1.375]/2, inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\att, 0.17
+		).quant_(~globalQuant);
+		//~changePattern.value(Pdef(\unit4), ~song3Pattern10);
+		~changePattern.value(Pdef(\unit8), ~song3Pattern12);
+		Pbindef(\unit6, \dur, Pseq([1.75, 0.875], inf)).quant_(~globalQuant);
+		Pbindef(\unit7,
+			\dur, Pseq([0.875, Rest(0.21875), 0.4375, 0.21875, 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+		).quant_(~globalQuant);
 		14.0.wait;
 		Pbindef(\unit3,
-			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf) // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\att, 0.17
 		).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit8), ~song3Pattern13);
+		7.0.wait;
+		Pbindef(\unit3,
+			\dur, Pseq([Rest(0.875), 1.75, 0.875, 1.25, Rest(0.875), 1.375]/2, inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\att, 0.17
+		).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit8), ~song3Pattern12);
+		//~changePattern.value(Pdef(\unit5), ~song3Pattern11);
 		7.0.wait;
 	}
 }
 
-) // 16+ 4+ 8+ 4+ 8+ 8+ 28+ 4+ 12+ 4 == 96
+)

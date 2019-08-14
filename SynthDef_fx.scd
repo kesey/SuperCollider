@@ -61,6 +61,11 @@ SynthDef(\awdistortion, {arg in = 0, out = 0, gate = 1;
 
 }).add;
 
+SynthDef(\distortion, { arg out = 0, gain = 41.97, envtime = 4, mix = 1, outputlevel = 1, shaperbuf;
+	var input = In.ar(out, 2) * gain;
+	ReplaceOut.ar(out, XFade2.ar(input, Shaper.ar(shaperbuf, input), mix.linlin(0,1.0,-1,1.0)));
+}).add;
+
 ///////////////////////////////////////  Dynamic
 
 SynthDef(\Compression, {arg in = 0, out = 0, gain = 1.5, threshold = 0.5, drywet = 0.5, level = 1;

@@ -19,12 +19,10 @@ Tdef(\song, ~song3).play(t, true, ~globalQuant);
 if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~globalQuant); });
 )
 
-
 ( // Stop Both
 Tdef(\song).stop;
 ~sequencerTransport.stop;
 )
-
 
 ( // Reset Both
 Tdef(\song).reset;
@@ -56,8 +54,6 @@ if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: 
 Pbindef(\unit4, \dur, Pseq([1, 1.25, Rest(1), 1.5, Rest(2)], inf)).quant_(~globalQuant);
 ~changePattern.value(Pdef(\unit1), ~defaultPattern1);
 
-Tdef(\song, ~song2).play(t, quant: ~globalQuant);
-Tdef(\song, ~defaultSong).play(t, quant: ~globalQuant);
 ~samplerStereo.set(\out, ~channelBus[0]);
 
 (
