@@ -215,4 +215,10 @@ SynthDef(\hihatAw, {arg out = 0, amp = 0.5, att = 0.01, rel = 0.2, ffreq = 6000,
 	Out.ar(out, Pan2.ar(snd, pan));
 }).add;
 
+SynthDef(\ikedhat,{arg out = 0, amp = 1, pan = 0, envLevel1 = 0.0, envLevel2 = 1.0, envLevel3 = 0.0, levelScale = 1, levelBias = 0, att= 0.0, rel = 0.01, timeScale = 1, hpf = 6000, t_trig = 1, doneAction = 2;
+  var sig = HPF.ar(WhiteNoise.ar(1), hpf);
+  var env = EnvGen.ar(Env([envLevel1, envLevel2, envLevel3], [att, rel]), t_trig, levelScale, levelBias, timeScale, doneAction);
+  Out.ar(out, Pan2.ar(sig, pan, env*amp));
+}).add;
+
 )

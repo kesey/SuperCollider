@@ -42,6 +42,7 @@ Tdef(\song).reset;
 /////////// Sequencer transport
 
 if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~globalQuant); }); // Play Sequencer
+
 ~sequencerTransport.stop; // Stop Sequencer
 
 ( // Reset Sequencer

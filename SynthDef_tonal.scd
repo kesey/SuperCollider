@@ -400,4 +400,17 @@ SynthDef(\seqPure, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\main,{arg out = 0, amp = 0.5, pan = 0, lev = 10, envLevel1 = 0.0, envLevel2 = 1.0, envLevel3 = 0.0, levelScale = 1, levelBias = 0, att = 0.0, rel = 0.1, timeScale = 1, hpf = 8000, freq = 50, sel = 0, noiseAmp = 1, t_trig = 1, doneAction = 2;
+	var fmod = SinOsc.ar(freq/60, 0, freq/60);
+	var sig = [
+		SinOsc.ar([freq, freq + 600] + fmod, 0, [lev, 0.005]).mean.tanh,
+		HPF.ar(WhiteNoise.ar(1), hpf),
+		SinOsc.ar(30, 0, 1),
+		VarSaw.ar(freq/40, mul: lev * 10000)
+	];
+	var env = EnvGen.ar(Env([envLevel1, envLevel2, envLevel3], [att, rel]), t_trig, levelScale, levelBias, timeScale, doneAction);
+	sig = (Select.ar(sel, sig) * env).fold(-1, 1) * 0.7 + SinOsc.ar(40, 0, 0.3) * (1 + HPF.ar(WhiteNoise.ar(0.02 * noiseAmp), hpf));
+Out.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
 )

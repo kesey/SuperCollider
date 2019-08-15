@@ -313,4 +313,10 @@ SynthDef(\seqModul, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\harrish, {| out = 0, amp = 0.1, pan = 0, attack = 0, sustain = 0.2, release = 0.1, curve = 0, impFreq = 0, doneAction = 2|
+	var env = EnvGen.ar(Env.linen(attack, sustain, release, curve: curve), doneAction: doneAction);
+	var snd = (ClipNoise.ar(amp) + Impulse.ar(impFreq) + BrownNoise.ar(0.3)) * env;
+	Out.ar(out, Pan2.ar(snd, pan));
+}).add;
+
 )

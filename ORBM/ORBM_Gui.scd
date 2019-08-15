@@ -403,7 +403,7 @@ u.canvas.layout = VLayout();
 	]
 ));
 
-~autoGui.value(u, ~noiseInjectionSnythDef, ~noiseInjection, 45, 1, ~aux1Color, Dictionary.newFrom(
+~autoGui.value(u, ~noiseInjectionSynthDef, ~noiseInjection, 45, 1, ~aux1Color, Dictionary.newFrom(
 	List[
 		"attack", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],
 		"release", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],
