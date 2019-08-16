@@ -29,6 +29,7 @@ s.options.recChannels = 2;
 s.options.recSampleFormat = "int24"; // 24 bit
 s.options.recHeaderFormat = "aiff";
 
+// s.options.blockSize = 64;
 s.options.dump; // visualise server options
 // s.dumpOSC;
 // GUI.current; // Test which GUI library you are using by default
@@ -36,8 +37,8 @@ s.options.dump; // visualise server options
 ////////////////////////////////// 2. OSC config
 
 // NetAddr.localAddr; // retrieve the current IP and port
-// OSCFunc.trace(true); // Turn posting on
-// OSCFunc.trace(false); // Turn posting off
+// OSCFunc.trace(true); // Turn OSC message posting on
+// OSCFunc.trace(false); // Turn OSC message posting off
 
 ////////////////////////////////// 3. midi config
 
@@ -123,8 +124,8 @@ s.waitForBoot({
 		s.sync;
 		this.executeFile(~path ++ "ORBM_Song.scd"); // Gui need to exist before executing ORBM_Song.scd
 		s.sync;
-		"init complete".postln;
 		~init = true;
+		"init complete".postln;
 	});
 });
 
