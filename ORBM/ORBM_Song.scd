@@ -342,13 +342,13 @@
 		~autoGuiControl.at("quadDelay1013sync4").valueAction_(1);
 		~autoGuiControl.at("quadDelay1013amp4").valueAction_(0);
 
-		~autoGuiControl.at("pitchShifter1012drywet").valueAction_(0.5);
-		~autoGuiControl.at("pitchShifter1012pitchRatio").valueAction_(1.98);
-		~autoGuiControl.at("pitchShifter1012pitchDisper").valueAction_(0.18);
-		~autoGuiControl.at("pitchShifter1012timeDisper").valueAction_(0.76);
+		~autoGuiControl.at("pitchShifter1012drywet").valueAction_(0.7);
+		~autoGuiControl.at("pitchShifter1012pitchRatio").valueAction_(0.11);
+		~autoGuiControl.at("pitchShifter1012pitchDisper").valueAction_(0);
+		~autoGuiControl.at("pitchShifter1012timeDisper").valueAction_(0.02);
 
 		~autoGuiControl.at("flanging1011drywet").valueAction_(-0.02);
-		~autoGuiControl.at("flanging1011fgfreq").valueAction_(102.4);
+		~autoGuiControl.at("flanging1011fgfreq").valueAction_(2);
 		~autoGuiControl.at("flanging1011fdback").valueAction_(0.12);
 
 		~autoGuiControl.at("verb1010drywet").valueAction_(0);
@@ -438,7 +438,94 @@
 			\att, 0.17
 		).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit4), ~song3Pattern15);
+		Pbindef(\unit4,
+			\dur, Pwrand([3.5, 7], [0.7, 0.3].normalizeSum, inf),
+			\amp, 0.25,
+			\attack, 1.32,
+			\sustain, 0.01,
+			\release, 0.09,
+			\impFreq, Pseq([15, 8, 12], inf),
+			\impPhase, 0,
+			\impLevel, 1.7,
+			\noiseLevel, 0.2,
+			\eqfreq, 367,
+		).quant_(~globalQuant);
 		7.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song3Pattern2);
+		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
+		~changePattern.value(Pdef(\unit5), ~song3Pattern17);
+		~changePattern.value(Pdef(\unit6), ~song3Pattern6);
+		~changePattern.value(Pdef(\unit7), ~song3Pattern7);
+		28.0.wait;
+		Pbindef(\unit1,
+			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+		).quant_(~globalQuant);
+		Pbindef(\unit3,
+			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\att, 0.17
+		).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit6), ~song3Pattern15);
+		Pbindef(\unit6,
+			\attack, 0,
+			\sustain, 0.14,
+			\release, 0,
+			\curve, 4.76,
+			\clipLevel, 0,
+			\impFreq, Pseq([15, 8, 12], inf),
+			\impPhase, 0,
+			\impLevel, 3.99,
+			\noiseLevel, 0.3,
+			\eqfreq, Pseg([765, 2242, 12875], [0.2, 0.55], \exp, inf),
+			\eqrq, 0.74,
+			\eqdb, -60
+		).quant_(~globalQuant);
+		Pbindef(\unit7,
+			\dur, Pseq([0.875, Rest(0.21875), 1.75, 0.21875, 0.4375], inf), // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+			\release, Pseq([0.01, 0.02, 0.01, 0.02, 0.03], inf),
+		).quant_(~globalQuant);
+		14.0.wait;
+		Pbindef(\unit3,
+			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf)
+		).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit4), ~song3Pattern16);
+		~changePattern.value(Pdef(\unit6), ~song3Pattern15);
+		Pbindef(\unit6,
+			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf),
+			\amp, 0.25,
+			\attack, 1.32,
+			\sustain, 0.01,
+			\release, 0.09,
+			\impFreq, Pseq([15, 8, 12], inf),
+			\eqfreq, 367,
+			\impLevel, 1.7,
+			\noiseLevel, 0.2,
+		).quant_(~globalQuant);
+		28.0.wait;
+		Pbindef(\unit1,
+			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+		).quant_(~globalQuant);
+		Pbindef(\unit3,
+			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\att, 0.17
+		).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit5), ~song3Pattern5);
+		~changePattern.value(Pdef(\unit6), ~song3Pattern15);
+		Pbindef(\unit6,
+			\attack, 0,
+			\sustain, 0.14,
+			\release, 0,
+			\curve, 4.76,
+			\clipLevel, 0,
+			\impFreq, Pseq([15, 8, 12], inf),
+			\impPhase, 0,
+			\impLevel, 3.99,
+			\noiseLevel, 0.3,
+			\eqfreq, Pseg([765, 2242, 12875], [0.2, 0.55], \exp, inf),
+			\eqrq, 0.74,
+			\eqdb, -60
+		).quant_(~globalQuant);
+		14.0.wait;
 	}
 }
 
