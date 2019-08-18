@@ -159,9 +159,10 @@ SynthDef(\awdistortion, {arg in = 0, out = 0, gate = 1;
 
 }).add;
 
-SynthDef(\distortion, { arg out = 0, gain = 41.97, envtime = 4, mix = 1, outputlevel = 1, shaperbuf;
-	var input = In.ar(out, 2) * gain;
-	ReplaceOut.ar(out, XFade2.ar(input, Shaper.ar(shaperbuf, input), mix.linlin(0,1.0,-1,1.0)));
+~waveShapeSynthDef = SynthDef(\waveShape, { arg in = 0, out = 0, mix = 1, gain = 1, shaperbuf;
+	var input = In.ar(in, 2);
+	var sig = XFade2.ar(input, Shaper.ar(shaperbuf, input * gain), mix.linlin(0,1.0,-1,1.0));
+	ReplaceOut.ar(out, sig);
 }).add;
 
 ///////////////////////////////////////  Dynamic
@@ -1184,12 +1185,13 @@ var sig = LatoocarfianL.ar(
     OffsetOut.ar(0,sig*amp);
 }).add;*/
 
-~noiseInjectionSynthDef = SynthDef(\noiseInjection, { arg in = 0, out = 0, drywet = -0.6, attack = 0.01, release = 0.01, noiseType = 0;
+~noiseInjectionSynthDef = SynthDef(\noiseInjection, { arg in = 0, out = 0, drywet = -0.6, attack = 0.01, release = 0.01, noiseType = 0, noiseLevel = 1, impFreq = 52.9, impLevel = 0;
 	var input, sig, inputAmp;
 	input = InFeedback.ar(in, 2);
 	inputAmp = Amplitude.kr(input, attack, release);
 	noiseType = noiseType.max(0).min(4);
 	sig = Select.ar(noiseType, [WhiteNoise.ar(inputAmp), BrownNoise.ar(inputAmp), GrayNoise.ar(inputAmp), PinkNoise.ar(inputAmp), ClipNoise.ar(inputAmp)]);
+	sig = (sig * noiseLevel) + (Impulse.ar(impFreq, 0, inputAmp) * impLevel);
 	sig = XFade2.ar(input, sig, drywet);
 	ReplaceOut.ar(out, sig);
 	//XOut.ar(out, drywet, sig);

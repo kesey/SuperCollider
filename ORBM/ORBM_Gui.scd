@@ -356,7 +356,7 @@ u.canvas.layout = VLayout();
 	List[
 		"amp", ["none"],
 		"drywet", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), true],
-		"amount", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), false],
+		"amount", ["slider", ControlSpec(0, 1, step: 0.01, default: 1), false]
 	]
 ));
 
@@ -391,24 +391,35 @@ u.canvas.layout = VLayout();
 ));
 
 // Aux 1
-~autoGui.value(u, ~distoInsideOutSynthDef, ~distoInsideOut, 39, 1, ~aux1Color, Dictionary.newFrom(
+~autoGui.value(u, ~waveShapeSynthDef, ~waveShape, 39, 1, ~aux1Color, Dictionary.newFrom(
+	List[
+		"shaperbuf", ["none"],
+		"gain", ["knob", ControlSpec(0, 50, step: 0.1, default: 29.96), true],
+		"mix", ["slider", ControlSpec(0, 1, step: 0.01, default: 0), true]
+	]
+));
+
+~autoGui.value(u, ~distoInsideOutSynthDef, ~distoInsideOut, 41, 1, ~aux1Color, Dictionary.newFrom(
 	List[
 		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.5), true]
 	]
 ));
 
-~autoGui.value(u, ~distoCrossOverSynthDef, ~distoCrossOver, 41, 1, ~aux1Color, Dictionary.newFrom(
+~autoGui.value(u, ~distoCrossOverSynthDef, ~distoCrossOver, 43, 1, ~aux1Color, Dictionary.newFrom(
 	List[
 		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: 0.5), true]
 	]
 ));
 
-~autoGui.value(u, ~noiseInjectionSynthDef, ~noiseInjection, 45, 1, ~aux1Color, Dictionary.newFrom(
+~autoGui.value(u, ~noiseInjectionSynthDef, ~noiseInjection, 47, 1, ~aux1Color, Dictionary.newFrom(
 	List[
-		"attack", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],
-		"release", ["knob", ControlSpec(0.01, 4, step: 0.01, default: 0.01), true],
+		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.6), true],
+		"attack", ["knob", ControlSpec(0.01, 10, step: 0.01, default: 0.01), true],
+		"release", ["knob", ControlSpec(0.01, 10, step: 0.01, default: 0.01), true],
 		"noiseType", ["knob", ControlSpec(0, 4, step: 1, default: 0), true],
-		"drywet", ["slider", ControlSpec(-1, 1, step: 0.01, default: -0.6), true]
+		"noiseLevel", ["knob", ControlSpec(0, 4, step: 0.01, default: 1), false],
+		"impFreq", ["knob", ControlSpec(0, 19000, step: 1, default: 52.09), false],
+		"impLevel", ["knob", ControlSpec(0, 60, step: 0.01, default: 0), false]
 	]
 ));
 

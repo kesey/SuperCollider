@@ -1202,7 +1202,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song3Pattern8 = Pbind(
 	\instrument, \cym,
-	\dur, 3.5,
+	\dur, Pwrand([3.5, 7], [0.7, 0.3].normalizeSum, inf),
 	\amp, 0.05,
 	\att, 0.47,
 	\rel, 0.88,
@@ -1620,7 +1620,10 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song3Pattern17 = Pbind(
 	\instrument, \main,
-	[\dur, \freq, \att], Pseq([[0.75, 49, 0.79], [1, 49, 1], [0.5, 46, 0.02], [3, 49, 0.16], [0.75, 39.2, 0.02], [1, 49, 0.3]], inf), // 0.75+ 1+ 0.5+ 3+ 0.75+ 1 == 7
+	[\dur, \freq, \att], Pseq([[0.75, 49, 0.79], [1, 49, 1], [0.5, 46, 0.02], [3, 49, 0.16], [0.75, 39.2, 0.02], [1, 49, 0.5]/**/, [0.75, 49, 0.79], [1, 49, 1], [0.5, 46, 0.02], [3, 49, 0.16], [0.75, 39.2, 0.02], [1, 52.8, 0.55]], inf), // 0.75+ 1+ 0.5+ 3+ 0.75+ 1 == 7
+	/*\dur, Pseq([0.75, 1, 0.5, 3, 0.75, 1], inf),
+	\att, Pseq([0.79, 1, 0.02, 0.16], inf),
+	\freq, 49,*/
 	\amp, 0.043,
 	\sinAmp, 2,
 	\sel, 0,
@@ -1628,7 +1631,6 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\timeScale, 1,
 	\hpf, 8000,
 	\sinFreq, 30,
-	//\att, Pseq([0.79, 1, 0.02, 0.16], inf),
 	\rel, 0.79,
 	\pan, 0,
 	\out, ~channelBus[1],
