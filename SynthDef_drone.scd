@@ -375,4 +375,19 @@ SynthDef(\ambitek, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
+SynthDef(\Lumbricost, {arg out = 0, amp = 1, pan = 0, attTim= 1, relTim=2.5, scale= 6, offset = 40, synch = 10, timescale = 10, widthmod = 0.4, width = 0.2, totVol, abc = 0, randLo = 0, randHi = 20000, bpfrq = 1, doneAction = 2;
+	var generation =
+	Pulse.ar(SinOsc.kr(5/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(30/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(7/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(7/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(9/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(2/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(10/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(5/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(3/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(9/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(2/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(40/synch),widthmod,width,timescale), mul: 0.1);
+	var env = generation * Env.perc(attackTime:attTim,releaseTime: relTim).ar(doneAction);
+	var env1 = LeakDC.ar(env);
+	var sig =  env1* ((totVol + amp -15).dbamp);
+	sig = BPF.ar(sig, Rand(randLo-100, randHi+100), bpfrq);
+	OffsetOut.ar(out, Pan2.ar(sig, pan));
+}).add;
+
 )

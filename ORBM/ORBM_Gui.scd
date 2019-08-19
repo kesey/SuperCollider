@@ -394,7 +394,7 @@ u.canvas.layout = VLayout();
 ~autoGui.value(u, ~waveShapeSynthDef, ~waveShape, 39, 1, ~aux1Color, Dictionary.newFrom(
 	List[
 		"shaperbuf", ["none"],
-		"gain", ["knob", ControlSpec(0, 50, step: 0.1, default: 29.96), true],
+		"gain", ["knob", ControlSpec(0, 100, step: 0.1, default: 29.9), true],
 		"mix", ["slider", ControlSpec(0, 1, step: 0.01, default: 0), true]
 	]
 ));
@@ -419,6 +419,7 @@ u.canvas.layout = VLayout();
 		"noiseType", ["knob", ControlSpec(0, 4, step: 1, default: 0), true],
 		"noiseLevel", ["knob", ControlSpec(0, 4, step: 0.01, default: 1), false],
 		"impFreq", ["knob", ControlSpec(0, 19000, step: 1, default: 52.09), false],
+		"impPhase", ["slider", ControlSpec(0, 4, step: 0.01, default: 0), false],
 		"impLevel", ["knob", ControlSpec(0, 60, step: 0.01, default: 0), false]
 	]
 ));

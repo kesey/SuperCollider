@@ -1180,4 +1180,96 @@ play{Splay.ar({|i|f=1.9**i/128;BPF.ar(PinkNoise.ar(1!2),4**LFNoise2.kr(1.2**i/16
 
 p=Impulse;play{mean({|i|Pluck.ar(LFSaw.ar([102,101]),x=p.ar(1,i/10)+p.ar(0),1,1/Latch.ar(1.015**Sweep.ar(0,1)*64%1+1*200,x),4,0.2)}!10)}
 
-play{GVerb.ar(VarSaw.ar(Duty.ar(1/5,0,Dseq(x=[[4,4.5],[2,3,5,6]];flat(x*.x allTuples(x*.x x)*4).clump(2)++0)),0,0.9)*LFPulse.ar(5),99,5)/5};
+play{
+	GVerb.ar(
+		(
+			{|k|
+				({|i|
+					x = Impulse.kr(0.5 ** i / k);
+					y = SinOsc;y.ar(i, y.ar(i + k ** i) / Decay.kr(x, [i, i + 1], k))} ! 6).sum;
+			}!16
+		).sum,
+		1
+	)/512;
+}//#supercollider
+
+( // too big
+SynthDef(\sleep, { arg out = 0, amp = 1, attack = 0.01, release = 2, roomSize = 1, impFreq = 0.5, t_trig = 1, doneAction = 2;
+	var sig, env, x;
+	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	sig = GVerb.ar(
+		(
+			{|k|
+				({|i|
+					x = Impulse.kr(impFreq ** i / k);
+					y = SinOsc;y.ar(i, y.ar(i + k ** i) / Decay.kr(x, [i, i + 1], k))} ! 3).sum;
+			} ! 8
+		).sum,
+		roomSize
+	) / 512;
+	sig = sig * env;
+	OffsetOut.ar(out, sig * amp);
+}).add;
+)
+
+(
+SynthDef(\KSpluck3, { arg out = 0, att = 0, dec = 0.01, midiPitch, art, noiseFreq = 1, doneAction = 2;
+		var burstEnv;
+		var sig, delayTime;
+		delayTime = [midiPitch, midiPitch + 12].midicps.reciprocal;
+		burstEnv = EnvGen.kr(Env.perc(att, dec));
+		sig = PinkNoise.ar([burstEnv, burstEnv]); //Noise burst
+		sig = CombL.ar(sig, delayTime, delayTime,
+			art, add: sig); //Echo chamber
+		sig = RLPF.ar(sig, LFNoise1.kr(noiseFreq, 13000, 14010), 0.1); //Filter ADSR GELSIN BURAYA
+		DetectSilence.ar(sig, doneAction: doneAction);
+		OffsetOut.ar(out, sig*0.8)
+	}
+).add;
+)
+
+(
+//run this first
+SynthDef(\Flash, { arg out = 0, amp = 0.3, fund = 400, decay = 4, filter = 1, doneAction = 2;
+	var sig;
+	sig = Mix.ar( Array.fill(7,
+		{
+			arg counter;
+			var partial;
+			partial = counter + 1;
+			SinOsc.ar(fund*partial) * EnvGen.kr(Env.linen(0, 0, decay + 2), levelScale: 1/(partial*filter)
+			) * max(0, LFNoise1.kr(rrand(5.0, 12.0)));
+		}
+	)
+	);
+	sig = Pan2.ar(sig, Rand(-1.0, 1.0), amp);
+	DetectSilence.ar(sig, doneAction: doneAction);
+	OffsetOut.ar(out, sig)
+}
+).add;
+)
+
+(
+Pbind(
+	\instrument, \Lumbricost,
+	\dur, 1.75,
+	\amp, 0.5
+).play;
+)
+
+(
+SynthDef(\Lumbricost, {arg out = 0, amp = 1, pan = 0, attTim= 1, relTim=2.5, scale= 6, offset = 40, synch = 10, timescale = 10, widthmod = 0.4, width = 0.2, totVol, abc = 0, randLo = 0, randHi = 20000, bpfrq = 1, doneAction = 2;
+	var generation =
+	Pulse.ar(SinOsc.kr(5/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(30/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(7/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(7/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(9/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(2/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(10/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(5/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(3/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(9/synch),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(2/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(40/synch),widthmod,width,timescale), mul: 0.1);
+	var env = generation * Env.perc(attackTime:attTim,releaseTime: relTim).ar(doneAction);
+	var env1 = LeakDC.ar(env);
+	var sig =  env1* ((totVol + amp -15).dbamp);
+	sig = BPF.ar(sig, Rand(randLo-100, randHi+100), bpfrq);
+	OffsetOut.ar(out, Pan2.ar(sig, pan));
+}).add;
+)

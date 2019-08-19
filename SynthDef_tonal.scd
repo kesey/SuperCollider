@@ -413,4 +413,21 @@ SynthDef(\main,{arg out = 0, amp = 0.5, pan = 0, lev = 10, envLevel1 = 0.0, envL
 Out.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
+SynthDef(\flash, { arg out = 0, amp = 0.3, fund = 400, decay = 4, filter = 1, doneAction = 2;
+	var sig;
+	sig = Mix.ar( Array.fill(7,
+		{
+			arg counter;
+			var partial;
+			partial = counter + 1;
+			SinOsc.ar(fund*partial) * EnvGen.kr(Env.linen(0, 0, decay + 2), levelScale: 1/(partial*filter)
+			) * max(0, LFNoise1.kr(rrand(5.0, 12.0)));
+		}
+	)
+	);
+	sig = Pan2.ar(sig, Rand(-1.0, 1.0), amp);
+	DetectSilence.ar(sig, doneAction: doneAction);
+	OffsetOut.ar(out, sig)
+}).add;
+
 )

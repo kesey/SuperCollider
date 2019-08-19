@@ -313,10 +313,26 @@ SynthDef(\seqModul, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\harrish, {| out = 0, amp = 0.1, pan = 0, attack = 0, sustain = 0.2, release = 0.1, curve = 0, impFreq = 0, doneAction = 2|
+SynthDef(\harrish, {| out = 0, amp = 0.2, pan = 0, attack = 0, sustain = 0.2, release = 0.1, curve = 0, clipLevel = 0.006, impFreq = 0, impPhase = 0, impLevel = 1, noiseLevel = 0.3, lpf = 20000, eqfreq = 4000, eqrq = 1, eqdb = 0, hpf = 20,  doneAction = 2|
 	var env = EnvGen.ar(Env.linen(attack, sustain, release, curve: curve), doneAction: doneAction);
-	var snd = (ClipNoise.ar(amp) + Impulse.ar(impFreq) + BrownNoise.ar(0.3)) * env;
-	Out.ar(out, Pan2.ar(snd, pan));
+	var snd = (ClipNoise.ar(clipLevel) + Impulse.ar(impFreq, impPhase, impLevel) + BrownNoise.ar(noiseLevel)) * env;
+	snd = LPF.ar(snd, lpf);
+	snd = BPeakEQ.ar(snd, Lag2.kr(eqfreq.max(20).min(20000), 0.5), eqrq, eqdb);
+	snd = HPF.ar(snd, hpf);
+	OffsetOut.ar(out, Pan2.ar(snd, pan, amp));
+}).add;
+
+SynthDef(\KSpluck3, { arg out = 0, att = 0, dec = 0.01, midiPitch, art, noiseFreq = 1, doneAction = 2;
+	var burstEnv;
+	var sig, delayTime;
+	delayTime = [midiPitch, midiPitch + 12].midicps.reciprocal;
+	burstEnv = EnvGen.kr(Env.perc(att, dec));
+	sig = PinkNoise.ar([burstEnv, burstEnv]); //Noise burst
+	sig = CombL.ar(sig, delayTime, delayTime,
+		art, add: sig); //Echo chamber
+	sig = RLPF.ar(sig, LFNoise1.kr(noiseFreq, 13000, 14010), 0.1); //Filter ADSR GELSIN BURAYA
+	DetectSilence.ar(sig, doneAction: doneAction);
+	OffsetOut.ar(out, sig*0.8)
 }).add;
 
 )
