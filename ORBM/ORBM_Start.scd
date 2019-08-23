@@ -58,7 +58,7 @@ if (MIDIClient.destinations[2].notNil, {
 ////////////////////////////////// 4. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
-~globalQuant = 1; // use a multiple of signature
+~globalQuant = 1; // use a multiple of tempo signature
 ~globalQuant = ~globalQuant.max(0.0625); // avoid 0
 ~synthWindow = Dictionary.new;
 ~autoGuiControl = Dictionary.new;

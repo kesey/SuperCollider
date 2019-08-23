@@ -969,7 +969,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song3Pattern3 = Pbind(
 	\instrument, \kicklaserbeam,
-	\dur, Pseq([0.875, 1.75, 1.25, 0.875, 1.375, 0.875], inf), // 1.75+ 1.25+ 0.875+ 1.75+ 1.375 == 7 1.75 - 0.875
+	\dur, Pseq([0.875, 1.75, 1.25, 0.875, 1.375, 0.875], inf), // 0.875+ 1.75+ 1.25+ 0.875+ 1.375+ 0.875 == 7
 	\amp, 0.004,
 	\freq, 15794,
 	\att, 1.06,
@@ -1352,18 +1352,22 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song3Pattern11 = Pbind(
 	\instrument, \main,
-	[\dur, \freq, \att], Pseq([[0.75, 49, 0.79], [1, 49, 1], [0.5, 46, 0.02], [3, 49, 0.16], [0.75, 39.2, 0.02], [1, 49, 0.5]/**/, [0.75, 49, 0.79], [1, 49, 1], [0.5, 46, 0.02], [3, 49, 0.16], [0.75, 39.2, 0.02], [1, 52.8, 0.55]], inf), // 0.75+ 1+ 0.5+ 3+ 0.75+ 1 == 7
-	/*\dur, Pseq([0.75, 1, 0.5, 3, 0.75, 1], inf),
-	\att, Pseq([0.79, 1, 0.02, 0.16], inf),
-	\freq, 49,*/
-	\amp, 0.043,
+	\dur, Pseq([0.75, 1.5, 2, 1.75, 1]*2, inf), // 0.75+ 1.5+ 2+ 1.75+ 1 == 7
+	\amp, 0.03,
+	\att, Pseg([0.03, 0.21, 0.16, 0.13, 0.03, 0.23], [0.3, 0.03, 0.04, 0.09, 0.5], repeats: inf),
+	\freq, Pseg([34, 37], [0.07], repeats: inf),
+	\lev, 10,
 	\sinAmp, 2,
 	\sel, 0,
 	\levelScale, 1.53,
+	\levelBias, 0.48,
 	\timeScale, 1,
 	\hpf, 8000,
 	\sinFreq, 30,
-	\rel, 0.79,
+	\rel, 0.13,
+	\revtime, 2.5,
+	\room, Pseq([1.63, 16, 1.63, 10, 1.37], inf),
+	\revMix, 0.3,
 	\pan, 0,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
@@ -1381,6 +1385,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"t_trig", ["none"],
 					"doneAction", ["none"],
 					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
+					"lev", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\lev)), true],
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
 					"sinAmp", ["knob", ControlSpec(0, 5, step: 0.01, default: event.at(\sinAmp)), true],
 					"levelScale", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\levelScale)), true],
@@ -1390,7 +1395,9 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"freq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\freq)), true],
 					"sel", ["slider", ControlSpec(0, 3, step: 1, default: event.at(\sel)), true],
 					"att", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\att)), true],
-					"rel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\rel)), true]
+					"rel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\rel)), true],
+					"revtime", ["slider", ControlSpec(0, 60, step: 0.1, default: event.at(\revtime)), true],
+					"room", ["knob", ControlSpec(0, 20, step: 0.01, default: event.at(\room)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -1401,13 +1408,20 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song3Pattern12 = Pbind(
 	\instrument, \kSpluck3,
-	\dur, Pwrand([3.5, Rest(3.5)], [0.85, 0.15].normalizeSum, inf),
-	\amp, 0.03,
-	\att, 0.47,
-	\rel, 0.88,
-	\midiPitch, 24,
-	\art, Pwhite(-3.0, 3.0, inf),
-	\noiseFreq, 1,
+	//\dur, Pseq([7, 7, 7, 4.5, 2.5], inf),
+	\amp, 0.014,
+	[\dur, \att, \midiPitch],
+	Pseq([
+		[7, 0.47, 53.4],
+		[14, 1.37, 53.4],
+		[4.5, 1.32, 53.4],
+		[2.5, 0.82, Penv([41,4, 35.3], [0.5], \exponential)]
+	], inf),
+	\rel, 2.11,
+	\art, 0.6,
+	\noiseFreq, Pseq([3707, 2700, 120, 3570, 4280], inf),
+	\noiseLev, 13631,
+	\noiseOffset, 13963,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -1426,8 +1440,10 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"att", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\att)), true],
 					"rel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\rel)), true],
 					"midiPitch", ["knob", ControlSpec(0, 127, step: 0.1, default: event.at(\midiPitch)), true],
-					"art", ["knob", ControlSpec(-3, 3, step: 0.1, default: event.at(\art)), true],
-					"noiseFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\noiseFreq)), true]
+					"art", ["knob", ControlSpec(-10, 10, step: 0.1, default: event.at(\art)), true],
+					"noiseFreq", ["knob", ControlSpec(0, 20000, step: 1, default: event.at(\noiseFreq)), true],
+					"noiseLev", ["knob", ControlSpec(0, 20000, step: 1, default: event.at(\noiseLev)), true],
+					"noiseOffset", ["knob", ControlSpec(0, 20000, step: 1, default: event.at(\noiseLev)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -1436,20 +1452,20 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	})
 );
 
-~song3Pattern13 = Pbind( // randLo = 0, randHi = 20000, bprq = 1
-	\instrument, \Lumbricost,
-	\dur, Pwrand([3.5, 7], [0.7, 0.3].normalizeSum, inf),
-	\amp, 0.05,
+~song3Pattern13 = Pbind(
+	\instrument, \lumbricost,
+	\dur, 7, //Pwrand([3.5, 7], [0.7, 0.3].normalizeSum, inf),
+	\amp, 0.3,
 	\attTim, 1,
 	\relTim, 2.5,
-	\scale, 6,
-	\offset, 40,
-	\synch, 10,
+	\scale, 25,
+	\offset, 24.7,
+	\freq, 12,
 	\timescale, 10,
-	\randLo, 0,
-	\randHi, 20000,
+	\randLo, 200,
+	\randHi, 2000,
 	\bprq, 1,
-	\pan, Pwhite(-0.5, 0.5, inf),
+	\pan, Pwhite(-0.2, 0.2, inf),
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -1463,18 +1479,19 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 			{
 				~removePrev.value(synthWindowKey);
 				~autoGui.value(v, ~lumbricostSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"t_gate", ["none"],
 					"doneAction", ["none"],
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
-					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
+					"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\amp)), true],
 					"attTim", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\attTim)), true],
 					"relTim", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\relTim)), true],
-					"scale", ["knob", ControlSpec(0, 128, step: 1, default: event.at(\scale)), true],
+					"scale", ["knob", ControlSpec(0, 48, step: 1, default: event.at(\scale)), true],
 					"offset", ["knob", ControlSpec(0, 60, step: 0.1, default: event.at(\offset)), true],
-					"synch", ["knob", ControlSpec(0, 40, step: 0.1, default: event.at(\synch)), true],
+					"freq", ["knob", ControlSpec(0, 40, step: 0.1, default: event.at(\freq)), true],
 					"timescale", ["knob", ControlSpec(0, 40, step: 0.1, default: event.at(\timescale)), true],
 					"randLo", ["knob", ControlSpec(0, 20000, step: 1, default: event.at(\randLo)), true],
 					"randHi", ["knob", ControlSpec(0, 20000, step: 1, default: event.at(\randHi)), true],
-					"bprq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\bprq)), true]
+					"bprq", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\bprq)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;

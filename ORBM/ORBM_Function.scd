@@ -130,6 +130,21 @@
 	.put(\stop, { updater.remove; });
 };
 
+~resetControlBus = { arg controlId; // you have to pass an array here
+	~controlBus.keysDo({ arg key;
+		if(key.contains(controlId), {
+			~controlBus.at(key).free;
+			~controlBus.removeAt(key);
+		});
+	});
+
+	~firstTime.keysDo({ arg key;
+		if(key.contains(controlId), {
+			~firstTime.put(key, true);
+		});
+	});
+};
+
 ~pdefUpdate = { arg controlId, instance, controlNameSymb, value;
 	if (~firstTime.at(controlId), {
 		~controlBus.put(controlId, Bus.control(s, 1).set(value));

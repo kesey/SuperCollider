@@ -368,16 +368,20 @@
 		~changePattern.value(Pdef(\unit8), ~song3Pattern8);
 		56.0.wait;
 		Pbindef(\unit1,
-			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+			\dur, Pseq([Rest(0.875), 2.625, Rest(1.75), 1.75/**/, Rest(0.875), 0.875, 1.75, 2.625, Rest(0.875)], inf)
+		).quant_(~globalQuant);
+		Pbindef(\unit2,
+			\dur, Pseq([Rest(1.75), 0.875, 3.5, Rest(0.875)], inf)
 		).quant_(~globalQuant);
 		Pbindef(\unit3,
-			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\dur, Pseq([Rest(1.75), 1.75, Rest(1.25), 0.4375, Rest(1.375), 0.4375], inf), // 1.75+ 1.75+ 1.25+ 0.4375+ 1.375+ 0.4375 == 7
 			\att, 0.17
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit3att");
 		~changePattern.value(Pdef(\unit6), ~song3Pattern9);
 		Pbindef(\unit6,
 			\attack, 0,
-			\amp, 0.3,
+			\amp, 0.27,
 			\sustain, 0.14,
 			\release, 0,
 			\curve, 4.76,
@@ -390,10 +394,12 @@
 			\eqrq, 0.74,
 			\eqdb, -60
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit6");
 		Pbindef(\unit7,
 			\dur, Pseq([0.875, Rest(0.21875), 1.75, 0.21875, 0.4375], inf), // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
 			\release, Pseq([0.01, 0.02, 0.01, 0.02, 0.03], inf),
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit7release");
 		28.0.wait;
 		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
 		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
@@ -401,23 +407,41 @@
 		~changePattern.value(Pdef(\unit7), ~song3Pattern7);
 		28.0.wait;
 		Pbindef(\unit1,
-			\dur, Pseq([2.625, 1.75, Rest(0.875), 0.875, Rest(0.875)], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+			\dur, Pseq([2.625, 1.75, Rest(0.875), 0.875, Rest(0.875)/**/, Rest(0.875), 2.625, 1.75, 0.875, Rest(0.875)], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
 		).quant_(~globalQuant);
 		Pbindef(\unit2,
 			\dur, Pseq([1.75, 3.5, Rest(0.875), Rest(0.875)], inf)
 		).quant_(~globalQuant);
 		Pbindef(\unit3,
-			\dur, Pseq([Rest(0.875), 1.75, 0.875, 1.25, Rest(0.875), 1.375]/2, inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\dur, Pseq([Rest(0.875), 1.75, 0.875, 1.25, Rest(0.875), 1.375/**/, Rest(0.875), 1.75, 1.25, Rest(1.75), 1.375]/2, inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
 			\att, 0.17
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit3att");
 		~changePattern.value(Pdef(\unit4), ~song3Pattern9);
+		Pbindef(\unit4,
+			\dur, Pwrand([1.75, Rest(1.75), 3.5, Rest(3.5)], [0.3, 0.3, 0.3, 0.1].normalizeSum, inf),
+			\amp, 0.3,
+			\attack, 1.6,
+			\sustain, 0,
+			\release, 0,
+			\curve, 3.31,
+			\clipLevel, 0.02,
+			\impFreq, Pseq([8000, 34, 8000], inf),
+			\impPhase, 0,
+			\impLevel, Pseq([0.15, 0.75, 0.15], inf),
+			\noiseLevel, 0,
+			\eqfreq, 163150,
+			\eqrq, 0.73,
+			\eqdb, 30.99
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit4");
 		Pbindef(\unit6, \dur, Pseq([1.75, 0.875], inf)).quant_(~globalQuant);
 		Pbindef(\unit7,
-			\dur, Pseq([0.875, Rest(0.21875), 0.4375, 0.21875, 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+			\dur, Pseq([0.875, Rest(0.21875), 0.4375, 0.21875, 1.75/**/, 1.75, 0.875, Rest(0.21875), 0.21875, 0.4375], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
 		).quant_(~globalQuant);
 		28.0.wait;
 		Pbindef(\unit3,
-			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf) // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\dur, Pseq([Rest(0.875), 0.875, Rest(0.875), 1.375, 0.875, 1.25, 0.875], inf) // 0.875+ 0.875+ 0.875+ 1.375+ 0.875+ 1.25+ 0.875 == 7
 		).quant_(~globalQuant);
 		Pbindef(\unit4,
 			\attack, 0,
@@ -434,9 +458,13 @@
 			\eqrq, 0.74,
 			\eqdb, -60
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit4");
+		Pbindef(\unit7,
+			\dur, Pseq([1.75, 0.875, Rest(0.21875), 0.21875, 0.4375], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+		).quant_(~globalQuant);
 		14.0.wait;
 		Pbindef(\unit3,
-			\dur, Pseq([Rest(0.875), 1.75, 0.875, 1.25, Rest(0.875), 1.375]/2, inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
+			\dur, Pseq([Rest(0.875), 1.75, Rest(0.875), 1.25, Rest(0.875), 1.375]/2, inf), // 0.875+ 1.75+ 0.875+ 1.25+ 0.875+ 1.375 == 7
 		).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit4), ~song3Pattern9);
 		Pbindef(\unit4,
@@ -444,12 +472,22 @@
 			\attack, 1.32,
 			\sustain, 0.01,
 			\release, 0.09,
-			\impFreq, Pseq([15, 8, 12], inf),
+			[\impFreq, \impLevel], Pseq([[15, 1.7], [8000, 0.25], [8, 1.7], [8000, 0.25], [12, 1.7], [8, 1.7]], inf),
 			\impPhase, 0,
-			\impLevel, 1.7,
 			\noiseLevel, 0.2,
-			\eqfreq, 367,
+			\eqfreq, 367
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit4");
+		~changePattern.value(Pdef(\unit5), ~song3Pattern11);
+		Pbindef(\unit5,
+			\dur, 14,
+			\amp, 0.03,
+			\att, 5.8,
+			\revMix, 0,
+			\freq, 37,
+			\rel, 0
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit5");
 		14.0.wait;
 		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
 		~changePattern.value(Pdef(\unit2), ~song3Pattern2);
@@ -461,12 +499,17 @@
 		Pbindef(\unit1,
 			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
 		).quant_(~globalQuant);
+		Pbindef(\unit2,
+			\dur, Pseq([Rest(1.75), 3.5, 0.875, Rest(0.875)], inf)
+		).quant_(~globalQuant);
 		Pbindef(\unit3,
 			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf), // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
 			\att, 0.17
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit3att");
 		~changePattern.value(Pdef(\unit6), ~song3Pattern9);
 		Pbindef(\unit6,
+			\dur, Pwrand([1.75, Rest(1.75), 3.5, Rest(3.5)], [0.2, 0.4, 0.3, 0.1].normalizeSum, inf),
 			\attack, 0,
 			\amp, 0.3,
 			\sustain, 0.14,
@@ -481,38 +524,71 @@
 			\eqrq, 0.74,
 			\eqdb, -60
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit6");
 		Pbindef(\unit7,
 			\dur, Pseq([0.875, Rest(0.21875), 1.75, 0.21875, 0.4375], inf), // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
 			\release, Pseq([0.01, 0.02, 0.01, 0.02, 0.03], inf),
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit7release");
 		28.0.wait;
+		~changePattern.value(Pdef(\unit2), ~song3Pattern2);
 		Pbindef(\unit3,
-			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf)
+			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf),
+			\amp, 0.005
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit3amp");
+		~changePattern.value(Pdef(\unit6), ~song3Pattern6);
+		28.0.wait;
+		~changePattern.value(Pdef(\unit1), ~initPattern);
+		~changePattern.value(Pdef(\unit3), ~initPattern);
+		~changePattern.value(Pdef(\unit4), ~initPattern);
+		~changePattern.value(Pdef(\unit5), ~initPattern);
+		~changePattern.value(Pdef(\unit6), ~initPattern);
+		~changePattern.value(Pdef(\unit8), ~initPattern);
+		28.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
+		Pbindef(\unit1,
+			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 2.625+ 0.875+ 0.875+ 1.75
+		).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
+		Pbindef(\unit3,
+			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
+			\att, 0.17,
+			\amp, 0.005
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit3amp");
 		~changePattern.value(Pdef(\unit4), ~song3Pattern10);
+		~changePattern.value(Pdef(\unit5), ~song3Pattern11);
 		~changePattern.value(Pdef(\unit6), ~song3Pattern9);
 		Pbindef(\unit6,
-			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf),
+			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
 			\amp, 0.3,
-			\attack, 1.32,
+			\attack, Pseq([1.32, 0.2, 1.65, 0.03], inf),
 			\sustain, 0.01,
 			\release, 0.09,
-			\impFreq, Pseq([15, 8, 12], inf),
+			\impFreq, Pseq([8000, 34, 8000], inf),
 			\eqfreq, 367,
-			\impLevel, 1.7,
+			\impLevel, Pseq([0.15, 0.75, 0.15]*1.2, inf),
 			\noiseLevel, 0.2,
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit6");
+		~changePattern.value(Pdef(\unit8), ~song3Pattern8);
 		56.0.wait;
-		Pbindef(\unit1,
-			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
-		).quant_(~globalQuant);
-		Pbindef(\unit3,
-			\dur, Pseq([Rest(0.875), 0.875, 1.75, 1.25, 1.375, 0.875], inf) // 0.875+ 0.875+ 1.75+ 1.25+ 1.375+ 0.875 == 7
-		).quant_(~globalQuant);
-		~changePattern.value(Pdef(\unit5), ~song3Pattern5);
+		~changePattern.value(Pdef(\unit1), ~initPattern);
+		~changePattern.value(Pdef(\unit2), ~initPattern);
+		~changePattern.value(Pdef(\unit4), ~initPattern);
+		~changePattern.value(Pdef(\unit5), ~initPattern);
+		~changePattern.value(Pdef(\unit7), ~initPattern);
+		~changePattern.value(Pdef(\unit8), ~initPattern);
+		28.0.wait;
+		~changePattern.value(Pdef(\unit3), ~initPattern);
+		~changePattern.value(Pdef(\unit5), ~song3Pattern13);
+		~changePattern.value(Pdef(\unit6), ~initPattern);
+		28.0.wait;
 		~changePattern.value(Pdef(\unit6), ~song3Pattern9);
 		Pbindef(\unit6,
 			\attack, 0,
+			\amp, 0.3,
 			\sustain, 0.14,
 			\release, 0,
 			\curve, 4.76,
@@ -525,8 +601,9 @@
 			\eqrq, 0.74,
 			\eqdb, -60
 		).quant_(~globalQuant);
-		28.0.wait;
+		14.0.wait;
 		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song3Pattern2);
 		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
 		~changePattern.value(Pdef(\unit4), ~song3Pattern4);
 		~changePattern.value(Pdef(\unit6), ~song3Pattern6);
@@ -539,37 +616,69 @@
 		).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit4), ~song3Pattern9);
 		Pbindef(\unit4,
-			\dur, Pwrand([3.5, 7], [0.7, 0.3].normalizeSum, inf),
-			\attack, 1.32,
-			\sustain, 0.01,
-			\release, 0.09,
+			\dur, Pwrand([1.75, Rest(1.75), 3.5, Rest(3.5)], [0.2, 0.4, 0.3, 0.1].normalizeSum, inf),
+			\attack, 0,
+			\amp, 0.3,
+			\sustain, 0.14,
+			\release, 0,
+			\curve, 4.76,
+			\clipLevel, 0,
 			\impFreq, Pseq([15, 8, 12], inf),
 			\impPhase, 0,
-			\impLevel, 1.7,
-			\noiseLevel, 0.2,
-			\eqfreq, 367,
+			\impLevel, 3.99,
+			\noiseLevel, 0.3,
+			\eqfreq, Pseg([765, 2242, 12875], [0.2, 0.55], \exp, inf),
+			\eqrq, 0.74,
+			\eqdb, -60
 		).quant_(~globalQuant);
-		Pbindef(\unit8, \dur, 7).quant_(~globalQuant);
 		Pbindef(\unit6, \dur, Pseq([1.75, 3.5], inf)).quant_(~globalQuant);
+		Pbindef(\unit7,
+			\dur, Pseq([0.875, Rest(0.21875), 1.75, 0.21875, 0.4375], inf), // 0.875+ 0.4375+ 0.21875+ 0.21875+ 1.75
+			\release, Pseq([0.01, 0.02, 0.01, 0.02, 0.03], inf),
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit7release");
 		28.0.wait;
 		Pbindef(\unit3,
-			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf)
+			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf),
+			\amp, 0.005
 		).quant_(~globalQuant);
+		~resetControlBus.value("unit3amp");
+		~changePattern.value(Pdef(\unit6), ~song3Pattern6);
+		~changePattern.value(Pdef(\unit7), ~song3Pattern7);
+		28.0.wait;
+		~changePattern.value(Pdef(\unit1), ~initPattern);
+		~changePattern.value(Pdef(\unit3), ~initPattern);
+		~changePattern.value(Pdef(\unit4), ~initPattern);
+		~changePattern.value(Pdef(\unit6), ~initPattern);
+		~changePattern.value(Pdef(\unit8), ~initPattern);
+		28.0.wait;
+		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
+		Pbindef(\unit1,
+			\dur, Pseq([Rest(0.875), 2.625, 0.875, Rest(0.875), 1.75], inf) // 0.875+ 2.625+ 0.875+ 0.875+ 1.75
+		).quant_(~globalQuant);
+		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
+		Pbindef(\unit3,
+			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
+			\att, 0.17,
+			\amp, 0.005
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit3amp");
 		~changePattern.value(Pdef(\unit4), ~song3Pattern10);
-		Pbindef(\unit4, \dur, Pseq([1.75, 5.25], inf)).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit6), ~song3Pattern9);
 		Pbindef(\unit6,
-			\dur, Pseq([1.375, Rest(0.875), 0.875, 1.75, 0.875, 1.25], inf),
+			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
 			\amp, 0.3,
-			\attack, 1.32,
+			\attack, Pseq([1.32, 0.2, 1.65, 0.03], inf),
 			\sustain, 0.01,
 			\release, 0.09,
-			\impFreq, Pseq([15, 8, 12], inf),
+			\impFreq, Pseq([8000, 34, 8000], inf),
 			\eqfreq, 367,
-			\impLevel, 1.7,
+			\impLevel, Pseq([0.15, 0.75, 0.15]*1.2, inf),
 			\noiseLevel, 0.2,
 		).quant_(~globalQuant);
-		14.0.wait;
+		~resetControlBus.value("unit6");
+		~changePattern.value(Pdef(\unit8), ~song3Pattern12);
+		56.0.wait;
 	}
 }
 

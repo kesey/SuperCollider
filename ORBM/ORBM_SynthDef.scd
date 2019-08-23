@@ -10,11 +10,11 @@
 SynthDef(\ChannelStrip, { arg in = 0, out = 0, pan = 0, hpfreq = 20, band1freq = 8000, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 80, band3rq = 1, band3db = 0, lpfreq = 20000, mute = 1, auxsend1 = 0, auxsend2 = 0, level = 0.5;
 	var input, sig;
 	input = InFeedback.ar(in, 2);
-	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
+	sig = BHiPass4.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
 	sig = BPeakEQ.ar(sig, Lag2.kr(band1freq.max(20).min(20000), 0.5), band1rq, band1db); // Band 1
 	sig = BPeakEQ.ar(sig, Lag2.kr(band2freq.max(20).min(20000), 0.5), band2rq, band2db); // Band 2
 	sig = BPeakEQ.ar(sig, Lag2.kr(band3freq.max(20).min(20000), 0.5), band3rq, band3db); // Band 3
-	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
+	sig = BLowPass4.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
 	Out.ar(~aux1, sig * auxsend1); // Aux 1 pre fader / pre mute / post eq
 	Out.ar(~aux2, sig * auxsend2); // Aux 2 pre fader / pre mute / post eq
 	sig = sig * Lag2.kr(mute, 0.2); // Mute
@@ -24,8 +24,8 @@ SynthDef(\ChannelStrip, { arg in = 0, out = 0, pan = 0, hpfreq = 20, band1freq =
 SynthDef(\MasterStrip, { arg in = 0, out = 0, hpfreq = 20, lpfreq = 20000, level = 0.5;
 	var input, sig;
 	input = In.ar(in, 2);
-	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
-	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
+	sig = BHiPass4.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
+	sig = BLowPass4.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
 	sig = sig * level.curvelin(0, 1, 0, 1, log(10));
 	sig = Limiter.ar(sig);
 	Out.ar(out, sig);
@@ -977,7 +977,7 @@ SynthDef(\ikedhat,{arg out = 0, amp = 1, pan = 0, envLevel1 = 0.0, envLevel2 = 1
 	var sig;
 	var env = EnvGen.ar(Env.perc(att,rel,1,curve),doneAction: doneAction);
 	var
-	freqs= geom(100,50,1.3434)*10.234567*tu;
+	freqs= geom(100,50,1.3434)*10.234567*Lag3.kr(tu);
 	sig = WhiteNoise.ar;
 	sig = Ringz.ar(sig,freqs,1).mean;
 	sig = Pan2.ar(sig*env, pan, amp);
@@ -1413,30 +1413,29 @@ SynthDef(\henon, { arg out = 0, amp = 0.3, pan = 0, freq = 440, a = 1.3, b = 0.3
 	OffsetOut.ar(out, Pan2.ar(snd, pan, amp));
 }).add;
 
-~kSpluck3SynthDef = SynthDef(\kSpluck3, { arg out = 0, amp = 0.2, att = 0, dec = 0.01, midiPitch, art, noiseFreq = 1, doneAction = 2;
+~kSpluck3SynthDef = SynthDef(\kSpluck3, { arg out = 0, amp = 0.2, att = 0, rel = 0.01, midiPitch = 24, art = -3, noiseFreq = 1, noiseLev = 13000, noiseOffset = 14010, mix = 0.5, doneAction = 2;
 	var burstEnv;
 	var sig, delayTime;
 	delayTime = [midiPitch, midiPitch + 12].midicps.reciprocal;
-	burstEnv = EnvGen.kr(Env.perc(att, dec));
+	burstEnv = EnvGen.kr(Env.perc(att, rel));
 	sig = PinkNoise.ar([burstEnv, burstEnv]); //Noise burst
-	sig = CombL.ar(sig, delayTime, delayTime,
-		art, add: sig); //Echo chamber
-	sig = RLPF.ar(sig, LFNoise1.kr(noiseFreq, 13000, 14010), 0.1); //Filter ADSR GELSIN BURAYA
+	sig = CombL.ar(sig, delayTime, delayTime, art, add: sig); //Echo chamber
+	sig = XFade2.ar(sig, RLPF.ar(sig, LFNoise1.kr(noiseFreq, noiseLev, noiseOffset), 0.1), mix, amp); //Filter ADSR GELSIN BURAYA
 	DetectSilence.ar(sig, doneAction: doneAction);
-	OffsetOut.ar(out, sig * amp)
+	OffsetOut.ar(out, sig);
 }).add;
 
-~lumbricostSynthDef = SynthDef(\lumbricost, {arg out = 0, amp = 1, pan = 0, attTim= 1, relTim=2.5, scale= 6, offset = 40, synch = 10, timescale = 10, widthmod = 0.4, width = 0.2, totVol, abc = 0, randLo = 0, randHi = 20000, bprq = 1, doneAction = 2;
+~lumbricostSynthDef = SynthDef(\lumbricost, {arg out = 0, amp = 0.2, pan = 0, attTim= 1, relTim=2.5, scale= 6, offset = 40, freq = 10, timescale = 10, widthmod = 0.4, width = 0.2, abc = 0, randLo = 0, randHi = 20000, bprq = 1, t_gate = 1, doneAction = 2;
 	var generation =
-	Pulse.ar(SinOsc.kr(5/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(30/synch),widthmod,width,timescale), mul: 0.1) +
-	Pulse.ar(SinOsc.kr(7/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(7/synch),widthmod,width,timescale), mul: 0.1) +
-	Pulse.ar(SinOsc.kr(9/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(2/synch),widthmod,width,timescale), mul: 0.1) +
-	Pulse.ar(SinOsc.kr(10/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(5/synch),widthmod,width,timescale), mul: 0.1) +
-	Pulse.ar(SinOsc.kr(3/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(9/synch),widthmod,width,timescale), mul: 0.1) +
-	Pulse.ar(SinOsc.kr(2/synch, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(40/synch),widthmod,width,timescale), mul: 0.1);
-	var env = generation * Env.perc(attackTime:attTim,releaseTime: relTim).ar(doneAction);
+	Pulse.ar(SinOsc.kr(5/freq, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(30/freq),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(7/freq, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(7/freq),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(9/freq, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(2/freq),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(10/freq, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(5/freq),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(3/freq, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(9/freq),widthmod,width,timescale), mul: 0.1) +
+	Pulse.ar(SinOsc.kr(2/freq, mul: scale, add: Rand(offset - abc,offset + abc)),EnvGen.kr(Env.perc(0.01, relTim), Impulse.ar(40/freq),widthmod,width,timescale), mul: 0.1);
+	var env = generation * EnvGen.kr(Env.perc(attackTime:attTim,releaseTime: relTim), t_gate, doneAction: doneAction);
 	var env1 = LeakDC.ar(env);
-	var sig =  env1* ((totVol + amp -15).dbamp);
+	var sig = env1 * amp;
 	sig = BPF.ar(sig, Rand(randLo-100, randHi+100), bprq);
 	OffsetOut.ar(out, Pan2.ar(sig, pan));
 }).add;
@@ -1820,7 +1819,8 @@ SynthDef(\ambitek, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-~mainSynthDef = SynthDef(\main,{arg out = 0, amp = 0.5, pan = 0, lev = 10, freq = 50, wnoiseAmp = 1, hpf = 8000, sinAmp = 1, sinFreq = 30, sel = 0, envLevel1 = 0.0, envLevel2 = 1.0, envLevel3 = 0.0, levelScale = 1, levelBias = 0, att = 0.0, rel = 0.1, timeScale = 1, noiseAmp = 1, t_trig = 1, doneAction = 2;
+~mainSynthDef = SynthDef(\main,{arg out = 0, amp = 0.5, pan = 0, lev = 10, freq = 50, wnoiseAmp = 1, hpf = 8000, sinAmp = 1, sinFreq = 30, sel = 0, envLevel1 = 0.0, envLevel2 = 1.0, envLevel3 = 0.0, levelScale = 1, levelBias = 0, att = 0.0, rel = 0.1, timeScale = 1, noiseAmp = 1, revtime = 3, room = 10, damp = 0.5, revMix = 0, t_trig = 1, doneAction = 2;
+	var revSig;
 	var fmod = SinOsc.ar(freq/60, 0, freq/60);
 	var sig = [
 		SinOsc.ar([freq, freq + 600] + fmod, 0, [lev, 0.005]).mean.tanh,
@@ -1830,7 +1830,9 @@ SynthDef(\ambitek, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 
 	];
 	var env = EnvGen.ar(Env([envLevel1, envLevel2, envLevel3], [att, rel]), t_trig, levelScale, levelBias, timeScale, doneAction);
 	sig = (Select.ar(sel, sig) * env).fold(-1, 1) * 0.7 + SinOsc.ar(40, 0, 0.3) * (1 + HPF.ar(WhiteNoise.ar(0.02 * noiseAmp), hpf));
-	Out.ar(out, Pan2.ar(sig, pan, amp));
+	revSig = GVerb.ar(sig, Lag3.kr(room).max(0.01), revtime, damp);
+	sig = SelectX.ar(revMix, [sig, revSig]);
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
 SynthDef(\flash, { arg out = 0, amp = 0.3, fund = 400, decay = 4, filter = 1, doneAction = 2;
