@@ -22,7 +22,7 @@ s.options.numInputBusChannels_(3);
 s.options.numOutputBusChannels_(4);
 
 // o.memSize_(2.pow(20)); // real time memory size (used by delay like CombN)
-// s.options.memSize_(2.pow(20));
+s.options.memSize_(2.pow(20));
 
 // rec options
 s.options.recChannels = 2;

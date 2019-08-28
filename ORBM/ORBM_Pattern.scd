@@ -1384,6 +1384,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 				~autoGui.value(v, ~mainSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
 					"t_trig", ["none"],
 					"doneAction", ["none"],
+					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
 					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
 					"lev", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\lev)), true],
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
@@ -1397,6 +1398,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"att", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\att)), true],
 					"rel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\rel)), true],
 					"revtime", ["slider", ControlSpec(0, 60, step: 0.1, default: event.at(\revtime)), true],
+					"revMix", ["slider", ControlSpec(0, 60, step: 0.1, default: event.at(\revMix)), true],
 					"room", ["knob", ControlSpec(0, 20, step: 0.01, default: event.at(\room)), true]
 				]));
 			}.defer;

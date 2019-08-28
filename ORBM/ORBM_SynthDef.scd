@@ -1819,7 +1819,7 @@ SynthDef(\ambitek, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-~mainSynthDef = SynthDef(\main,{arg out = 0, amp = 0.5, pan = 0, lev = 10, freq = 50, wnoiseAmp = 1, hpf = 8000, sinAmp = 1, sinFreq = 30, sel = 0, envLevel1 = 0.0, envLevel2 = 1.0, envLevel3 = 0.0, levelScale = 1, levelBias = 0, att = 0.0, rel = 0.1, timeScale = 1, noiseAmp = 1, revtime = 3, room = 10, damp = 0.5, revMix = 0, t_trig = 1, doneAction = 2;
+~mainSynthDef = SynthDef(\main,{arg out = 0, amp = 0.5, pan = 0, lev = 10, freq = 50, wnoiseAmp = 1, sinAmp = 1, sinFreq = 30, sel = 0, envLevel1 = 0.0, envLevel2 = 1.0, envLevel3 = 0.0, levelScale = 1, levelBias = 0, att = 0.0, rel = 0.1, timeScale = 1, noiseAmp = 1, hpf = 8000, revtime = 3, room = 10, damp = 0.5, revMix = 0, t_trig = 1, doneAction = 2;
 	var revSig;
 	var fmod = SinOsc.ar(freq/60, 0, freq/60);
 	var sig = [
@@ -1828,7 +1828,7 @@ SynthDef(\ambitek, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 
 		SinOsc.ar(sinFreq, 0, sinAmp),
 		VarSaw.ar(freq/40, mul: lev * 10000)
 	];
-	var env = EnvGen.ar(Env([envLevel1, envLevel2, envLevel3], [att, rel]), t_trig, levelScale, levelBias, timeScale, doneAction);
+	var env = EnvGen.kr(Env.new([envLevel1, envLevel2, envLevel3], [att, rel]), t_trig, levelScale, levelBias, timeScale, doneAction);
 	sig = (Select.ar(sel, sig) * env).fold(-1, 1) * 0.7 + SinOsc.ar(40, 0, 0.3) * (1 + HPF.ar(WhiteNoise.ar(0.02 * noiseAmp), hpf));
 	revSig = GVerb.ar(sig, Lag3.kr(room).max(0.01), revtime, damp);
 	sig = SelectX.ar(revMix, [sig, revSig]);

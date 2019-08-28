@@ -356,6 +356,7 @@
 
 		~channel.at(\level2).valueAction_(0.08);
 	}.defer;
+	Pdefn(\kickNoisePatt, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf));
 	~songInit.value;
 	loop {
 		~changePattern.value(Pdef(\unit1), ~song3Pattern1);
@@ -552,7 +553,7 @@
 		).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
 		Pbindef(\unit3,
-			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
+			\dur, Pdefn(\kickNoisePatt),
 			\att, 0.17,
 			\amp, 0.005
 		).quant_(~globalQuant);
@@ -561,7 +562,7 @@
 		~changePattern.value(Pdef(\unit5), ~song3Pattern11);
 		~changePattern.value(Pdef(\unit6), ~song3Pattern9);
 		Pbindef(\unit6,
-			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
+			\dur, Pdefn(\kickNoisePatt),
 			\amp, 0.3,
 			\attack, Pseq([1.32, 0.2, 1.65, 0.03], inf),
 			\sustain, 0.01,
@@ -658,7 +659,7 @@
 		).quant_(~globalQuant);
 		~changePattern.value(Pdef(\unit3), ~song3Pattern3);
 		Pbindef(\unit3,
-			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
+			\dur, Pdefn(\kickNoisePatt),
 			\att, 0.17,
 			\amp, 0.005
 		).quant_(~globalQuant);
@@ -666,7 +667,7 @@
 		~changePattern.value(Pdef(\unit4), ~song3Pattern10);
 		~changePattern.value(Pdef(\unit6), ~song3Pattern9);
 		Pbindef(\unit6,
-			\dur, Pseq([1.375, Rest(1.75), 1.75, 0.875, 1.25/**/, 1.375, Rest(0.875), 0.875, 1.75, Rest(0.875), 1.25], inf),
+			\dur, Pdefn(\kickNoisePatt),
 			\amp, 0.3,
 			\attack, Pseq([1.32, 0.2, 1.65, 0.03], inf),
 			\sustain, 0.01,
