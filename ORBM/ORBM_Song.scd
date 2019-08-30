@@ -681,6 +681,22 @@
 		~changePattern.value(Pdef(\unit8), ~song3Pattern12);
 		56.0.wait;
 	}
-}
+};
+
+~song4 = {// ~globalQuant = 5; // !!! change globalQuant before song !!!
+	t.tempo = 320 / 60;
+	~songInit.value;
+	loop {
+		~changePattern.value(Pdef(\unit1), ~song4Pattern1);
+		~changePattern.value(Pdef(\unit2), ~song4Pattern2);
+		~changePattern.value(Pdef(\unit3), ~song4Pattern3);
+		~changePattern.value(Pdef(\unit4), ~song4Pattern4);
+		/*~changePattern.value(Pdef(\unit5), ~song3Pattern5);
+		~changePattern.value(Pdef(\unit6), ~song3Pattern6);
+		~changePattern.value(Pdef(\unit7), ~song3Pattern7);
+		~changePattern.value(Pdef(\unit8), ~song3Pattern8);*/
+		10.0.wait;
+	}
+};
 
 )
