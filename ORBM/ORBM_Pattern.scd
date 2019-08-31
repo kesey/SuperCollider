@@ -1684,7 +1684,80 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"levBiasBpf", ["knob", ControlSpec(0.1, 120, step: 0.1, default: event.at(\levBiasBpf)), true],
 					"lineStartBpf", ["slider", ControlSpec(0, 2, step: 0.01, default: event.at(\lineStartBpf)), true],
 					"lineEndBpf", ["slider", ControlSpec(0, 2, step: 0.01, default: event.at(\lineEndBpf)), true],
-					"lineLevBpf", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\lineLevBpf)), true],
+					"lineLevBpf", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\lineLevBpf)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~song4Pattern5 = Pbind(
+	\instrument, \kickhi,
+	\dur, Pseq([5, Rest(0.625), 1.25, Rest(0.625), 2.5], inf),
+	\amp, 1,
+	\vcaLev1, 0.1,
+	\vcaLev2, 0.26,
+	\vcaLev3, 0.55,
+	\vcaLev4, 0.58,
+	\vcaLev5, 0,
+	\vcaTime1, 0.02,
+	\vcaTime2, 1.58,
+	\vcaTime3, 0.79,
+	\vcaTime4, 2.89,
+	\vcaCurve1, -46.3,
+	\vcaCurve2, -88.5,
+	\vcaCurve3, 72.3,
+	\vcfLev1, 19.5,
+	\vcfLev2, 52.3,
+	\vcfLev3, 104.3,
+	\vcfLev4, 71.3,
+	\vcfTime1, 1.84,
+	\vcfTime2, 0.53,
+	\vcfTime3, 1,
+	\vcfCurve1, -25.8,
+	\vcfCurve2, -39.4,
+	\tu, 0.14,
+	\pan, 0,
+	\out, ~channelBus[0],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~kickhiSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+					"amp", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\amp)), true],
+					"vcaLev1", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\vcaLev1)), true],
+					"vcaLev2", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\vcaLev2)), true],
+					"vcaLev3", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\vcaLev3)), true],
+					"vcaLev4", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\vcaLev4)), true],
+					"vcaLev5", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\vcaLev5)), true],
+					"vcaTime1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\vcaTime1)), true],
+					"vcaTime2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\vcaTime2)), true],
+					"vcaTime3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\vcaTime3)), true],
+					"vcaTime4", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\vcaTime4)), true],
+					"vcaCurve1", ["knob", ControlSpec(-100, 100, step: 0.1, default: event.at(\vcaCurve1)), true],
+					"vcaCurve2", ["knob", ControlSpec(-100, 100, step: 0.1, default: event.at(\vcaCurve2)), true],
+					"vcaCurve3", ["knob", ControlSpec(-100, 100, step: 0.1, default: event.at(\vcaCurve3)), true],
+					"vcfLev1", ["knob", ControlSpec(0, 127, step: 0.1, default: event.at(\vcfLev1)), true],
+					"vcfLev2", ["knob", ControlSpec(0, 127, step: 0.1, default: event.at(\vcfLev2)), true],
+					"vcfLev3", ["knob", ControlSpec(0, 127, step: 0.1, default: event.at(\vcfLev3)), true],
+					"vcfLev4", ["knob", ControlSpec(0, 127, step: 0.1, default: event.at(\vcfLev4)), true],
+					"vcfTime1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\vcfTime1)), true],
+					"vcfTime2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\vcfTime2)), true],
+					"vcfTime3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\vcfTime3)), true],
+					"vcfCurve1", ["knob", ControlSpec(-100, 100, step: 0.1, default: event.at(\vcfCurve1)), true],
+					"vcfCurve2", ["knob", ControlSpec(-100, 100, step: 0.1, default: event.at(\vcfCurve2)), true],
+					"tu", ["knob", ControlSpec(0, 5, step: 0.01, default: event.at(\tu)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
