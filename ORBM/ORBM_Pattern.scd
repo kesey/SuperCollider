@@ -1766,6 +1766,88 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	})
 );
 
+~song4Pattern6 = Pbind(
+	\instrument, \snapkick,
+	\dur, Pseq([Rest(1.25), 5, Rest(1.25), 2.5], inf),
+	\amp, 0.25,
+	\pan, 0,
+	\bdFrqL1, 261,
+	\bdFrqL2, 116,
+	\bdFrqL3, 65,
+	\bdFrqT1, 0.035,
+	\bdFrqT2, 0.08,
+	\bdFrqC, \exp,
+	\bdAmpAtt, 0.01,
+	\bdAmpSus, 0.1,
+	\bdAmpRel, 0.3,
+	\bdAmpLev, 1.36,
+	\bdAmpCurve, 47.4,
+	\popFrqSt, 750,
+	\popFrqEnd, 261,
+	\popFrqDur, 0.04,
+	\popAmpAtt, 1.32,
+	\popAmpSus, 0.02,
+	\popAmpRel, 0.14,
+	\popAmpLev, 0.39,
+	\clkAmpAtt, 0,
+	\clkAmpRel, 0.01,
+	\clkAmpLev, 0.99,
+	\clkAmpCurve, -14.9,
+	\clkfFundFreq, 910,
+	\clkfFormFreq, 5078,
+	\clkfBwFreq, 14776,
+	\clkLpfFreq, 5612,
+	\out, ~channelBus[0],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~snapKickSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"amp", ["knob", ControlSpec(0, 24, step: 0.01, default: event.at(\amp)), true],
+					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), true],
+					"bdFrqL1", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\bdFrqL1)), true],
+					"bdFrqL2", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\bdFrqL2)), true],
+					"bdFrqL3", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\bdFrqL3)), true],
+					"bdFrqT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdFrqT1)), true],
+					"bdFrqT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdFrqT2)), true],
+					"bdFrqC", ["knob", ControlSpec(-200, 200, step: 0.1, default: event.at(\bdFrqC)), true],
+					"bdAmpAtt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdFrqC)), true],
+					"bodyAmpAtt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdAmpAtt)), true],
+					"bdAmpSus", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdAmpSus)), true],
+					"bdAmpRel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdAmpRel)), true],
+					"bdAmpLev", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\bdAmpLev)), true],
+					"bdAmpCurve", ["knob", ControlSpec(-200, 200, step: 0.1, default: event.at(\bdAmpCurve)), true],
+					"popFrqSt", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\popFrqSt)), true],
+					"popFrqEnd", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\popFrqEnd)), true],
+					"popFrqDur", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\popFrqDur)), true],
+					"popAmpAtt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\popAmpAtt)), true],
+					"popAmpSus", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\popAmpSus)), true],
+					"popAmpRel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\popAmpRel)), true],
+					"popAmpLev", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\popAmpLev)), true],
+					"clkAmpAtt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\clkAmpAtt)), true],
+					"clkAmpRel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\clkAmpRel)), true],
+					"clkAmpLev", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\clkAmpLev)), true],
+					"clkAmpCurve", ["knob", ControlSpec(-200, 200, step: 0.1, default: event.at(\clkAmpCurve)), true],
+					"clkfFundFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\clkfFundFreq)), true],
+					"clkfFormFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\clkfFormFreq)), true],
+					"clkfBwFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\clkfBwFreq)), true],
+					"clkLpfFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\clkLpfFreq)), true],
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
 ~pattern1 = Pbind(
 	\instrument, \samplerStereo,
 	\dur, Pdefn(\durSnapkick),

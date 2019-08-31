@@ -381,29 +381,29 @@ SynthDef(\gatedreverb, {|in = 0, out =0 gate= 1 threshold= 0.1 amp=0.1|
 
 ///////////////////////////////////////  Kick
 
-~snapKickSynthDef = SynthDef(\snapkick, { |out = 0, pan = 0, amp = 0.3|
+~snapKickSynthDef = SynthDef(\snapkick, { |out = 0, amp = 0.3, pan = 0, bdFrqL1 = 261, bdFrqL2 = 120, bdFrqL3 = 51, bdFrqT1 = 0.035, bdFrqT2 = 0.08, bdFrqC = \exp, bdAmpAtt = 0.005, bdAmpSus = 0.1, bdAmpRel = 0.3, bdAmpLev = 1, bdAmpCurve = \linear, popFrqSt = 750, popFrqEnd = 261, popFrqDur = 0.02, popAmpAtt = 0.001, popAmpSus = 0.02, popAmpRel = 0.001, popAmpLev = 0.15, clkAmpAtt = 0.001, clkAmpRel = 0.01, clkAmpLev = 0.15, clkAmpCurve = (-4), clkfFundFreq = 910, clkfFormFreq = 4760, clkfBwFreq = 2110, clkLpfFreq = 3140, doneAction = 2|
 	var body, bodyFreq, bodyAmp;
 	var pop, popFreq, popAmp;
 	var click, clickAmp;
 	var snd;
 
 	// body starts midrange, quickly drops down to low freqs, and trails off
-	bodyFreq = EnvGen.ar(Env([261, 120, 51], [0.035, 0.08], curve: \exp));
-	bodyAmp = EnvGen.ar(Env.linen(0.005, 0.1, 0.3), doneAction: 2);
+	bodyFreq = EnvGen.ar(Env([bdFrqL1, bdFrqL2, bdFrqL3], [bdFrqT1, bdFrqT2], bdFrqC));
+	bodyAmp = EnvGen.ar(Env.linen(bdAmpAtt, bdAmpSus, bdAmpRel, bdAmpLev, bdAmpCurve), doneAction: doneAction);
 	body = SinOsc.ar(bodyFreq) * bodyAmp;
 	// pop sweeps over the midrange
-	popFreq = XLine.kr(750, 261, 0.02);
-	popAmp = EnvGen.ar(Env.linen(0.001, 0.02, 0.001)) * 0.15;
+	popFreq = XLine.kr(popFrqSt, popFrqEnd, popFrqDur);
+	popAmp = EnvGen.ar(Env.linen(popAmpAtt, popAmpSus, popAmpRel, popAmpLev));
 	pop = SinOsc.ar(popFreq) * popAmp;
 	// click is spectrally rich, covering the high-freq range
 	// you can use Formant, FM, noise, whatever
-	clickAmp = EnvGen.ar(Env.perc(0.001, 0.01)) * 0.15;
-	click = LPF.ar(Formant.ar(910, 4760, 2110), 3140) * clickAmp;
+	clickAmp = EnvGen.ar(Env.perc(clkAmpAtt, clkAmpRel, clkAmpLev, clkAmpCurve));
+	click = LPF.ar(Formant.ar(clkfFundFreq, clkfFormFreq, clkfBwFreq), clkLpfFreq) * clickAmp;
 
 	snd = body + pop + click;
 	snd = snd.tanh;
 
-	// OffsetOut.ar(out, Pan2.ar(snd, pan, amp));
+	OffsetOut.ar(out, Pan2.ar(snd, pan, amp));
 }).add;
 
 ~ikedaBassSynthDef = SynthDef(\IkedaBass, { arg out = 0, t_trig = 0, pan = 0, amp = 1;
