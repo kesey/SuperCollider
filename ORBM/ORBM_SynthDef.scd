@@ -987,12 +987,21 @@ OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 ~cymSynthDef = SynthDef(\cym, { arg out=0, amp=0.5, pan=0, att=0, rel=1, curve=(-8), tu=1, doneAction=2;
 	var sig;
 	var env = EnvGen.ar(Env.perc(att,rel,1,curve),doneAction: doneAction);
-	var
-	freqs= geom(100,50,1.3434)*10.234567*Lag3.kr(tu);
+	var freqs = geom(100, 50, 1.3434)*10.234567*Lag3.kr(tu);
 	sig = WhiteNoise.ar;
-	sig = Ringz.ar(sig,freqs,1).mean;
+	sig = Ringz.ar(sig,freqs).mean;
 	sig = Pan2.ar(sig*env, pan, amp);
-	OffsetOut.ar(out, sig*amp);
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+~cym1SynthDef = SynthDef(\cym1, { arg out=0, amp=0.5, pan=0, envL1 = 0, envL2 = 1, envL3 = 0.3, envL4 = 0, levScale = 1, envT1 = 0.1, envT2 = 0.02, envT3= 0.01, envC1 = (-8), envC2 = 4, envC3 = (-4), tu=1, doneAction=2;
+	var sig;
+	var env = EnvGen.ar(Env.new([envL1, envL2, envL3, envL4], [envT1, envT2, envT3], [envC1, envC2, envC3]), levelScale: levScale, doneAction: doneAction);
+	var freqs = geom(100, 50, 1.3434)*10.234567*Lag3.kr(tu, 10);
+	sig = WhiteNoise.ar;
+	sig = Ringz.ar(sig,freqs).mean;
+	sig = Pan2.ar(sig*env, pan, amp);
+	OffsetOut.ar(out, sig);
 }).add;
 
 ~cymnewSynthDef = SynthDef(\cymnew, { arg out = 0, amp = 0.5, pan = 0, att = 0, rel = 4, curve = (-8), tu = 6, pos = 0, t_trig = 1, doneAction = 2;
@@ -1007,22 +1016,23 @@ OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
     OffsetOut.ar(out, sig * 0.2);
 }).add;
 
-SynthDef(\cymbalic_mcld, { |amp=0.1, out=0, t_trig = 1, pan=0, relLow = 5, relHi = 3, attTh = 0.001, relTh = 0.001, doneAction = 2|
+SynthDef(\cymbalicMcld, { |out=0, amp=0.1, pan=0, attLowf = 0.5, relLowf = 5, lowNoiseLev = 0.1, attHif = 1, relHif = 3, hiNoiseLev = 0.1, attHi = 1, relHi = 2, hiLev = 0.25, attTh = 0.001, relTh = 0.001, freq1 = 627, freq2 = 2961, freq3 = 7824, freq4 = 476, t_trig = 1, doneAction = 2|
 	var lodriver, locutoffenv, hidriver, hicutoffenv, freqs, res, thwack, sig;
 
-	locutoffenv = EnvGen.ar(Env.perc(0.5, 5), t_trig, doneAction: doneAction) * 20000 + 10;
-	lodriver = LPF.ar(WhiteNoise.ar(0.1), locutoffenv);
+	locutoffenv = EnvGen.kr(Env.perc(attLowf, relLowf), t_trig, doneAction: doneAction) * 20000 + 10;
+	lodriver = LPF.ar(WhiteNoise.ar(lowNoiseLev), locutoffenv);
 
-	hicutoffenv = 10001 - (EnvGen.ar(Env.perc(1, 3), t_trig, doneAction: doneAction) * 10000);
-	hidriver = HPF.ar(WhiteNoise.ar(0.1), hicutoffenv);
-	hidriver = hidriver * EnvGen.ar(Env.perc(1, 2, 0.25));
+	hicutoffenv = 10001 - (EnvGen.kr(Env.perc(attHif, relHif), t_trig, doneAction: doneAction) * 10000);
+	hidriver = HPF.ar(WhiteNoise.ar(hiNoiseLev), hicutoffenv);
+	hidriver = hidriver * EnvGen.kr(Env.perc(attHi, relHi, hiLev));
 
-	thwack = EnvGen.ar(Env.perc(attTh,relTh,1), t_trig, doneAction: doneAction);
+	thwack = EnvGen.kr(Env.perc(attTh,relTh), t_trig, doneAction: doneAction);
 
 	// This bit will regenerate new freqs every time you evaluate the SynthDef!
 	freqs  = {exprand(300, 20000)}.dup(100);
+	//freqs = [freq1, freq2, freq3, freq4];
 
-	res    = Ringz.ar(lodriver + hidriver + thwack, freqs).mean;
+	res = Ringz.ar(lodriver + hidriver + thwack, freqs).mean;
 	sig = (res * 1) + (lodriver * 2) + thwack;
 	Out.ar(out, Pan2.ar(sig, pan, amp));
 }).add;

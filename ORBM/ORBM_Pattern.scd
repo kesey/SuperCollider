@@ -1921,6 +1921,60 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 );
 
 ~song4Pattern8 = Pbind(
+	\instrument, \cym1,
+	\dur, Pseq([Rest(0.625), 0.625, 1.25], inf),
+	\amp, 0.008,
+	\pan, Pwhite(-0.35, 0.35, inf),
+	\envL1, 0.76,
+	\envL2, 0,
+	\envL3, 0.32,
+	\envL4, 0.72,
+	\levScale, 1,
+	\envT1, 0.11,
+	\envT2, 0.13,
+	\envT3, 0.04,
+	\envC1, -3.1,
+	\envC2, 5,
+	\envC3, -4,
+	\tu, 0.56,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~cym1SynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
+					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
+					"envL1", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL1)), true],
+					"envL2", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL2)), true],
+					"envL3", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL3)), true],
+					"envL4", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL4)), true],
+					"levScale", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\levScale)), true],
+					"envT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT1)), true],
+					"envT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT2)), true],
+					"envT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT3)), true],
+					"envT4", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT4)), true],
+					"envC1", ["knob", ControlSpec(-200, 200, step: 0.1, default: event.at(\envC1)), true],
+					"envC2", ["knob", ControlSpec(-200, 200, step: 0.1, default: event.at(\envC2)), true],
+					"envC3", ["knob", ControlSpec(-200, 200, step: 0.1, default: event.at(\envC3)), true],
+					"tu", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\tu)), true],
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+/*~song4Pattern8 = Pbind(
 	\instrument, \cymbal808ryan,
 	\dur, Pseq([Rest(0.625), 0.625, 1.25], inf),
 	\amp, 0.0015,
@@ -1994,7 +2048,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 		});
 		0;
 	})
-);
+);*/
 
 ~pattern1 = Pbind(
 	\instrument, \samplerStereo,
