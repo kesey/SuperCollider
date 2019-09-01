@@ -693,8 +693,8 @@
 		~changePattern.value(Pdef(\unit4), ~song4Pattern4);
 		~changePattern.value(Pdef(\unit5), ~song4Pattern5);
 		~changePattern.value(Pdef(\unit6), ~song4Pattern6);
-		/*~changePattern.value(Pdef(\unit7), ~song4Pattern7);
-		~changePattern.value(Pdef(\unit8), ~song4Pattern8);*/
+		~changePattern.value(Pdef(\unit7), ~song4Pattern7);
+		~changePattern.value(Pdef(\unit8), ~song4Pattern8);
 		10.0.wait;
 	}
 };

@@ -964,9 +964,22 @@ SynthDef(\hihatAw, {arg out = 0, amp = 0.5, pan = 0, att = 0.01, rel = 0.2, ffre
 }).add;
 
 SynthDef(\ikedhat,{arg out = 0, amp = 1, pan = 0, envLevel1 = 0.0, envLevel2 = 1.0, envLevel3 = 0.0, levelScale = 1, levelBias = 0, att= 0.0, rel = 0.01, timeScale = 1, hpf = 6000, t_trig = 1, doneAction = 2;
-  var sig = HPF.ar(WhiteNoise.ar(1), hpf);
-  var env = EnvGen.ar(Env([envLevel1, envLevel2, envLevel3], [att, rel]), t_trig, levelScale, levelBias, timeScale, doneAction);
-  Out.ar(out, Pan2.ar(sig, pan, env*amp));
+	var sig = HPF.ar(WhiteNoise.ar(1), hpf);
+	var env = EnvGen.ar(Env([envLevel1, envLevel2, envLevel3], [att, rel]), t_trig, levelScale, levelBias, timeScale, doneAction);
+	OffsetOut.ar(out, Pan2.ar(sig, pan, env*amp));
+}).add;
+
+~fabHiSynthDef = SynthDef(\fabHi, {arg out = 0, amp = 0.2, pan = 0, wamp = 0.5, envNatt = 0.001, envNrel = 0.2, wbpfFreq = 2800, wbpfRq = 1, sinFrq1 = 2120, sinFrq2 = 12423, sinPh1 = 0, sinPh2 = 0.02, sinLev1 = 1, sinLev2 = 1, envSatt = 0.001, envSrel = 0.2, mix = 0.5, envL1 = 0, envL2 = 1, envL3 = 0.75, envT1 = 0.1, envT2 = 0.02, envT3 = 0.2, ffreq = 6000, t_gate = 1, doneAction = 2;
+	var noise, sin1, sin2, sig, env, envNoise, envSin;
+	envNoise = EnvGen.kr(Env.perc(envNatt, envNrel), t_gate);
+	envSin = EnvGen.kr(Env.perc(envSatt, envSrel), t_gate);
+	noise = BPF.ar(WhiteNoise.ar(wamp) * envNoise, wbpfFreq, wbpfRq.max(0.01));
+	sin1 = SinOsc.ar(sinFrq1, sinPh1, sinLev1);
+	sin2 = SinOsc.ar(sinFrq2, sinPh2, sinLev2);
+	sig = XFade2.ar(noise, Mix.ar([sin1, sin2]) * envSin, mix);
+env = Env.step([envL1, envL2, envL3], [envT1, envT2, envT3]).kr(doneAction: doneAction);
+sig = HPF.ar(sig * env, ffreq);
+OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
 ///////////////////////////////////////  Cymbal
@@ -1014,24 +1027,21 @@ SynthDef(\cymbalic_mcld, { |amp=0.1, out=0, t_trig = 1, pan=0, relLow = 5, relHi
 	Out.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
-SynthDef(\cymbal808_ryan, {
-	arg out=0, baseFreq = 300, time = 250, amp=0.1;
-	//var freqs = [baseFreq, baseFreq*1.3420, baseFreq*1.2312, baseFreq*1.6532, baseFreq*1.9523, baseFreq*2.1523];
+~cymbal808ryanSynthDef = SynthDef(\cymbal808ryan, {
+	arg out=0, amp=0.1, baseFreq = 300, penvL1 = 1.0, penvL2 = 0.6, ptime = 250, pcurve = (-0.5), pulsew = 0.55, rlpfFrq = 7000, rlpfRq = 0.6, rhpfFrq = 6800, rhpfRq = 1.5, envL1 = 0, envL2 = 1, envL3 = 0.4, envL4 = 0, envL5 = 0, envT1 = 2, envT2 = 250, envT3 = 50, envT4 = 500, envC1 = 0, envC2 = (-0.5), envC3 = 0, envC4 = (-50), doneAction = 2;
+	var freqs = [baseFreq, baseFreq*1.3420, baseFreq*1.2312, baseFreq*1.6532, baseFreq*1.9523, baseFreq*2.1523];
 	//var freqs = [78.6, 140.44, 123.87, 219.4, 787.5, 531.3];
 	//var freqs = [205.35, 254.29, 294.03, 304.41, 369.64, 522.71];
-	var freqs = [205.35, 304.41, 369.64, 522.71, 540.54, 812.21];
+	//var freqs = [205.35, 304.41, 369.64, 522.71, 540.54, 812.21];
 	var signal, pulseEnv;
 
-	pulseEnv = EnvGen.ar(Env.new([1.0, 0.6], [time], [-0.5]), timeScale:(1/1000));
+	pulseEnv = EnvGen.kr(Env.new([penvL1, penvL2], [ptime], [pcurve]), timeScale:(1/1000));
 	signal = Mix.new(LFPulse.ar(freqs * 4.09));
 	signal = (BinaryOpUGen('==', signal, 6.0) * 0.6) + (BinaryOpUGen('==', signal, 2.0) * 0.2) + (BinaryOpUGen('==', signal, 1.0) * 0.9); // XOR
-	signal = (signal * pulseEnv) + (Mix.new(LFPulse.ar(freqs, width:0.55)) * 0.9);
-	signal = RLPF.ar(signal, 7000, 0.6);
- 	signal = RHPF.ar(signal, 6800, 1.5);
-	signal = RHPF.ar(signal, 6800, 1.5);
-	signal = RHPF.ar(signal, 1200, 1.5);
-	signal = signal + FreeVerb.ar(signal);
-	signal = signal * EnvGen.ar(Env.new([0, 1, 0.4, 0, 0], [2, time, 50, 500], [0, -0.5, 0, -50]), timeScale:(1/1000), doneAction:2);
+	signal = (signal * pulseEnv) + (Mix.new(LFPulse.ar(freqs, width: pulsew)) * 0.9);
+	signal = RLPF.ar(signal, rlpfFrq, rlpfRq);
+ 	signal = RHPF.ar(signal, rhpfFrq, rhpfRq);
+	signal = signal * EnvGen.kr(Env.new([envL1, envL2, envL3, envL4, envL5], [envT1, envT2, envT3, envT4], [envC1, envC2, envC3, envC4]), timeScale:(1/1000), doneAction: doneAction);
 	signal = [signal, DelayN.ar(signal, 0.005, 0.005)];
 	OffsetOut.ar(out, signal*4*amp);
 }).add;
