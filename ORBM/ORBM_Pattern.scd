@@ -1504,13 +1504,13 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern1 = Pbind(
 	\instrument, \scratchi,
-	\dur, Pwrand([5, 1.25, 0.625], [0.9, 0.05, 0.05].normalizeSum, inf), // 5,
+	\dur, 5, // Pwrand([5, 1.25, 0.625], [0.9, 0.05, 0.05].normalizeSum, inf),
 	\amp, 16,
 	\attack, 0.01,
 	\release, 2,
 	\freq, 440,
 	\pan, 0,
-	\out, ~channelBus[0],
+	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
 		currentInstr = event.at(\instrument);
@@ -1540,7 +1540,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern2 = Pbind(
 	\instrument, \rim,
-	\dur, Pseq([5, 2.5], inf),
+	\dur, 5,
+	\timingOffset, Pseq([0.4, 1.5], inf),
 	\amp, 0.16,
 	\tu, 1.56,
 	\envLev1, 0.65,
@@ -1631,8 +1632,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern4 = Pbind(
 	\instrument, \drumkick,
-	\dur, Pseq([2.5, Rest(0.625), 1.25, Rest(0.625)/*, 1.25, 2.5, 1.25*/], inf), // 2.5+ 0.625+ 1.25+ 0.625+ 1.25+ 2.5+ 1.25
-	\amp, 0.23,
+	\dur, Pseq([2, 3, 2, Rest(1), 2], inf),
+	\amp, 0.2,
 	\attack, 1.05,
 	\release,0.16,
 	\curve, -39.7,
@@ -1695,30 +1696,30 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern5 = Pbind(
 	\instrument, \kickhi,
-	\dur, Pseq([5, Rest(0.625), 1.25, Rest(0.625), 2.5], inf),
-	\amp, 1,
+	\dur, Pseq([Rest(1.5), 2, 1.5, Rest(1), 3, 1], inf),
+	\amp, 0.8,
 	\vcaLev1, 0.1,
 	\vcaLev2, 0.26,
 	\vcaLev3, 0.55,
-	\vcaLev4, 0.58,
+	\vcaLev4, 0,
 	\vcaLev5, 0,
 	\vcaTime1, 0.02,
-	\vcaTime2, 1.58,
-	\vcaTime3, 0.79,
-	\vcaTime4, 2.89,
+	\vcaTime2, 2.11,
+	\vcaTime3, 1.84,
+	\vcaTime4, 0.01,
 	\vcaCurve1, -46.3,
-	\vcaCurve2, -88.5,
-	\vcaCurve3, 72.3,
-	\vcfLev1, 19.5,
-	\vcfLev2, 52.3,
-	\vcfLev3, 104.3,
-	\vcfLev4, 71.3,
-	\vcfTime1, 1.84,
-	\vcfTime2, 0.53,
-	\vcfTime3, 1,
-	\vcfCurve1, -25.8,
-	\vcfCurve2, -39.4,
-	\tu, 0.14,
+	\vcaCurve2, -47.7,
+	\vcaCurve3, -79.8,
+	\vcfLev1, 0,
+	\vcfLev2, 63.5,
+	\vcfLev3, 16.2,
+	\vcfLev4, 0,
+	\vcfTime1, 0.02,
+	\vcfTime2, 0.49,
+	\vcfTime3, 0.02,
+	\vcfCurve1, -8.4,
+	\vcfCurve2, -85,
+	\tu, 1.75,
 	\pan, 0,
 	\out, ~channelBus[0],
 	\function, Pfunc({ arg event;
@@ -1768,7 +1769,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern6 = Pbind(
 	\instrument, \snapkick,
-	\dur, Pseq([Rest(1.25), 5, Rest(1.25), 2.5], inf),
+	\dur, Pseq([Rest(0.2), 5.8, Rest(2), 1, Rest(1), Rest(1), 5.8, Rest(0.2), 1, Rest(2)], inf),
 	\amp, 0.25,
 	\pan, 0,
 	\bdFrqL1, 261,
@@ -1813,9 +1814,9 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"doneAction", ["none"],
 					"amp", ["knob", ControlSpec(0, 24, step: 0.01, default: event.at(\amp)), true],
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
-					"bdFrqL1", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\bdFrqL1)), true],
-					"bdFrqL2", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\bdFrqL2)), true],
-					"bdFrqL3", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\bdFrqL3)), true],
+					"bdFrqL1", ["knob", ControlSpec(20, 20000, step: 0.1, default: event.at(\bdFrqL1)), true],
+					"bdFrqL2", ["knob", ControlSpec(20, 20000, step: 0.1, default: event.at(\bdFrqL2)), true],
+					"bdFrqL3", ["knob", ControlSpec(20, 20000, step: 0.1, default: event.at(\bdFrqL3)), true],
 					"bdFrqT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdFrqT1)), true],
 					"bdFrqT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\bdFrqT2)), true],
 					"bdFrqC", ["knob", ControlSpec(-200, 200, step: 0.1, default: event.at(\bdFrqC)), true],
@@ -1850,7 +1851,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern7 = Pbind(
 	\instrument, \fabHi,
-	\dur, Pseq([Rest(0.3125), 0.625, 0.3125, Rest(0.625), 0.625/**/, 0.625, Rest(0.3125), 0.625, 0.3125, Rest(0.625)/**/, Rest(0.625), 0.625, Rest(0.3125), 0.625, Rest(0.3125)], inf), // 0.3125+ 0.625+ 0.3125+ 0.625+ 0.625
+	\dur, 1, // Pseq([Rest(0.3125), 0.625, 0.3125, Rest(0.625), 0.625/**/, 0.625, Rest(0.3125), 0.625, 0.3125, Rest(0.625)/**/, Rest(0.625), 0.625, Rest(0.3125), 0.625, Rest(0.3125)], inf), // 0.3125+ 0.625+ 0.3125+ 0.625+ 0.625
 	\amp, 0.02,
 	\pan, Pwhite(-1.0, 1.0, inf),
 	\wamp, 0.84,
@@ -1871,7 +1872,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\envL2, 1,
 	\envL3, 0.94,
 	\envT1, 0.04,
-	\envT2, Pseq([0.02, 0.06, 0.01, 0.018, 0.01], inf),
+	\envT2, Pseq([0.02, 0.06, 0.01, 0.018, 0, 0.02, 0.06, 0.01, 0.018, 3.11], inf),
 	\envT3, Pseq([0.07, 0.01, 0.07, 0.002, 0.03, 0.007], inf),
 	\ffreq, 12018,
 	\out, ~channelBus[1],
@@ -1922,8 +1923,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern8 = Pbind(
 	\instrument, \cym1,
-	\dur, Pseq([Rest(0.625), 0.625, 1.25], inf),
-	\amp, 0.008,
+	\dur, Pseq([Rest(0.5), 0.5, 1, 0.5, Rest(0.5), 1, 0.5, Rest(0.5)/**/, Rest(0.5), 1, 1, Rest(0.5), 1, Rest(0.5), 0.5], inf),
+	\amp, 0.006,
 	\pan, Pwhite(-0.35, 0.35, inf),
 	\envL1, 0.76,
 	\envL2, 0,
