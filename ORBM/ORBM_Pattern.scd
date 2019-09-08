@@ -1504,7 +1504,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern1 = Pbind(
 	\instrument, \scratchi,
-	\dur, 5, // Pwrand([5, 1.25, 0.625], [0.9, 0.05, 0.05].normalizeSum, inf),
+	\dur, 1.25, // 5, // Pwrand([5, 1.25, 0.625], [0.9, 0.05, 0.05].normalizeSum, inf),
 	\amp, 16,
 	\attack, 0.01,
 	\release, 2,
@@ -1540,8 +1540,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern2 = Pbind(
 	\instrument, \rim,
-	\dur, 5,
-	\timingOffset, Pseq([0.4, 1.5], inf),
+	\dur, 1.25, // 5,
+	\timingOffset, Pseq([0.1, 0.375], inf), // Pseq([0.4, 1.5], inf),
 	\amp, 0.16,
 	\tu, 1.56,
 	\envLev1, 0.65,
@@ -1591,7 +1591,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern3 = Pbind(
 	\instrument, \tweetAnaBass,
-	\dur, Pseq([10, 5], inf),
+	\dur, Pseq([2.5, 1.25], inf), // Pseq([10, 5], inf),
 	\amp, 0.3,
 	\attack, 0,
 	\release, 1.75,
@@ -1632,7 +1632,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern4 = Pbind(
 	\instrument, \drumkick,
-	\dur, Pseq([2, 3, 2, Rest(1), 2], inf),
+	\dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5], inf), // Pseq([2, 3, 2, Rest(1), 2], inf),
 	\amp, 0.2,
 	\attack, 1.05,
 	\release,0.16,
@@ -1696,7 +1696,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern5 = Pbind(
 	\instrument, \kickhi,
-	\dur, Pseq([Rest(1.5), 2, 1.5, Rest(1), 3, 1], inf),
+	\dur, Pseq([Rest(0.375), 0.5, 0.375, Rest(0.25), 0.75, 0.25], inf), // Pseq([Rest(1.5), 2, 1.5, Rest(1), 3, 1], inf),
 	\amp, 0.8,
 	\vcaLev1, 0.1,
 	\vcaLev2, 0.26,
@@ -1769,7 +1769,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern6 = Pbind(
 	\instrument, \snapkick,
-	\dur, Pseq([Rest(0.2), 5.8, Rest(2), 1, Rest(1), Rest(1), 5.8, Rest(0.2), 1, Rest(2)], inf),
+	\dur, Pseq([Rest(0.05), 1.45, Rest(0.5), 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf),
 	\amp, 0.25,
 	\pan, 0,
 	\bdFrqL1, 261,
@@ -1851,7 +1851,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern7 = Pbind(
 	\instrument, \fabHi,
-	\dur, 1, // Pseq([Rest(0.3125), 0.625, 0.3125, Rest(0.625), 0.625/**/, 0.625, Rest(0.3125), 0.625, 0.3125, Rest(0.625)/**/, Rest(0.625), 0.625, Rest(0.3125), 0.625, Rest(0.3125)], inf), // 0.3125+ 0.625+ 0.3125+ 0.625+ 0.625
+	\dur, 0.25, // Pseq([Rest(0.3125), 0.625, 0.3125, Rest(0.625), 0.625/**/, 0.625, Rest(0.3125), 0.625, 0.3125, Rest(0.625)/**/, Rest(0.625), 0.625, Rest(0.3125), 0.625, Rest(0.3125)], inf), // 0.3125+ 0.625+ 0.3125+ 0.625+ 0.625
 	\amp, 0.02,
 	\pan, Pwhite(-1.0, 1.0, inf),
 	\wamp, 0.84,
@@ -1923,7 +1923,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern8 = Pbind(
 	\instrument, \cym1,
-	\dur, Pseq([Rest(0.5), 0.5, 1, 0.5, Rest(0.5), 1, 0.5, Rest(0.5)/**/, Rest(0.5), 1, 1, Rest(0.5), 1, Rest(0.5), 0.5], inf),
+	\dur, Pseq([Rest(0.125), 0.125, 0.25, 0.125, Rest(0.125), 0.25, 0.125, Rest(0.125)/**/, Rest(0.125), 0.25, 0.25, Rest(0.125), 0.25, Rest(0.125), 0.125], inf),
 	\amp, 0.006,
 	\pan, Pwhite(-0.35, 0.35, inf),
 	\envL1, 0.76,

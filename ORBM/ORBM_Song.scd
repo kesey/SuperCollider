@@ -684,7 +684,7 @@
 };
 
 ~song4 = {// ~globalQuant = 5; // !!! change globalQuant before song !!!
-	t.tempo = 320 / 60;
+	t.tempo = 80 / 60;
 	t.beatsPerBar = 5.0;
 	{
 		~autoGuiControl.at("samplerStereo1020amp").valueAction_(0.12);
@@ -742,11 +742,11 @@
 		~changePattern.value(Pdef(\unit6), ~song4Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song4Pattern7);
 		~changePattern.value(Pdef(\unit8), ~song4Pattern8);
-		20.0.wait; //30.0.wait;
-		/*Pbindef(\unit4, \dur, Pseq([2.5, Rest(0.625), 1.25, Rest(0.625), 1.25, 2.5, 1.25], inf)).quant_(~globalQuant);
-		Pbindef(\unit6, \dur, Pseq([Rest(1.25), 2.5, Rest(1.25), 5], inf)).quant_(~globalQuant);
-		Pbindef(\unit8, \dur, Pseq([1.25, Rest(0.625), 0.625], inf)).quant_(~globalQuant);
-		10.0.wait;*/
+		15.0.wait;
+		Pbindef(\unit4, \dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5/**/, 0.25, 0.75, 0.25, Rest(0.5), 0.25, 0.5], inf));
+		Pbindef(\unit5, \dur, Pseq([0.5, 0.375, Rest(0.375), Rest(0.25), 0.75, 0.25], inf));
+		Pbindef(\unit6, \dur, Pseq([Rest(1.5), 0.5, 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf));
+		5.0.wait;
 	}
 };
 

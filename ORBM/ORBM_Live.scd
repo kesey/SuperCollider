@@ -7,7 +7,7 @@ this.executeFile(PathName(thisProcess.nowExecutingPath).parentPath ++ "ORBM_Star
 /////////// Sequencer + Song transport
 
 ( // Play Both
-/*~globalQuant = 1; // !!! change globalQuant before song !!!
+/*~globalQuant = 1; // !!! change globalQuant before song !!! // length of the longest pattern
 Tdef(\song, ~defaultSong).play(t, true, ~globalQuant);*/
 
 /*~globalQuant = 4; // !!! change globalQuant before song !!!
@@ -16,7 +16,7 @@ Tdef(\song, ~song2).play(t, true, ~globalQuant);*/
 /*~globalQuant = 7; // !!! change globalQuant before song !!!
 Tdef(\song, ~song3).play(t, true, ~globalQuant);*/
 
-~globalQuant = 5; // !!! change globalQuant before song !!!
+~globalQuant = 5; // !!! change globalQuant before song !!! // 20?
 Tdef(\song, ~song4).play(t, true, ~globalQuant);
 
 if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~globalQuant); });
