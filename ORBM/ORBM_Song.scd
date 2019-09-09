@@ -717,7 +717,7 @@
 		~autoGuiControl.at("noiseInjection1017noiseLevel").valueAction_(1);
 		~autoGuiControl.at("noiseInjection1017impFreq").valueAction_(55);
 		~autoGuiControl.at("noiseInjection1017impPhase").valueAction_(0);
-		~autoGuiControl.at("noiseInjection1017impLevel").valueAction_(10.11);
+		~autoGuiControl.at("noiseInjection1017impLevel").valueAction_(5.81);
 
 		~autoGuiControl.at("distoCrossOver1016drywet").valueAction_(-0.5);
 		~autoGuiControl.at("distoCrossOver1016amp").valueAction_(0.14);
@@ -743,6 +743,18 @@
 		~changePattern.value(Pdef(\unit7), ~song4Pattern7);
 		~changePattern.value(Pdef(\unit8), ~song4Pattern8);
 		15.0.wait;
+		Pbindef(\unit4, \dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5/**/, 0.25, 0.75, 0.25, Rest(0.5), 0.25, 0.5], inf));
+		Pbindef(\unit5, \dur, Pseq([0.5, 0.375, Rest(0.375), Rest(0.25), 0.75, 0.25], inf));
+		Pbindef(\unit6, \dur, Pseq([Rest(1.5), 0.5, 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf));
+		5.0.wait;
+		Pbindef(\unit2, \dur, 2.5, \timingOffset, Pseq([0, 0.2], inf));
+		~changePattern.value(Pdef(\unit4), ~song4Pattern4);
+		~changePattern.value(Pdef(\unit5), ~song4Pattern5);
+		~changePattern.value(Pdef(\unit6), ~song4Pattern6);
+		Pbindef(\unit7, \dur, Pseq([0.25, 0.125, 0.125, 0.5, 0.25], inf));
+		Pbindef(\unit8, \dur, Pseq([Rest(0.25), 0.25, 0.125, Rest(0.125), 0.25, 0.125, Rest(0.125)/**/, Rest(0.25), 0.25, 0.25, Rest(0.125), 0.25, Rest(0.125)], inf));
+		15.0.wait;
+		Pbindef(\unit2, \dur, Pseq([1.25, Rest(3.75)], inf));
 		Pbindef(\unit4, \dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5/**/, 0.25, 0.75, 0.25, Rest(0.5), 0.25, 0.5], inf));
 		Pbindef(\unit5, \dur, Pseq([0.5, 0.375, Rest(0.375), Rest(0.25), 0.75, 0.25], inf));
 		Pbindef(\unit6, \dur, Pseq([Rest(1.5), 0.5, 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf));
