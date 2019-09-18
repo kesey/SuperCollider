@@ -138,8 +138,8 @@
 		});
 	});
 
-	~firstTime.keysDo({ arg key;
-		if(key.contains(controlId), {
+	~firstTime.keysValuesDo({ arg key, value;
+		if((key.contains(controlId) and: value.not), {
 			~firstTime.put(key, true);
 		});
 	});
