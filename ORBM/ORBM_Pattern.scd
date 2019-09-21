@@ -1771,7 +1771,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song4Pattern6 = Pbind(
 	\instrument, \snapkick,
-	\dur, Pseq([Rest(0.05), 1.45, Rest(0.5), 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf),
+	\dur, Pseq([1.5, Rest(0.5), 0.25, Rest(0.25), Rest(0.25), 1.5, 0.25, Rest(0.5)], inf),
 	\amp, 0.25,
 	\pan, 0,
 	\bdFrqL1, 261,

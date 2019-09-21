@@ -1926,9 +1926,9 @@ SynthDef(\seqModul, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	var enf2 = EnvGen.ar(Env([1000,1600,700,200],[0.001,0.001,0.06,0.01],-4));
 	sig = SinOsc.ar(tu*400)*env;
 	sig =  WhiteNoise.ar(env)+sig;
-	sig = RHPF.ar(sig, \hpf.kr(100)*tu, \rq2.kr(1))+sig;
+	sig = RHPF.ar(sig, \hpf.kr(100)*tu, \hpfRq.kr(1))+sig;
 	sig = sig + Mix.ar(BPF.ar(sig,[327,430],[0.5,0.5])*0.1)+WhiteNoise.ar(env)+BrownNoise.ar(env/8);
-	sig = RLPF.ar(sig, \lpf.kr(11100)*tu, \rq.kr(0.5))+sig;
+	sig = RLPF.ar(sig, \lpf.kr(11100)*tu, \lpfRq.kr(0.5))+sig;
 	sig =( Ringz.ar(WhiteNoise.ar,Mix.ar([enf2,enf*0.9,enf2*0.8]),1,0.01*env) +RLPF.ar(BrownNoise.ar(env),enf*4,1,1)+sig )*env ;
 	sig = Pan2.ar(sig*env, pan, amp);
 		sig = CompanderD.ar(sig*4,0.8,0.3,0.5,0.001,0.2,env);

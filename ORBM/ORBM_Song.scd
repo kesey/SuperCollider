@@ -769,36 +769,36 @@
 		15.0.wait;
 		Pbindef(\unit4, \dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5/**/, 0.25, 0.75, 0.25, Rest(0.5), 0.25, 0.5], inf)).quant_(~globalQuant);
 		Pbindef(\unit5, \dur, Pseq([0.5, 0.375, Rest(0.375), Rest(0.25), 0.75, 0.25], inf)).quant_(~globalQuant);
-		Pbindef(\unit6, \dur, Pseq([Rest(1.5), 0.5, 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf)).quant_(~globalQuant);
+		Pbindef(\unit6, \dur, Pseq([Rest(1.5), 0.5, 0.25, Rest(0.25), Rest(0.25), 1.5, 0.25, Rest(0.5)], inf)).quant_(~globalQuant);
 		5.0.wait;
 		"1".postln;
-		Pbindef(\unit2, \dur, 2.5, \timingOffset, Pseq([0, 0.2], inf)).quant_(~globalQuant);
-		~changePattern.value(Pdef(\unit4), ~song4Pattern4);
-		~changePattern.value(Pdef(\unit5), ~song4Pattern5);
-		~changePattern.value(Pdef(\unit6), ~song4Pattern6);
+		Pbindef(\unit2,
+			\dur, 2.5,
+			\timingOffset, Pseq([0, 0.2], inf)
+		).quant_(~globalQuant);
+		Pbindef(\unit4, \dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5], inf)).quant_(~globalQuant);
+		Pbindef(\unit5, \dur, Pseq([Rest(0.375), 0.5, 0.375, Rest(0.25), 0.75, 0.25], inf)).quant_(~globalQuant);
+		Pbindef(\unit6, \dur, Pseq([Rest(0.05), 1.45, Rest(0.5), 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf)).quant_(~globalQuant);
 		Pbindef(\unit7, \dur, Pseq([0.25, 0.125, 0.125, 0.5, 0.25], inf)).quant_(~globalQuant);
 		Pbindef(\unit8, \dur, Pseq([Rest(0.125), 0.125, 0.25, Rest(0.25), 0.25, 0.125, Rest(0.125), Rest(0.25), 0.25, 0.25, Rest(0.125), 0.25, Rest(0.125)], inf)).quant_(~globalQuant); // 0.125+ 0.125+ 0.25+ 0.25+ 0.25+ 0.125+ 0.125+ 0.25+ 0.25+ 0.25+ 0.125+ 0.25+ 0.125 == 2.5
 		15.0.wait;
 		Pbindef(\unit2, \dur, Pseq([1.25, Rest(3.75)], inf)).quant_(~globalQuant);
 		Pbindef(\unit4, \dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5/**/, 0.25, 0.75, 0.25, Rest(0.5), 0.25, 0.5], inf)).quant_(~globalQuant);
 		Pbindef(\unit5, \dur, Pseq([0.5, 0.375, Rest(0.375), Rest(0.25), 0.75, 0.25], inf)).quant_(~globalQuant);
-		Pbindef(\unit6, \dur, Pseq([Rest(1.5), 0.5, 0.25, Rest(0.25), Rest(0.25), 1.45, Rest(0.05), 0.25, Rest(0.5)], inf)).quant_(~globalQuant);
+		Pbindef(\unit6, \dur, Pseq([Rest(1.5), 0.5, 0.25, Rest(0.25), Rest(0.25), 1.5, 0.25, Rest(0.5)], inf)).quant_(~globalQuant);
 		5.0.wait;
 		"2".postln;
-		~changePattern.value(Pdef(\unit2), ~song4Pattern2);
 		Pbindef(\unit2,
-			\amp, 0.12,
-			\tu, 2.17,
-			\dec, 0.11,
-			\hpf, 183
+			\dur, 1.25,
+			\timingOffset, Pseq([0.1, 0.375], inf),
+			\amp, 0.072,
+			\envLev4, 1,
+			\rel, 0.16
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit2");
 		Pbindef(\unit3, \freq, 672).quant_(~globalQuant);
 		~resetControlBus.value("unit3freq");
-		Pbindef(\unit4,
-			\dur, Pseq([0.5, Rest(0.25), 0.75, 0.5, 0.5], inf)
-		).quant_(~globalQuant);
-		~changePattern.value(Pdef(\unit6), ~song4Pattern6);
+		Pbindef(\unit4, \dur, Pseq([0.5, Rest(0.25), 0.75, 0.5, 0.5], inf)).quant_(~globalQuant);
 		Pbindef(\unit6,
 			\dur, Pseq([Rest(0.5), 2, Rest(0.25), 1.5, 0.25, Rest(0.5)], inf), // 0.5+ 2+ 0.25+ 1.5+ 0.25+ 0.5 == 5
 			\bdFrqL1, 251.3,
@@ -810,11 +810,57 @@
 			\popAmpLev, 0.7
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit6");
-		Pbindef(\unit8,
-			\envL2, 0.2
-		).quant_(~globalQuant);
+		Pbindef(\unit8, \envL2, 0.2).quant_(~globalQuant);
 		~resetControlBus.value("unit8envL2");
 		20.0.wait;
+		"3".postln;
+		Pbindef(\unit2,
+			\dur, 2.5,
+			\timingOffset, Pseq([0, 0.2], inf),
+			\amp, 0.16,
+			\envLev4, 0.38,
+			\rel, 0.1,
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit2");
+		Pbindef(\unit3,
+			\amp, 0.17,
+			\freq, 95,
+			\ffreq, 488,
+			\release, 0.79
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit3");
+		Pbindef(\unit4, \dur, Pseq([Rest(0.5), 1, 1.5, 1, 1/**/, 0.5, 1, 1.5, 1, 1], inf)).quant_(~globalQuant);
+		Pbindef(\unit5, \dur, Pseq([Rest(0.75), 1, 0.75, Rest(1), 1, 0.5], inf)).quant_(~globalQuant); // 0.75+ 1+ 0.75+ 1+ 1+ 0.5
+		Pbindef(\unit6,
+			\dur, Pseq([Rest(0.25), 1.5, 0.5, Rest(0.25)/**/, Rest(0.25), 0.5, Rest(0.25), 1.5/**/, Rest(0.25), 1.5, 0.5, Rest(0.25)/**/, Rest(0.25), 1.5, Rest(0.25), 0.5], inf),
+			\bdFrqL1, 261,
+			\bdFrqL2, 116,
+			\bdFrqL3, 64,
+			\bdFrqT1, 0.035,
+			\bdAmpSus, 0.1,
+			\popFrqEnd, 261,
+			\popAmpLev, 0.39
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit6");
+		Pbindef(\unit7, \dur, 0.5).quant_(~globalQuant);
+		Pbindef(\unit8,
+			\dur, Pseq([Rest(0.25), 0.25, 0.5, 0.25, Rest(0.25), 0.5, 0.25, Rest(0.25), Rest(0.25), 0.5, 0.5, Rest(0.25), 0.5, Rest(0.25), 0.25], inf),
+			\envL2, 0
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit8envL2");
+		35.0.wait;
+		Pbindef(\unit2, \dur, Pseq([1.25, Rest(3.75)], inf)).quant_(~globalQuant);
+		Pbindef(\unit3,
+			\amp, 0.3,
+			\freq, 95,
+			\ffreq, 53,
+			\release, 1.75
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit3");
+		Pbindef(\unit4, \dur, Pseq([0.5, 0.75, 0.5, Rest(0.25), 0.5/**/, Rest(0.25), 0.75, 0.25, Rest(0.5), Rest(0.25), 0.5], inf)).quant_(~globalQuant);
+		Pbindef(\unit5, \dur, Pseq([Rest(0.5), Rest(0.375), 0.375, Rest(0.25), 0.75, Rest(0.25)], inf)).quant_(~globalQuant);
+		Pbindef(\unit6, \dur, Pseq([Rest(1), 0.5, Rest(1)/**/, Rest(0.25), 1.5, Rest(0.25), 0.5], inf)).quant_(~globalQuant);
+		5.0.wait;
 	}
 };
 
