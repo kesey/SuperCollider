@@ -130,17 +130,34 @@
 	.put(\stop, { updater.remove; });
 };
 
-~resetControlBus = { arg controlId; // you have to pass an array here
-	~controlBus.keysDo({ arg key;
-		if(key.contains(controlId), {
-			~controlBus.at(key).free;
-			~controlBus.removeAt(key);
+~resetControlBus = { arg controlId;
+	if (controlId.isArray, {
+		~controlBus.keysDo({ arg key;
+			if(controlId.includesEqual(key), {
+				~controlBus.at(key).free;
+				~controlBus.removeAt(key);
+			});
+		});
+
+		~firstTime.keysValuesDo({ arg key, value;
+			if((controlId.includesEqual(key) and: value.not), {
+				~firstTime.put(key, true);
+			});
 		});
 	});
 
-	~firstTime.keysValuesDo({ arg key, value;
-		if((key.contains(controlId) and: value.not), {
-			~firstTime.put(key, true);
+	if (controlId.isString, {
+		~controlBus.keysDo({ arg key;
+			if(key.contains(controlId), {
+				~controlBus.at(key).free;
+				~controlBus.removeAt(key);
+			});
+		});
+
+		~firstTime.keysValuesDo({ arg key, value;
+			if((key.contains(controlId) and: value.not), {
+				~firstTime.put(key, true);
+			});
 		});
 	});
 };
