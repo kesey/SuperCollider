@@ -162,6 +162,14 @@
 	});
 };
 
+~resetAllControlBus = {
+	var unit;
+	~pdefNumber.do({ arg i;
+		unit = ("unit" ++ (1 + i)).asString;
+		~resetControlBus.value(unit);
+	});
+};
+
 ~pdefUpdate = { arg controlId, instance, controlNameSymb, value;
 	if (~firstTime.at(controlId), {
 		~controlBus.put(controlId, Bus.control(s, 1).set(value));

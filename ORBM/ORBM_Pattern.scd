@@ -1926,7 +1926,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 ~song4Pattern8 = Pbind(
 	\instrument, \cym1,
 	\dur, Pseq([Rest(0.125), 0.125, 0.25, 0.125, Rest(0.125), 0.25, 0.125, Rest(0.125), Rest(0.125), 0.25, 0.25, Rest(0.125), 0.25, Rest(0.125), 0.125], inf),
-	\amp, 0.006,
+	\amp, 0.0065,
 	\pan, Pwhite(-0.35, 0.35, inf),
 	\envL1, 0.76,
 	\envL2, 0,
