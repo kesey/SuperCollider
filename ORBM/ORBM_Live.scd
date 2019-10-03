@@ -16,8 +16,11 @@ Tdef(\song, ~song2).play(t, true, ~globalQuant);*/
 /*~globalQuant = 7; // !!! change globalQuant before song !!!
 Tdef(\song, ~song3).play(t, true, ~globalQuant);*/
 
-~globalQuant = 5; // !!! change globalQuant before song !!!
-Tdef(\song, ~song4).play(t, true, ~globalQuant);
+/*~globalQuant = 5; // !!! change globalQuant before song !!!
+Tdef(\song, ~song4).play(t, true, ~globalQuant);*/
+
+~globalQuant = 7; // !!! change globalQuant before song !!!
+Tdef(\song, ~song5).play(t, true, ~globalQuant);
 
 if (~sequencerTransport.isPlaying.not, { ~sequencerTransport = p.play(t, quant: ~globalQuant); });
 )

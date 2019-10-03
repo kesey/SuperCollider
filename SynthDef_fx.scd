@@ -187,7 +187,7 @@ SynthDef(\SimpleDelay, { arg in = 0, out = 0, delaytime = 0.1;
 SynthDef(\quadDelay, { arg in = 0, out = 0, delayamp1 = 1, delaypan1 = 0, sync1 = 0, delayamp2 = 1,  delaypan2 = 0, sync2 = 0, delayamp3 = 1, delaypan3 = 0, sync3 = 0, delayamp4 = 1, delaypan4 = 0, sync4 = 0, feedBack = 0.2, dryWet = 0.4, amp = 0.5;
 	var input, delay, delay1, delay2, delay3, delay4, time1, time2, time3, time4, sig, tempoClock;
 	input = In.ar(in, 2);
-	delay = Mix.ar([input, LocalIn.ar(2)]);
+	delay = input + LocalIn.ar(2);
 	tempoClock = \tempoClock.kr(TempoClock.default.tempo);
 
 	// delay 1
@@ -210,7 +210,7 @@ SynthDef(\quadDelay, { arg in = 0, out = 0, delayamp1 = 1, delaypan1 = 0, sync1 
 	delay4 = XFadeDelay.ar(delay, 1, time4);
 	delay4 = Balance2.ar(delay4[0], delay4[1], delaypan4, delayamp4);
 
-	sig =  Mix.ar([delay1, delay2, delay3, delay4]);
+	sig = delay1 + delay2 + delay3 + delay4;
 
 	LocalOut.ar(sig * feedBack);
 	sig = XFade2.ar(input, sig, dryWet, amp);
@@ -220,7 +220,7 @@ SynthDef(\quadDelay, { arg in = 0, out = 0, delayamp1 = 1, delaypan1 = 0, sync1 
 SynthDef(\syncDelay, { arg in = 0, out = 0, sync = 0/*false*/, feedBack = 0.2, dryWet = 0.4, pan = 0, amp = 0.5;
     var input, delay, sig, time;
     input = In.ar(in, 2);
-	delay = Mix.ar([input, LocalIn.ar(2)]);
+	delay = input + LocalIn.ar(2);
 
 	time = Select.kr(sync, [\delaytime.kr(0.25), \division.kr(2/3) / \tempoClock.kr(TempoClock.default.tempo)]);
 	delay = XFadeDelay.ar(delay, 1, time);

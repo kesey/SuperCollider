@@ -38,15 +38,24 @@ s.options.dump; // visualise server options
 ////////////////////////////////// 2. OSC config
 
 // NetAddr.localAddr; // retrieve the current IP and port
-// OSCFunc.trace(true); // Turn OSC message posting on
-// OSCFunc.trace(false); // Turn OSC message posting off
 
-////////////////////////////////// 3. midi config
+// OSCFunc.trace(true); // dumps all incoming OSC messages
+// OSCFunc.trace(false);
+
+////////////////////////////////// 3. HID config
+
+// HIDFunc.trace(true); // dumps all incoming HID messages
+// HIDFunc.trace(false);
+
+////////////////////////////////// 4. MIDI config
 
 MIDIClient.init; // post a list of available devices
 
-// MIDIClient.sources; // list avalaible midi sources
+/*MIDIFunc.trace(true); // dumps all incoming MIDI messages
+MIDIFunc.trace(false);*/
+
 // MIDIIn.connectAll; // connect to all attached input sources
+// MIDIClient.sources; // list avalaible midi sources
 if (MIDIClient.sources[0].notNil, {
 	MIDIIn.connect(0, MIDIClient.sources[0]); // connect on first port with first device equivalent to MIDIIn.connect
 });
@@ -56,7 +65,7 @@ if (MIDIClient.destinations[2].notNil, {
 	~midiOut = MIDIOut.new(2).latency_(s.latency); // 2 for MIDIClient.destinations[2]
 });
 
-////////////////////////////////// 4. initialize global variables
+////////////////////////////////// 5. initialize global variables
 
 ~path = PathName(thisProcess.nowExecutingPath).parentPath;
 ~globalQuant = 1; // length of the longest pattern
@@ -74,21 +83,21 @@ if (MIDIClient.destinations[2].notNil, {
 t = TempoClock.default;
 t.tempo = 60 / 60; // TempoClock by default in beat per seconds
 
-////////////////////////////////// 5. define specific functions
+////////////////////////////////// 6. define specific functions
 
 this.executeFile(~path ++ "ORBM_Function.scd");
 
-////////////////////////////////// 6. register functions with ServerBoot/Quit/Tree
+////////////////////////////////// 7. register functions with ServerBoot/Quit/Tree
 
 ServerBoot.add(~makeBuffers, s);
 
 ServerQuit.add(~cleanup, s);
 
-////////////////////////////////// 7. boot
+////////////////////////////////// 8. boot
 
 s.serverRunning.not.if({ s.boot });
 
-////////////////////////////////// 8. actions to perform once boot is completed
+////////////////////////////////// 9. actions to perform once boot is completed
 
 s.waitForBoot({
 	if (~init.isNil, {
