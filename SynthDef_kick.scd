@@ -533,4 +533,33 @@ SynthDef(\tabass, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, re
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
+SynthDef(\mcld, { arg out = 0, amp = 1, att = 0.01, rel = 2, impFreq = 10, hpfFreq = 440, gate = 1, doneAction = 2;
+	var sig, env, input;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	input = LocalIn.ar.clip2(LFPulse.kr([1,2,1/8]).sum/2)**100*100;
+	sig = DynKlank.ar(
+		`[input],
+		Impulse.ar(impFreq)
+	);
+	LocalOut.ar(sig);
+	sig = HPF.ar(sig, hpfFreq).clip2;
+	sig = Splay.ar(sig * env, amp);
+	OffsetOut.ar(out, sig);
+}).add;
+
+SynthDef(\batuhan, { arg out = 0, amp = 1, att = 0.01, rel = 5, tridDur = 0.125, decayTime = 0.3, sawFreq = 8, brfFreq1 = 45.1, brfFreq2 = 45, gate = 1, doneAction = 2;
+	var sig, env, core;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	core = Duty.kr(tridDur, 0, Drand([0, Drand((0.4,0.5..1))], inf));
+	sig = Decay2.kr(
+		core,
+		0.01,
+		decayTime
+	);
+	sig = Saw.ar(sawFreq, sig) ** 1.5;
+	sig = BRF.ar(sig, core * 20 + [brfFreq1, brfFreq2], 0.1);
+	sig = LeakDC.ar(sig).tanh;
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+
 )

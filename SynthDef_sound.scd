@@ -262,4 +262,77 @@ SynthDef(\seqTwit, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, r
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
+SynthDef(\nathanielVirgo, { arg out = 0, amp = 1, feedBack = 7.5, sawFreq1 = 32, sawFreq2 = 33, sawAmp = 0.2, bpff = 2, bpffModSpeed = 1.33, bpffModAmt = 4, delayTime = 2, decayTime = 40, gate = 1, doneAction = 2;
+	var sig, env;
+	env = Linen.kr(gate, 0.01, 1, 20, doneAction);
+	sig = LocalIn.ar(2) * feedBack + Saw.ar(
+		[sawFreq1, sawFreq2],
+		sawAmp
+	) * env;
+	sig = BPF.ar(
+		sig,
+		bpff ** LFNoise0.kr(bpffModSpeed, bpffModAmt) * 300,
+		0.1
+	).distort;
+	sig = CombN.ar(sig, 2, delayTime, decayTime);
+	LocalOut.ar(sig);
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\talters, { arg out = 0, amp = 1, gate = 1, doneAction = 2;
+	var sig, env;
+	env = Linen.kr(gate, 0.01, 1, 10, doneAction);
+	sig = ({
+		|k|
+		({
+			|i|
+			y = SinOsc;
+			y.ar(i*k*k, y.ar(i*k**i/[{4.rand}, {5.rand}]) * Decay.kr(Dust.kr(1/4**i), y.ar(0.1)+1*k+i, k*999))
+		}!4).product
+	}!8).sum;
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+
+SynthDef(\bozkurt, { arg out = 0, amp = 1, att = 0.01, rel = 10, impFreq = 0.25, freq1 = 4, freq2 = 6, delTime = 0.3, decTime = 50, feedBack = 1, gate = 1, doneAction = 2;
+	var sig, env, input, ctrl;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	input = LocalIn.ar(2).tanh * feedBack;
+	ctrl = Latch.kr(input[0].abs, Impulse.kr(impFreq));
+	sig = Blip.ar([freq1, freq2], 100 * ctrl + 50, 0.9);
+	sig = CombC.ar(
+		sig,
+		1,
+		ctrl * delTime,
+		decTime * input
+	);
+	LocalOut.ar(sig);
+	sig = Splay.ar(sig * env, amp);
+	OffsetOut.ar(out, sig);
+}).add;
+
+SynthDef(\nozkurt, { arg out = 0, amp = 1, att = 0.01, rel = 5, sinFreq = 55, impMin = 0.0002, impMax = 0.7, impFreq = 8, gate = 1, doneAction = 2;
+	var sig, env, delayTime;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	sig = SinOsc.ar(sinFreq).tanh;
+	delayTime = TExpRand.ar(impMin, impMax, Impulse.ar(impFreq)).round([2e-3, 4e-3]);
+	sig = AllpassC.ar(sig, 1, delayTime, 2);
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+
+SynthDef(\tirgo, { arg out = 0, amp = 1, att = 0.01, rel = 5, blipFreqMod = 2, blipHarmo = 400, brfFreq = 150, brfRq = 2, gate = 1, doneAction = 2;
+	var sig, noise, thunder, rainStep, env, delayTime;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	noise = PinkNoise.ar(1!2);
+	rainStep = noise + Blip.ar(noise + blipFreqMod, blipHarmo);
+	rainStep = BRF.ar(
+		rainStep,
+		brfFreq,
+		brfRq,
+		0.1
+	);
+	thunder = LPF.ar(FreeVerb2.ar(*LPF.ar(noise + 0.2 * Dust.ar(0.1), 60) ++ [1, 1, 0.2, 1e4]).tanh, 2000);
+	sig = rainStep + thunder;
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+
 )

@@ -731,7 +731,8 @@ SynthDef(\tweetKickInt, { arg out = 0, attack = 0.01, release = 2, amp = 1, t_tr
     // ring times
 	kring = [kring1, kring2, kring3, kring4];
 
-    reso = Klank.ar(`[kharm, kamp, kring], sig, frqScale, decScale);
+    //reso = Klank.ar(`[kharm, kamp, kring], sig, frqScale, decScale);
+	reso = DynKlank.ar(`[kharm, kamp, kring], sig, frqScale, decScale);
 	sig = SelectX.ar(resoMix, [sig, reso]);
 	sig = Pan2.ar (sig, pan);
 
@@ -764,6 +765,35 @@ SynthDef(\kickParallax1, { arg out = 0, amp = 1, pan = 0, envAmpAtt = 0.01, envA
 	};
 	sig = sig * env;
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+}).add;
+
+SynthDef(\mcld, { arg out = 0, amp = 1, att = 0.01, rel = 2, impFreq = 10, hpfFreq = 440, gate = 1, doneAction = 2;
+	var sig, env, input;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	input = LocalIn.ar.clip2(LFPulse.kr([1,2,1/8]).sum/2)**100*100;
+	sig = DynKlank.ar(
+		`[input],
+		Impulse.ar(impFreq)
+	);
+	LocalOut.ar(sig);
+	sig = HPF.ar(sig, hpfFreq).clip2;
+	sig = Splay.ar(sig * env, amp);
+	OffsetOut.ar(out, sig);
+}).add;
+
+SynthDef(\batuhan, { arg out = 0, amp = 1, att = 0.01, rel = 5, tridDur = 0.125, decayTime = 0.3, sawFreq = 8, brfFreq1 = 45.1, brfFreq2 = 45, gate = 1, doneAction = 2;
+	var sig, env, core;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	core = Duty.kr(tridDur, 0, Drand([0, Drand((0.4,0.5..1))], inf));
+	sig = Decay2.kr(
+		core,
+		0.01,
+		decayTime
+	);
+	sig = Saw.ar(sawFreq, sig) ** 1.5;
+	sig = BRF.ar(sig, core * 20 + [brfFreq1, brfFreq2], 0.1);
+	sig = LeakDC.ar(sig).tanh;
+	OffsetOut.ar(out, sig * env * amp);
 }).add;
 
 ///////////////////////////////////////  Snare
@@ -1486,6 +1516,22 @@ SynthDef(\henon, { arg out = 0, amp = 0.3, pan = 0, freq = 440, a = 1.3, b = 0.3
 	OffsetOut.ar(out, Pan2.ar(sig, pan));
 }).add;
 
+SynthDef(\tirgo, { arg out = 0, amp = 1, att = 0.01, rel = 5, blipFreqMod = 2, blipHarmo = 400, brfFreq = 150, brfRq = 2, gate = 1, doneAction = 2;
+	var sig, noise, thunder, rainStep, env, delayTime;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	noise = PinkNoise.ar(1!2);
+	rainStep = noise + Blip.ar(noise + blipFreqMod, blipHarmo);
+	rainStep = BRF.ar(
+		rainStep,
+		brfFreq,
+		brfRq,
+		0.1
+	);
+	thunder = LPF.ar(FreeVerb2.ar(*LPF.ar(noise + 0.2 * Dust.ar(0.1), 60) ++ [1, 1, 0.2, 1e4]).tanh, 2000);
+	sig = rainStep + thunder;
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+
 ///////////////////////////////////////  Sampler
 
 ~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, gate = 1, amp = 1, pan = 0, attack = 0.001, release = 1, buffer = 0, rate = 1, startPos = 0, loop = 0, doneAction = 2;
@@ -1943,6 +1989,78 @@ SynthDef(\seqModul, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	BufWr.ar(Blip.ar([1,1.01],10)/5+sig,buffer,LFNoise1.ar(0.2)+1*5e4);
 	sig = sig * env;
 	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\nathanielVirgo, { arg out = 0, amp = 1, feedBack = 7.5, sawFreq1 = 32, sawFreq2 = 33, sawAmp = 0.2, bpff = 2, bpffModSpeed = 1.33, bpffModAmt = 4, delayTime = 2, decayTime = 40, gate = 1, doneAction = 2;
+	var sig, env;
+	env = Linen.kr(gate, 0.01, 1, 20, doneAction);
+	sig = LocalIn.ar(2) * feedBack + Saw.ar(
+		[sawFreq1, sawFreq2],
+		sawAmp
+	) * env;
+	sig = BPF.ar(
+		sig,
+		bpff ** LFNoise0.kr(bpffModSpeed, bpffModAmt) * 300,
+		0.1
+	).distort;
+	sig = CombN.ar(sig, 2, delayTime, decayTime);
+	LocalOut.ar(sig);
+	OffsetOut.ar(out, sig * amp);
+}).add;
+
+SynthDef(\talters, { arg out = 0, amp = 1, gate = 1, doneAction = 2;
+	var sig, env;
+	env = Linen.kr(gate, 0.01, 1, 10, doneAction);
+	sig = ({
+		|k|
+		({
+			|i|
+			y = SinOsc;
+			y.ar(i*k*k, y.ar(i*k**i/[{4.rand}, {5.rand}]) * Decay.kr(Dust.kr(1/4**i), y.ar(0.1)+1*k+i, k*999))
+		}!4).product
+	}!8).sum;
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+
+SynthDef(\bozkurt, { arg out = 0, amp = 1, att = 0.01, rel = 10, impFreq = 0.25, freq1 = 4, freq2 = 6, delTime = 0.3, decTime = 50, feedBack = 1, gate = 1, doneAction = 2;
+	var sig, env, input, ctrl;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	input = LocalIn.ar(2).tanh * feedBack;
+	ctrl = Latch.kr(input[0].abs, Impulse.kr(impFreq));
+	sig = Blip.ar([freq1, freq2], 100 * ctrl + 50, 0.9);
+	sig = CombC.ar(
+		sig,
+		1,
+		ctrl * delTime,
+		decTime * input
+	);
+	LocalOut.ar(sig);
+	sig = Splay.ar(sig * env, amp);
+	OffsetOut.ar(out, sig);
+}).add;
+
+SynthDef(\padovan, { arg out = 0, amp = 1, tridDur = 1, freq = 165, roomSize = 9, gate = 1, doneAction = 2;
+	var sig, env, input, mod, grainTr, sinMod;
+	env = Linen.kr(gate, 0.1, 1, 5, doneAction);
+	sig = SinOsc;
+	mod = Trig.ar(
+		Saw.ar(freq),
+		tridDur
+	);
+	grainTr = sig.ar(mod * freq);
+	sinMod = sig.ar(mod);
+	sig = GrainIn.ar(2, grainTr, grainTr / 2, sinMod, mod * sinMod, -1, mul: env);
+	sig = GVerb.ar(sig, roomSize, mul: amp);
+	OffsetOut.ar(out, sig);
+}).add;
+
+SynthDef(\nozkurt, { arg out = 0, amp = 1, att = 0.01, rel = 5, sinFreq = 55, impMin = 0.0002, impMax = 0.7, impFreq = 8, gate = 1, doneAction = 2;
+	var sig, env, delayTime;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	sig = SinOsc.ar(sinFreq).tanh;
+	delayTime = TExpRand.ar(impMin, impMax, Impulse.ar(impFreq)).round([2e-3, 4e-3]);
+	sig = AllpassC.ar(sig, 1, delayTime, 2);
+	OffsetOut.ar(out, sig * env * amp);
 }).add;
 
 ///////////////////////////////////////  Rimshot
