@@ -335,4 +335,15 @@ SynthDef(\KSpluck3, { arg out = 0, att = 0, dec = 0.01, midiPitch, art, noiseFre
 	OffsetOut.ar(out, sig*0.8)
 }).add;
 
+SynthDef(\lmcd, { arg out = 0, amp = 1, att = 0.01, rel = 5, trigDur = 0.1, lfCubTu = 1, hpfFreq = 440, gate = 1, doneAction = 2;
+	var sig, noise, thunder, rainStep, env, delayTime;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	sig = Duty.kr(trigDur, 0, Dseq(fib(32).wrap(20, 55).midicps, inf));
+	sig = LFCub.ar([-1, sig, sig / 3, -2] * lfCubTu);
+	sig = LeakDC.ar(sig) * 9;
+	sig = HPF.ar(sig, hpfFreq).clip2 / 9;
+	sig = Splay.ar(sig);
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+
 )

@@ -18,9 +18,9 @@
 }.play;
 
 (
-SynthDef(\nVirgo, { arg out = 0, amp = 1, feedBack = 7.5, sawFreq1 = 32, sawFreq2 = 33, sawAmp = 0.2, bpff = 2, bpffModSpeed = 1.33, bpffModAmt = 4, delayTime = 2, decayTime = 40, gate = 1, doneAction = 2;
+SynthDef(\nVirgo, { arg out = 0, amp = 1, att = 0.01, rel = 20,feedBack = 7.5, sawFreq1 = 32, sawFreq2 = 33, sawAmp = 0.2, bpff = 2, bpffModSpeed = 1.33, bpffModAmt = 4, delayTime = 2, decayTime = 40, gate = 1, doneAction = 2;
 	var sig, env;
-	env = Linen.kr(gate, 0.01, 1, 20, doneAction);
+	env = Linen.kr(gate, att, 1, rel, doneAction);
 	sig = LocalIn.ar(2) * feedBack + Saw.ar(
 		[sawFreq1, sawFreq2],
 		sawAmp
@@ -331,14 +331,41 @@ Pbind(
 ).play;
 )
 
+// LMCD
+(
+play{
+	a = Duty.kr(0.1, 0, Dseq(fib(32).wrap(20, 55).midicps, inf));
+	HPF.ar(LeakDC.ar(Splay.ar(LFCub.ar([-1, a, a / 3, -2]))) * 9).clip2 / 9;
+};
+)
+
+(
+SynthDef(\lmcd, { arg out = 0, amp = 1, att = 0.01, rel = 5, trigDur = 0.1, lfCubTu = 1, hpfFreq = 440, gate = 1, doneAction = 2;
+	var sig, noise, thunder, rainStep, env, delayTime;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	sig = Duty.kr(trigDur, 0, Dseq(fib(32).wrap(20, 55).midicps, inf));
+	sig = LFCub.ar([-1, sig, sig / 3, -2] * lfCubTu);
+	sig = LeakDC.ar(sig) * 9;
+	sig = HPF.ar(sig, hpfFreq).clip2 / 9;
+	sig = Splay.ar(sig);
+	OffsetOut.ar(out, sig * env * amp);
+}).add;
+)
+
+p = Synth(\lmcd);
+p.set(\gate, 0);
+
+(
+Pbind(
+	\instrument, \lmcd,
+	\dur, 40,
+	\trigDur, 0.1,
+	\lfCubTu, 0.05
+).play;
+)
+
 // LDMC
 {a=[0.02,0.1,1,2,3,4]; k=LFPar.kr(a+0.5).sum; f=Latch.kr(k,Impulse.kr(a)); Splay.ar(SinOsc.ar(f*100+300)/5)}.play;
 
-// Sciss
-play{2.collect{RecordBuf.ar(Limiter.ar(HPF.ar(Convolution2.ar(k=Crackle.ar(l=Line.kr(1,2,90)),b=LocalBuf(2048),Dust.kr(4)),8)+k)*(2-l),b)}};
-
 // nalle
 {13.do{|i|k="SuperCollider"[i].ascii;20.do{|u|{MoogFF.ar(Saw.ar((k/4).midicps)*EnvGen.ar(Env.perc),u+k*9,k/30)}.play;(k*0.001).wait}}}.fork;
-
-// LMCD
-play{a=Duty.kr(0.1,0,Dseq(fib(32).wrap(20,55).midicps,inf));HPF.ar(LeakDC.ar(Splay.ar(LFCub.ar([-1,a,a/3,-2])))*9).clip2/9};
