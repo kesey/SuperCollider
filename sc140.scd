@@ -161,6 +161,28 @@ Ndef(\x, {
 	)
 }).play;
 
+( // new
+SynthDef(\rohrhuber, { arg out = 0, amp = 1, lfnFreq1 = 2, lfnFreq2 = 62, att = 0.01, rel = 2, gate = 1, doneAction = 2;
+	var sig, env;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	Ndef(\x, {
+		SinOsc.ar(
+			BrownNoise.ar(30 ! 2, 200),
+			Ndef(\x).ar * LFNoise1.kr([17, 4], 1, 1)
+		)
+	});
+	sig = Ndef(\x) * LFNoise0.kr([lfnFreq1, lfnFreq2]) * env * amp;
+	OffsetOut.ar(out, sig);
+}).add;
+)
+
+(
+Pbind(
+	\instrument, \rohrhuber,
+	\amp, 0.2,
+	\dur, 5
+).play;
+)
 
 // Padovan
 play{
@@ -254,7 +276,41 @@ Pbind(
 )
 
 // lirgo
-Ndef('x',{x=Ndef('x').ar+0.01;a=BPF.ar(x,6**Latch.ar(x,Dust.ar(x))*150,0.2).sin;9.do{a=AllpassN.ar(a,0.2,{0.2.rand}!2,9)};a+a.mean}).play;
+Ndef('x', {
+	x = Ndef('x').ar + 0.01;
+	a = BPF.ar(x, 6 ** Latch.ar(x, Dust.ar(x)) * 150, 0.2).sin;
+	9.do{
+		a = AllpassN.ar(a, 0.2, {0.2.rand}!2, 9)
+	};
+	a + a.mean;
+}).play;
+
+(
+SynthDef(\lirgo, { arg out = 0, amp = 1, att = 0.01, rel = 5, gate = 1, doneAction = 2;
+	var sig, env, bpf;
+
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	sig = Ndef('x', {
+		sig = Ndef('x').ar + 0.01;
+		bpf = BPF.ar(sig, 6 ** Latch.ar(sig, Dust.ar(sig)) * 150, 0.2).sin;
+		4.do{
+			bpf = AllpassN.ar(bpf, 0.2, {0.2.rand}!2, 9)
+		};
+		bpf + bpf.mean;
+	});
+	OffsetOut.ar(out, sig * env);
+}).add;
+)
+
+p = Synth(\lirgo);
+p.set(\gate, 0);
+
+(
+Pbind(
+	\instrument, \lirgo,
+	\dur, 10
+).play;
+)
 
 
 // nozkurt
@@ -369,3 +425,5 @@ Pbind(
 
 // nalle
 {13.do{|i|k="SuperCollider"[i].ascii;20.do{|u|{MoogFF.ar(Saw.ar((k/4).midicps)*EnvGen.ar(Env.perc),u+k*9,k/30)}.play;(k*0.001).wait}}}.fork;
+
+play{VarSaw.ar((Hasher.ar(Latch.ar(SinOsc.ar((1..4)!2),Impulse.ar([5/2,5])))*300+300).round(60),0,LFNoise2.ar(2,1/3,1/2))/5}

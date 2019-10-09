@@ -1127,12 +1127,12 @@
 	~song5InitPart = {
 		~changePattern.value(Pdef(\unit1), ~song5Pattern1);
 		~changePattern.value(Pdef(\unit2), ~song5Pattern2);
-		//~changePattern.value(Pdef(\unit3), ~song5Pattern3);
+		~changePattern.value(Pdef(\unit3), ~song5Pattern3);
 		~changePattern.value(Pdef(\unit4), ~song5Pattern4);
 		~changePattern.value(Pdef(\unit5), ~song5Pattern5);
 		~changePattern.value(Pdef(\unit6), ~song5Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song5Pattern7);
-		//~changePattern.value(Pdef(\unit8), ~song5Pattern8);
+		~changePattern.value(Pdef(\unit8), ~song5Pattern8);
 		~resetAllControlBus.value;
 	};
 

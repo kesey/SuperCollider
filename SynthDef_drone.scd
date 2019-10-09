@@ -390,4 +390,34 @@ SynthDef(\Lumbricost, {arg out = 0, amp = 1, pan = 0, attTim= 1, relTim=2.5, sca
 	OffsetOut.ar(out, Pan2.ar(sig, pan));
 }).add;
 
+// be carefull this one create a temporary node
+SynthDef(\rohrhuber, { arg out = 0, amp = 1, lfnFreq1 = 2, lfnFreq2 = 62, att = 0.01, rel = 2, gate = 1, doneAction = 2;
+	var sig, env;
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	Ndef(\x, {
+		SinOsc.ar(
+			BrownNoise.ar(30 ! 2, 200),
+			Ndef(\x).ar * LFNoise1.kr([17, 4], 1, 1)
+		)
+	});
+	sig = Ndef(\x) * LFNoise0.kr([lfnFreq1, lfnFreq2]) * env * amp;
+	OffsetOut.ar(out, sig);
+}).add;
+
+// be carefull this one create a temporary node
+SynthDef(\lirgo, { arg out = 0, amp = 1, att = 0.01, rel = 5, gate = 1, doneAction = 2;
+	var sig, env, bpf;
+
+	env = Linen.kr(gate, att, 1, rel, doneAction);
+	sig = Ndef('x', {
+		sig = Ndef('x').ar + 0.01;
+		bpf = BPF.ar(sig, 6 ** Latch.ar(sig, Dust.ar(sig)) * 150, 0.2).sin;
+		4.do{
+			bpf = AllpassN.ar(bpf, 0.2, {0.2.rand}!2, 9)
+		};
+		bpf + bpf.mean;
+	});
+	OffsetOut.ar(out, sig * env);
+}).add;
+
 )
