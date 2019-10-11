@@ -503,11 +503,11 @@ v.canvas.layout = VLayout();
 		"envLevel4", ["knob", ControlSpec(0, 80, step: 0.1, default: 50), true],
 		"envLevel5", ["knob", ControlSpec(0, 80, step: 0.1, default: 0), true],
 		"envLevel6", ["knob", ControlSpec(0, 80, step: 0.1, default: 60), true],
-		"envTime1", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true],
-		"envTime2", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.3), true],
-		"envTime3", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.25), true],
-		"envTime4", ["knob", ControlSpec(0, 1, step: 0.01, default: 1), true],
-		"envTime5", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.5), true]
+		"envTime1", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.5), true],
+		"envTime2", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.3), true],
+		"envTime3", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.25), true],
+		"envTime4", ["knob", ControlSpec(0, 10, step: 0.01, default: 1), true],
+		"envTime5", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.5), true]
 	]
 ));
 

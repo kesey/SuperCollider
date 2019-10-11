@@ -1435,14 +1435,14 @@ SynthDef(\ambiantPic, { arg out = 0, amp = 1, lfnFreq = 22, attack = 0.01, relea
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-~attBreathSynthDef = SynthDef(\attBreath, { arg out = 0, amp = 1, attack = 0.01, release = 2, seqv1 = 1, seqv2 = 1, seqv3 = 4, seqv4 = 2, seqv5 = 2, seqFreq = 0.2, bwrMod = 0.5, t_trig = 1, doneAction = 2;
+~attBreathSynthDef = SynthDef(\attBreath, { arg out = 0, amp = 1, attack = 0.01, release = 2, seqv1 = 1, seqv2 = 1, seqv3 = 4, seqv4 = 2, seqv5 = 2, seqFreq = 0.2, freqMin = 250, freqMax = 800, bwrMod = 0.5, t_trig = 1, doneAction = 2;
 	var sig, env;
 	//env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
 	env = Linen.kr(t_trig, attack, 1, release, doneAction);
 	sig = TDuty.kr(Dseq([seqv1, seqv2, seqv3, seqv4, seqv5] * seqFreq, inf));
 	sig = Resonz.ar(
-		Crackle.ar!2,
-		Demand.kr(sig, 0, Dseq([250,8e2], inf)),
+		Crackle.ar(sig.range(0.6, 1.6))!2,
+		Demand.kr(sig, 0, Dseq([freqMin, freqMax], inf)),
 		Demand.kr(sig, 0, Dwhite(0.01,0.5, inf)) * bwrMod
 	);
 	sig = sig * env;

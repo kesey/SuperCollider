@@ -2140,18 +2140,20 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song5Pattern3 = Pbind(
 	\instrument, \attBreath,
-	\dur, Pseq([Rest(3.5), 3.5, 2.25, 1.75, 1.25, 1.75], inf), // 3.5+ 3.5+ 2.25+ 1.75+ 1.25+ 1.75 == 14
-	\amp, 1.06,
-	\pan, Pwhite(-1.0, 1.0),
+	\dur, Pdefn(\patt3_8_dur),
+	\amp, 4.27,
+	\pan, Pwhite(-0.75, 0.75),
 	\attack, 0.01,
-	\release, 2,
+	\release, 1.84,
 	\seqv1, 0,
-	\seqv2, 2.27,
+	\seqv2, 3.31,
 	\seqv3, 4,
 	\seqv4, 3.77,
 	\seqv5, 4.01,
 	\seqFreq, Pseq([0.08/*, 0.04*/, 0.16], inf), // 0.08,
-	\bwrMod, 0.2,
+	\freqMin, 250,
+	\freqMax, 800,
+	\bwrMod, 0.1,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -2177,6 +2179,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"seqv4", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\seqv4)), true],
 					"seqv5", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\seqv5)), true],
 					"seqFreq", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\seqFreq)), true],
+					"freqMin", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\freqMin)), true],
+					"freqMax", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\freqMax)), true],
 					"bwrMod", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\bwrMod)), true]
 				]));
 			}.defer;
@@ -2443,10 +2447,11 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song5Pattern8 = Pbind(
 	\instrument, \hat909,
-	\dur, Pseq([1, 2, 0.5, 2, 1, 0.5], inf),
+	\dur, Pdefn(\patt3_8_dur),
 	\amp, 0.1, // 0.12,
+	\pan, Pseg(Pwhite(-0.5, 0.5), Pwhite(0.1, 0.3), 'lin', inf),
 	\envL1, 0,
-	\envL2, 0.98,
+	\envL2, 0.99,
 	\envL3, 0.45, // 0.3,
 	\envL4, 0, // 0.98,
 	\envT1, 0.5,
