@@ -1189,6 +1189,72 @@
 		28.0.wait;
 	};
 
+	~song5Part5 = {
+		"song5 part5".postln;
+		~song5InitPart.value;
+		Pbindef(\unit2,
+			\dur, Pseq([Rest(0.55), 1, 1.5, Rest(0.5), 1.5, 1, Rest(0.95)], inf)
+		).quant_(~globalQuant);
+		Pdefn(\patt3_8_dur, Pseq([1, 0.5, Rest(2), 2, 1.5], inf)).quant_(~globalQuant);
+		Pbindef(\unit3,
+			\release, Pseq([0.94, 1.3, 0.24, 1.84, 0.01], inf),
+			\amp, 7,
+			\seqv1, 0.12,
+			\seqv2, 6,
+			\seqv3, 0.16,
+			\seqv4, 0,
+			\seqv5, 0,
+			\seqFreq, 0.41,
+			\freqMin, 219,
+	        \freqMax, 321,
+			\bwrMod, 0.3
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit3");
+		Pbindef(\unit5,
+			\dur, Pseq([Rest(0.75), 0.75, Rest(1.75), 0.25/**/, Rest(0.75), 1.75, 1], inf)
+		).quant_(~globalQuant);
+		Pbindef(\unit7,
+			\dur, Pseq([0.25, 0.125, 0.125, 0.25], inf) // (0.125 * 2) + 0.25
+		).quant_(~globalQuant);
+		28.0.wait;
+	};
+
+	~song5Part6 = {
+		"song5 part6".postln;
+		~song5InitPart.value;
+		Pbindef(\unit2,
+			\dur, Pseq([Rest(0.55), 1, 1.5, Rest(0.5), 1.5, 1, Rest(0.95)], inf)
+		).quant_(~globalQuant);
+		Pdefn(\patt3_8_dur, Pseq([1, Rest(0.5), 2, 2, 1.5], inf)).quant_(~globalQuant);
+		Pbindef(\unit3,
+			\release, Pseq([0.94, 1.3, 0.24, 1.84, 0.01], inf),
+			\amp, 7,
+			\seqv1, 0.12,
+			\seqv2, 6,
+			\seqv3, 0.16,
+			\seqv4, 0,
+			\seqv5, 0,
+			\seqFreq, 0.41,
+			\freqMin, 219,
+	        \freqMax, 321,
+			\bwrMod, 0.3
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit3");
+		Pbindef(\unit4,
+			\dur, Pseq([1, 0.75, Rest(0.75), 1/**/, 1.5, Rest(1.5), 0.25, Rest(0.25)], inf),
+		).quant_(~globalQuant);
+		Pbindef(\unit5,
+			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
+			\freqTime, 0.49,
+			\ringTime, 223.68,
+		).quant_(~globalQuant);
+		Pbindef(\unit7,
+			\dur, Pseq([0.25, 0.125, 0.125, 0.25], inf) // (0.125 * 2) + 0.25
+		).quant_(~globalQuant);
+		~resetControlBus.value("unit6amp");
+		14.0.wait;
+	};
+
 	// Synth + Fx Preset
 
 	{
@@ -1277,6 +1343,8 @@
 		~song5Part2.value;
 		~song5Part3.value;
 		~song5Part4.value;
+		~song5Part5.value;
+		~song5Part6.value;
 	}
 };
 
