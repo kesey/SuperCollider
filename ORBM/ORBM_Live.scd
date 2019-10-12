@@ -37,6 +37,7 @@ Tdef(\song).reset;
 )
 
 /////////// Song transport
+
 (
 ~globalQuant = 4; // !!! change globalQuant before song !!!
 Tdef(\song, ~song2).play(t, true, ~globalQuant); // Play Song

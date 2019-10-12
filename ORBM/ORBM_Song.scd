@@ -1161,7 +1161,7 @@
 			\dur, Pseq([1, 0.75, Rest(0.75), 1], inf),
 		).quant_(~globalQuant);
 		Pbindef(\unit6,
-			\dur, Pseq([Rest(0.05), 1.7, Rest(0.25), 1.5], inf),
+			\dur, Pseq([Rest(0.05), 1.25, Rest(0.45), Rest(0.75), 1/**/, Pn(Pseq([Rest(0.05), 1.7, Rest(0.1), 1.65]), 3), inf]),
 			\amp, 0.18,
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit6amp");
@@ -1284,21 +1284,22 @@
 		).quant_(~globalQuant);
 		Pbindef(\unit5,
 			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
-			\amp, 0.67,
-			\freq1, 23,
-			\freq2, 34,
-			\freqTime, 0,
-			\ringTime, 52.63,
-			\envpT1, 0,
-			\envpL1, 0,
-			\envpT2, 1.77,
-			\envpL2, 0.99,
-			\envpT3, 0.79,
-			\envpL3, 0.13,
-			\envpT4, 0.03,
-			\envpL4, 0,
-			\envpCurve, 11,
-			\dist, 2.29,
+			\amp, 0.18,
+			\freqSrt, 344,
+			\freqEnd, 152,
+			\freqTime, 0.33,
+			\ringTime, 78.95,
+			\envpT1, 0.79,
+			\envpL1, 4,
+			\envpT2, 0.53,
+			\envpL2, 0.8,
+			\envpT3, 0.64,
+			\envpL3, 0,
+			\envpT4, 0.71,
+			\envpL4, 3.39,
+			\envpCurve, -20,
+			\dist, 4.01,
+			\hpfFreq, 42,
 			\tott, 0.29,
 			\durr, 0.01,
 		).quant_(~globalQuant);
@@ -1317,26 +1318,34 @@
 		).quant_(~globalQuant);
 		Pbindef(\unit5,
 			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
-			\amp, 0.67,
-			\freq1, 23,
-			\freq2, 34,
-			\freqTime, 0,
-			\ringTime, 52.63,
-			\envpT1, 0,
-			\envpL1, 0,
-			\envpT2, 1.77,
-			\envpL2, 0.99,
-			\envpT3, 0.79,
-			\envpL3, 0.13,
-			\envpT4, 0.03,
-			\envpL4, 0,
-			\envpCurve, 11,
-			\dist, 2.29,
+			\freqTime, 0.49,
+			\ringTime, 223.68,
+		).quant_(~globalQuant);
+		~resetControlBus.value(#["kick808Awunit5freqTime", "kick808Awunit5ringTime"]);
+		7.0.wait;
+		Pbindef(\unit5,
+			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
+			\amp, 0.18,
+			\freqSrt, 344,
+			\freqEnd, 152,
+			\freqTime, 0.33,
+			\ringTime, 78.95,
+			\envpT1, 0.79,
+			\envpL1, 4,
+			\envpT2, 0.53,
+			\envpL2, 0.8,
+			\envpT3, 0.64,
+			\envpL3, 0,
+			\envpT4, 0.71,
+			\envpL4, 3.39,
+			\envpCurve, -20,
+			\dist, 4.01,
+			\hpfFreq, 42,
 			\tott, 0.29,
 			\durr, 0.01,
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit5");
-		14.0.wait;
+		7.0.wait;
 	};
 
 	// Synth + Fx Preset
