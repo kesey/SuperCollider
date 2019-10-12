@@ -569,6 +569,7 @@ OffsetOut.ar(out, son*level).tanh;
 
 ~kick808AwSynthDef = SynthDef(\kick808Aw, {arg out = 0, amp = 12, pan = 0, freq1 = 240, freq2 = 60, freqTime = 0.1, ringTime = 100, envpT1 = 0, envpL1 = 0, envpT2 = 0.2, envpL2 = 1, envpT3 = 0.4, envpL3 = 0.2, envpT4 = 0.4, envpL4 = 0, envpCurve = \exp, dist = 1.5, tott = 1, durr = 0.01, t_trig = 1, doneAction = 2;
     var snd, env;
+	tott = tott.max(0.01);
 	snd = Ringz.ar(
 		in: Impulse.ar(0), // single impulse
 		freq: XLine.ar(freq1, freq2, freqTime),
