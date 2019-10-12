@@ -2273,6 +2273,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\envpL4, 0,
 	\envpCurve, -20,
 	\dist, 6.43,
+	\hpfFreq, 42,
 	\tott, 0.29,
 	\durr, 0.01,
 	\out, ~channelBus[0],
@@ -2307,6 +2308,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"rel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\rel)), true],
 					"envpCurve", ["knob", ControlSpec(-20, 20, step: 0.1, default: event.at(\envCurve)), true],
 					"dist", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\dist)), true],
+					"hpfFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\hpfFreq)), true],
 					"tott", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\tott)), true],
 					"durr", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\durr)), true]
 				]));

@@ -567,7 +567,7 @@ OffsetOut.ar(out, son*level).tanh;
     OffsetOut.ar(out,sig*env);
 }).add;
 
-~kick808AwSynthDef = SynthDef(\kick808Aw, {arg out = 0, amp = 12, pan = 0, freq1 = 240, freq2 = 60, freqTime = 0.1, ringTime = 100, envpT1 = 0, envpL1 = 0, envpT2 = 0.2, envpL2 = 1, envpT3 = 0.4, envpL3 = 0.2, envpT4 = 0.4, envpL4 = 0, envpCurve = \exp, dist = 1.5, tott = 1, durr = 0.01, t_trig = 1, doneAction = 2;
+~kick808AwSynthDef = SynthDef(\kick808Aw, {arg out = 0, amp = 12, pan = 0, freq1 = 240, freq2 = 60, freqTime = 0.1, ringTime = 100, envpT1 = 0, envpL1 = 0, envpT2 = 0.2, envpL2 = 1, envpT3 = 0.4, envpL3 = 0.2, envpT4 = 0.4, envpL4 = 0, envpCurve = \exp, dist = 1.5, hpfFreq = 30, tott = 1, durr = 0.01, t_trig = 1, doneAction = 2;
     var snd, env;
 	tott = tott.max(0.01);
 	snd = Ringz.ar(
@@ -578,6 +578,7 @@ OffsetOut.ar(out, son*level).tanh;
 	env = EnvGen.ar(Env.pairs([[envpT1, envpL1], [envpT2, envpL2], [envpT3, envpL3], [envpT4, envpL4]], envpCurve), t_trig, doneAction: doneAction);
 	snd = (1.0 - dist) * snd + (dist * (snd.distort));
 	snd = snd * env;
+	snd = HPF.ar(snd, hpfFreq);
 	snd = Limiter.ar(snd, tott, durr.max(0.01)) * 0.5 *(1/tott);
 	//snd = Clip.ar(snd, -1 * tott, tott);
 	//snd = Fold.ar(snd, -1 * tott, tott);

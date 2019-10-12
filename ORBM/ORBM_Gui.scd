@@ -426,7 +426,7 @@ u.canvas.layout = VLayout();
 
 ///////////////////////////////////////  SynthDef Window
 
-x = Window("SynthDef", Rect(600, 30, 800, 725));
+x = Window("Synth", Rect(600, 30, 800, 725));
 x.layout = VLayout();
 x.front;
 
