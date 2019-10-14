@@ -875,11 +875,9 @@
 		"song4 part6".postln;
 		~song4InitPart.value;
 		Pbindef(\unit1,
-			\freq, 6443.3,
-			\amp, 24,
-			\release, 2.84
+			\freq, 2982.4
 		).quant_(~globalQuant);
-		~resetControlBus.value(#["scratchiunit1freq", "scratchiunit1amp", "scratchiunit1release"]);
+		~resetControlBus.value("unit1freq");
 		Pbindef(\unit2,
 			\dur, 2.5,
 			\timingOffset, Pseq([0, 0.2], inf),
@@ -1147,7 +1145,7 @@
 		"song5 part2".postln;
 		~song5InitPart.value;
 		Pbindef(\unit6,
-			\dur, Pseq([Rest(1), 0.75, Rest(0.25), 0.625, 0.875/**/, Rest(1), 0.75, Rest(0.25), Rest(0.625), 0.875], inf), // 1+ 0.75+ 0.25+ 0.625+ 0.875
+			\dur, Pseq([Rest(1), 0.75, Rest(0.25), 0.56, 0.94/**/, Rest(1), 0.75, Rest(0.25), Rest(0.625), 0.875], inf), // 1+ 0.75+ 0.25+ 0.625+ 0.875
 			\amp, 0.16,
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit6amp");
@@ -1166,7 +1164,7 @@
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit6amp");
 		Pbindef(\unit7,
-			\dur, Pseq([0.125, 0.125, Rest(0.0625), 0.125, Rest(0.0625), 0.125, 0.25], inf) // (0.125 * 5) + 0.25
+			\dur, Pseq([0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.25], inf) // 0.125+ 0.25+ 0.125+ 0.125+ 0.25+ 0.125+ 0.125+ 0.25+ 0.125+ 0.25 == 1.75
 		).quant_(~globalQuant);
 		14.0.wait;
 	};
@@ -1184,7 +1182,7 @@
 			\dur, Pseq([Rest(0.75), 0.75, Rest(1.75), 0.25/**/, Rest(0.75), 0.75, 2], inf)
 		).quant_(~globalQuant);
 		Pbindef(\unit7,
-			\dur, Pseq([0.125, 0.125, Rest(0.0625), 0.125, Rest(0.0625), 0.125, 0.25], inf) // (0.125 * 5) + 0.25
+			\dur, Pseq([0.125, 0.125, 0.25, 0.125, Rest(0.125), 0.125], inf) // (0.125 * 5) + 0.25
 		).quant_(~globalQuant);
 		28.0.wait;
 	};
@@ -1214,7 +1212,7 @@
 			\dur, Pseq([Rest(0.75), 0.75, Rest(1.75), 0.25/**/, Rest(0.75), 1.75, 1], inf)
 		).quant_(~globalQuant);
 		Pbindef(\unit7,
-			\dur, Pseq([0.25, 0.125, 0.125, 0.25], inf) // (0.125 * 2) + 0.25
+			\dur, Pseq([0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.25], inf) // (0.125 * 2) + 0.25
 		).quant_(~globalQuant);
 		28.0.wait;
 	};
@@ -1250,7 +1248,7 @@
 		).quant_(~globalQuant);
 		~resetControlBus.value(#["kick808Awunit5freqTime", "kick808Awunit5ringTime"]);
 		Pbindef(\unit7,
-			\dur, Pseq([0.25, 0.125, 0.125, 0.25], inf) // (0.125 * 2) + 0.25
+			\dur, Pseq([0.125, 0.125, 0.25, 0.125, Rest(0.125), 0.125], inf) // 0.125+ 0.25+ 0.125+ 0.125+ 0.25+ 0.125+ 0.125+ 0.25+ 0.125+ 0.25 == 1.75
 		).quant_(~globalQuant);
 		14.0.wait;
 	};
@@ -1284,7 +1282,7 @@
 		).quant_(~globalQuant);
 		Pbindef(\unit5,
 			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
-			\amp, 0.18,
+			\amp, 0.16,
 			\freqSrt, 344,
 			\freqEnd, 152,
 			\freqTime, 0.33,
@@ -1302,6 +1300,7 @@
 			\hpfFreq, 42,
 			\tott, 0.29,
 			\durr, 0.01,
+			\out, ~channelBus[1]
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit5");
 		14.0.wait;
@@ -1325,7 +1324,7 @@
 		7.0.wait;
 		Pbindef(\unit5,
 			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
-			\amp, 0.18,
+			\amp, 0.16,
 			\freqSrt, 344,
 			\freqEnd, 152,
 			\freqTime, 0.33,
@@ -1343,8 +1342,12 @@
 			\hpfFreq, 42,
 			\tott, 0.29,
 			\durr, 0.01,
+			\out, ~channelBus[1]
 		).quant_(~globalQuant);
 		~resetControlBus.value("unit5");
+		Pbindef(\unit7,
+			\dur, Pseq([0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.25], inf) // (0.125 * 2) + 0.25
+		).quant_(~globalQuant);
 		7.0.wait;
 	};
 

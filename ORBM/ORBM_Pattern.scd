@@ -1505,11 +1505,11 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 ~song4Pattern1 = Pbind(
 	\instrument, \scratchi,
 	\dur, 1.25,
-	\amp, 13.2,
+	\amp, 20.2,
 	\spread, 0.99, // 0
 	\attack, 0.01,
 	\release, 2,
-	\freq, 6502, // 632, // 629 // 610 // 603 // 440
+	\freq, 2887.1, // 632, // 629 // 610 // 603 // 440
 	\pan, 0,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;

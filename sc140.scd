@@ -275,7 +275,7 @@ Pbind(
 ).play;
 )
 
-// lirgo
+// lirgo new
 Ndef('x', {
 	x = Ndef('x').ar + 0.01;
 	a = BPF.ar(x, 6 ** Latch.ar(x, Dust.ar(x)) * 150, 0.2).sin;
@@ -298,7 +298,7 @@ SynthDef(\lirgo, { arg out = 0, amp = 1, att = 0.01, rel = 5, gate = 1, doneActi
 		};
 		bpf + bpf.mean;
 	});
-	OffsetOut.ar(out, sig * env);
+	OffsetOut.ar(out, sig * env * amp * 0.1);
 }).add;
 )
 
@@ -308,7 +308,8 @@ p.set(\gate, 0);
 (
 Pbind(
 	\instrument, \lirgo,
-	\dur, 10
+	\dur, 10,
+	\amp, 2
 ).play;
 )
 
