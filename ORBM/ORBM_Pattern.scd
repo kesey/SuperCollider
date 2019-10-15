@@ -2369,7 +2369,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"enfCurve", ["knob", ControlSpec(-20, 20, step: 0.01, default: event.at(\enfCurve)), true],
 					"tu", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\tu)), true],
 					"sin2Frq", ["knob", ControlSpec(1, 20000, step: 1, default: event.at(\sin2Frq)), true],
-					"sin2Amp", ["knob", ControlSpec(1, 100, step: 1, default: event.at(\sin2Amp)), true],
+					"sin2Amp", ["knob", ControlSpec(1, 100, step: 1, default: event.at(\sin2Amp)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -2488,7 +2488,47 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"envT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT3)), true],
 					"envCurve", ["slider", ControlSpec(-20, 20, step: 0.01, default: event.at(\envCurve)), true],
 					"freq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\freq)), true],
-					"hpf", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\hpf)), true],
+					"hpf", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\hpf)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~song5Pattern9 = Pbind(
+	\instrument, \tweetSynth,
+	\dur, 1.75, // Pseq([1.75, 3.5, 1.75], inf),
+	\amp, 0.05,
+	\freq, 51,
+	\rate, 8.5,
+	\attack, 0.01,
+	\release, 9.47,
+	\thresh, 0.46,
+	\ratio, 0.82,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~tweetSynthSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"t_trig", ["none"],
+					"amp", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
+					"freq", ["knob", ControlSpec(0, 2000, step: 1, default: event.at(\freq)), true],
+					"rate", ["knob", ControlSpec(1, 120, step: 0.1, default: event.at(\rate)), true],
+					"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
+					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+					"thresh", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\thresh)), true],
+					"ratio", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\ratio)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;

@@ -1280,29 +1280,7 @@
 		Pbindef(\unit4,
 			\dur, Pseq([1, 0.75, Rest(0.75), 1/**/, 1.5, Rest(1.5), 0.25, Rest(0.25)], inf),
 		).quant_(~globalQuant);
-		Pbindef(\unit5,
-			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
-			\amp, 0.16,
-			\freqSrt, 344,
-			\freqEnd, 152,
-			\freqTime, 0.33,
-			\ringTime, 78.95,
-			\envpT1, 0.79,
-			\envpL1, 4,
-			\envpT2, 0.53,
-			\envpL2, 0.8,
-			\envpT3, 0.64,
-			\envpL3, 0,
-			\envpT4, 0.71,
-			\envpL4, 3.39,
-			\envpCurve, -20,
-			\dist, 4.01,
-			\hpfFreq, 42,
-			\tott, 0.29,
-			\durr, 0.01,
-			\out, ~channelBus[1]
-		).quant_(~globalQuant);
-		~resetControlBus.value("unit5");
+		~changePattern.value(Pdef(\unit5), ~song5Pattern9);
 		14.0.wait;
 	};
 
@@ -1322,29 +1300,7 @@
 		).quant_(~globalQuant);
 		~resetControlBus.value(#["kick808Awunit5freqTime", "kick808Awunit5ringTime"]);
 		7.0.wait;
-		Pbindef(\unit5,
-			\dur, Pseq([Rest(0.75), 0.75, 0.25, Rest(1.75)/**/, Rest(0.75), 1, 1.75], inf),
-			\amp, 0.16,
-			\freqSrt, 344,
-			\freqEnd, 152,
-			\freqTime, 0.33,
-			\ringTime, 78.95,
-			\envpT1, 0.79,
-			\envpL1, 4,
-			\envpT2, 0.53,
-			\envpL2, 0.8,
-			\envpT3, 0.64,
-			\envpL3, 0,
-			\envpT4, 0.71,
-			\envpL4, 3.39,
-			\envpCurve, -20,
-			\dist, 4.01,
-			\hpfFreq, 42,
-			\tott, 0.29,
-			\durr, 0.01,
-			\out, ~channelBus[1]
-		).quant_(~globalQuant);
-		~resetControlBus.value("unit5");
+		~changePattern.value(Pdef(\unit5), ~song5Pattern9);
 		Pbindef(\unit7,
 			\dur, Pseq([0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.125, 0.25, 0.125, 0.25], inf) // (0.125 * 2) + 0.25
 		).quant_(~globalQuant);
@@ -1364,7 +1320,7 @@
 		~autoGuiControl.at("samplerStereo1020startPos").valueAction_(0.03);
 		~autoGuiControl.at("samplerStereo1020loop").valueAction_(0);
 
-		~autoGuiControl.at("sinBass1021amp").valueAction_(0.66);
+		~autoGuiControl.at("sinBass1021amp").valueAction_(0.46);
 		~autoGuiControl.at("sinBass1021curve").valueAction_(0);
 		~autoGuiControl.at("sinBass1021loopNode").valueAction_(0);
 		~autoGuiControl.at("sinBass1021attack").valueAction_(0.2);

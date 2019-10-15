@@ -1295,9 +1295,10 @@ SynthDef(\jilet, { arg out=0, amp=0.20, pan = 0, att = 0.005, dec = 0.01, sus = 
 	OffsetOut.ar(out, 0.3*boreDelay);
 }).add;
 
-SynthDef(\pitchednoise, { arg out = 0, amp=0.1, pan=0.0, attack=0.01, sustain=0.1, decay=0.01, freq=440, bandwidth=100, doneAction=2;
+SynthDef(\pitchednoise, { arg out = 0, amp=0.1, pan=0.0, attack=0.01, release=10, freq=440, bandwidth=100, doneAction=2;
 	var source, filter, env;
-	env = EnvGen.ar(Env([0,1,1,0],[attack, sustain, decay]), doneAction: doneAction);
+	// env = EnvGen.ar(Env([0,1,1,0],[attack, sustain, decay]), doneAction: doneAction);
+	env = EnvGen.ar(Env.linen(attack, 1, release), doneAction: doneAction);
 	source = WhiteNoise.ar;
 	filter = BPF.ar(source*env*2*amp,freq,bandwidth/freq);
 	OffsetOut.ar(out, Pan2.ar(filter,pan));
@@ -1333,25 +1334,28 @@ SynthDef(\mutantFric, { arg out = 0, amp = 1, spec1 = 0.00001, spec2 = 0.03, noi
 	OffsetOut.ar(out, Splay.ar(sig * amp));
 }).add;
 
-SynthDef(\tweetSynth, { arg out = 0, amp = 1, freq = 25, t_trig = 1, attack = 0.01, release = 1, doneAction = 2;
-	var sig, demand;
+~tweetSynthSynthDef = SynthDef(\tweetSynth, { arg out = 0, amp = 1, freq = 25, rate = 8, attack = 0.01, release = 10, thresh = 0.5, ratio = 1, t_trig = 1, doneAction = 2;
+	var sig, demand, env;
 	demand = Demand.kr(
 		t_trig,
 		0,
-		Drand(freq,inf)
+		Drand(freq, inf)
 	);
 	sig = (
 		BHiPass.ar(
-			LFNoise1.ar(8) ** 3,
+			LFNoise1.ar(rate) ** 3,
 			[demand, demand + 0.2].midicps,
-			demand / 2e3, 67 - demand
+			demand / 2e3,
+			67 - demand
 		)
 	).tanh;
-	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	env = Linen.kr(t_trig, attack, 1, release, doneAction);
+	sig = sig * env;
+	sig = Compander.ar(sig, sig, thresh.max(0.01), 1, ratio);
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\tweetFogAttack, { arg out = 0, amp = 1, attack = 0.01, release = 2, feedBack = 0.2, freq = 0.8, t_trig = 1, doneAction = 2;
+SynthDef(\tweetFogAttack, { arg out = 0, amp = 1, attack = 0.01, release = 10, feedBack = 0.2, freq = 0.8, t_trig = 1, doneAction = 2;
 	var sig, env, coef;
 	sig = Pulse.ar(freq*(pi/[1,2.57]),[0.54,0.46]);
 	coef = (1-LocalIn.ar(2)).fold(0,[0.9,0.85]);
@@ -1362,7 +1366,7 @@ SynthDef(\tweetFogAttack, { arg out = 0, amp = 1, attack = 0.01, release = 2, fe
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\tweetErosion, { arg out = 0, amp = 1, attack = 0.01, release = 2, feedBack = 1, t_trig = 1, doneAction = 2;
+SynthDef(\tweetErosion, { arg out = 0, amp = 1, attack = 0.01, release = 10, feedBack = 1, t_trig = 1, doneAction = 2;
 	var sig, env, input, div;
 	input = LocalIn.ar(2).range(0,0.9)+0.1;
 	div = LagUD.ar(input, 0, 0.2);
