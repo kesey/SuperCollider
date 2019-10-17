@@ -562,4 +562,28 @@ SynthDef(\batuhan, { arg out = 0, amp = 1, att = 0.01, rel = 5, tridDur = 0.125,
 	OffsetOut.ar(out, sig * env * amp);
 }).add;
 
+SynthDef(\kicky,{
+	arg out = 0, startFreq=80, endFreq=15, decay=4, lowpass=800, amp=1, noiseAmp=0.0, gain=1, dur=6;
+	var sig, env, freq;
+	freq = Line.kr(PinkNoise.kr(6,startFreq), PinkNoise.kr(3,endFreq), dur, 1, 0);
+	env = EnvGen.kr(Env.perc(0.014, dur, 1, -5), 1, doneAction:2);
+	sig = {(LPF.ar(Ringz.ar(Impulse.ar(0), freq, decay), lowpass) * amp) ! 2};
+	sig = LPF.ar(sig,BrownNoise.kr(500,1500))*0.3;
+	sig = sig * gain;
+	sig = sig.softclip * amp * env;
+	OffsetOut.ar(out, [sig,sig]);
+}).add;
+
+SynthDef(\kickey,{
+	arg out = 0, startFreq=60, endFreq=20, decay=4, lowpass=1000, amp=1, noiseAmp=0.01, gain=1, dur=0.8;
+	var sig, env, freq;
+	freq = XLine.kr(startFreq, endFreq, dur, 1, 0);
+	env = EnvGen.kr(Env.perc(0.0014, dur, 1, -5), 1, doneAction:2);
+	sig = {(LPF.ar(Ringz.ar(Impulse.ar(0), freq, decay), lowpass) * amp) ! 2};
+	sig = sig + LPF.ar((noiseAmp*BrownNoise.ar(1)),lowpass);
+	sig = sig * gain;
+	sig = sig.softclip * amp * env;
+	OffsetOut.ar(out, [sig,sig]);
+}).add;
+
 )

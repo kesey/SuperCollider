@@ -25,6 +25,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	})
 );
 
+///////////////////// default song
+
 ~defaultPattern1 = Pbind(
 	\instrument, \snapkick,
 	\dur, Pdefn(\durSnapkick),
@@ -321,6 +323,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 		0;
 	})
 );
+
+///////////////////// song2
 
 ~song2Pattern1 = Pbind(
 	\instrument, \kick808,
@@ -875,6 +879,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 		0;
 	})
 );
+
+///////////////////// song3
 
 ~song3Pattern1 = Pbind(
 	\instrument, \kickMist,
@@ -1502,6 +1508,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	})
 );
 
+///////////////////// song4
+
 ~song4Pattern1 = Pbind(
 	\instrument, \scratchi,
 	\dur, 1.25,
@@ -1976,6 +1984,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 		0;
 	})
 );
+
+///////////////////// song5
 
 ~song5Pattern1 = Pbind(
 	\instrument, \t1kick2,
@@ -2507,6 +2517,9 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\release, 9.47,
 	\thresh, 0.46,
 	\ratio, 0.82,
+	\revMix, 0,
+	\revRoom, 0.5,
+	\revDamp, 0.5,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -2523,12 +2536,15 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"doneAction", ["none"],
 					"t_trig", ["none"],
 					"amp", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
-					"freq", ["knob", ControlSpec(0, 2000, step: 1, default: event.at(\freq)), true],
+					"freq", ["knob", ControlSpec(0, 2000, step: 0.01, default: event.at(\freq)), true],
 					"rate", ["knob", ControlSpec(1, 120, step: 0.1, default: event.at(\rate)), true],
 					"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
 					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
 					"thresh", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\thresh)), true],
-					"ratio", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\ratio)), true]
+					"ratio", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\ratio)), true],
+					"revMix", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revMix)), true],
+					"revRoom", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revRoom)), true],
+					"revDamp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revDamp)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -2537,36 +2553,188 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	})
 );
 
-/*~song5Pattern6 = Pbind(
-	\instrument, \t1kick2,
-	\dur, 1.75,
-	\amp, 0.3,
+///////////////////// song6
+
+~song6Pattern1 = Pbind(
+	\instrument, \tweetSynth,
+	\dur, Pwrand([5, 2.5], [0.7, 0.3].normalizeSum, inf),
+	\amp, 0.8,
+	\freq, 0.01, // Pseq([Pn(36.5, 6), 37.5], inf),
+	\rate, 91, // 8.5,
+	\attack, 0.01,
+	\release, 10,
+	\sigatt, 0.01,
+	\sigdec, 3.16,
+	\thresh, 0.48,
+	\ratio, 0.82,
+	\revMix, 0.84,
+	\revRoom, 0.07,
+	\revDamp, 0.12,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~tweetSynthSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"t_trig", ["none"],
+					"amp", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
+					"freq", ["knob", ControlSpec(0, 1000, step: 0.01, default: event.at(\freq)), true],
+					"rate", ["knob", ControlSpec(1, 120, step: 0.1, default: event.at(\rate)), true],
+					"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
+					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+					"sigatt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\sigatt)), true],
+					"sigdec", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\sigdec)), true],
+					"thresh", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\thresh)), true],
+					"ratio", ["knob", ControlSpec(0, 2, step: 0.01, default: event.at(\ratio)), true],
+					"revMix", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revMix)), true],
+					"revRoom", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revRoom)), true],
+					"revDamp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revDamp)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~song6Pattern2 = Pbind(
+	\instrument, \fabHi1,
+	\dur, Pseq([Rest(1.25), 0.75, 1.75, Rest(0.25), 1], inf), // 1.25+ 0.75+ 1.75+ 0.25 +1 == 5
+	\amp, 0.08,
 	\pan, 0,
-	\envaT1, 0,
-	\envaL1, 1,
-	\envaT2, 0.6,
-	\envaL2, 1,
-	\envaT3, 0.2,
-	\envaL3, 0.5,
-	\envaT4, 0.2,
-	\envaL4, 0,
-	\envaCurve, \exp,
-	\envfT1, 0,
-	\envfL1, 10000,
-	\envfT2, 0.002,
-	\envfL2, 20,
-	\envfT3, 0.1,
-	\envfL3, 0,
-	\envfT4, 1,
-	\envfL4, 4,
-	\envfCurve, \exp,
-	\pitch, 1.05,
-	\hpfFreq, 597,
-	\hpfRq, 1,
-	\verbMix, 0.5,
-	\verbRoom, 18.42,
-	\verbTime, 4.75,
-	\verbDamp, 0.65,
+	\wamp, 1,
+	\envNatt, 0.01,
+	\envNrel, 0.36,
+	\wbpfFreq, 10010,
+	\wbpfRq, 1,
+	\sinFrq1, 469,
+	\sinFrq2, 133,
+	\sinPh1, 0,
+	\sinPh2, 0.21,
+	\sinLev1, 2.67,
+	\sinLev2, 6.54,
+	\envSatt, 0,
+	\envSrel, 0.47,
+	\mix, -0.3,
+	\envL1, 0,
+	\envL2, 1,
+	\envL3, 1,
+	\envT1, 0,
+	\envT2, 0.01,
+	\envT3, 0,
+	\ffreq, 2,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~fabHi1SynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"t_gate", ["none"],
+					"doneAction", ["none"],
+					"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\amp)), true],
+					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
+					"wamp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\wamp)), true],
+					"envNatt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envNatt)), true],
+					"envNrel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envNrel)), true],
+					"wbpfFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\wbpfFreq)), true],
+					"wbpfRq", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\wbpfRq)), true],
+					"sinFrq1", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\sinFrq1)), true],
+					"sinFrq2", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\sinFrq2)), true],
+					"sinPh1", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\sinPh1)), true],
+					"sinPh2", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\sinPh2)), true],
+					"sinLev1", ["knob", ControlSpec(0, 24, step: 0.01, default: event.at(\sinLev1)), true],
+					"sinLev2", ["knob", ControlSpec(0, 24, step: 0.01, default: event.at(\sinLev2)), true],
+					"envSatt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envSatt)), true],
+					"envSrel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envSrel)), true],
+					"mix", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\mix)), true],
+					"envL1", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL1)), true],
+					"envL2", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL2)), true],
+					"envL3", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL3)), true],
+					"envT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT1)), true],
+					"envT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT2)), true],
+					"envT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT3)), true],
+					"ffreq", ["knob", ControlSpec(02, 20000, step: 1, default: event.at(\ffreq)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~song6Pattern3 = Pbind(
+	\instrument, \tweetFogAttack,
+	\dur, 2.5,
+	\amp, 0.34,
+	\attack, 0.01,
+	\release, 2.5,
+	\sigatt, 0,
+	\sigdec, 2.11,
+	\feedBack, 0.04,
+	\freq, 1.42,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~tweetFogAttackSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"t_trig", ["none"],
+					"amp", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
+					"attack", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
+					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+					"sigatt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\sigatt)), true],
+					"sigdec", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\sigdec)), true],
+					"feedBack", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\feedBack)), true],
+					"freq", ["knob", ControlSpec(0, 1000, step: 0.01, default: event.at(\freq)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+~song6Pattern4 = Pbind(
+	\instrument, \IkedaBass,
+	\dur, Pseq([Rest(0.5), 2, 1.75, Rest(0.75), 1], inf),
+	\amp, 2.18,
+	\pan, 0,
+	\envL1, 0,
+	\envL2, 0.25,
+	\envL3, 0.4,
+	\envL4, 0,
+	\envT1, 0,
+	\envT2, 0.21,
+	\envT3, 0.08,
+	\envCurve, -5,
+	\freq, 0,
+	\sweep1, 32.1,
+	\sweep2, 753.2,
+	\vol1, 2,
+	\vol2, 0.05,
 	\out, ~channelBus[0],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -2579,42 +2747,105 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 			midiChan = ~pdefMidiChan.asInt;
 			{
 				~removePrev.value(synthWindowKey);
-				~autoGui.value(v, ~t1kick2SynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+				~autoGui.value(v, ~ikedaBassSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
 					"doneAction", ["none"],
-					"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\amp)), true],
+					"t_trig", ["none"],
+					"amp", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
-					"envaT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envaT1)), true],
-					"envaL1", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envaL1)), true],
-					"envaT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envaT2)), true],
-					"envaL2", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envaL2)), true],
-					"envaT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envaT3)), true],
-					"envaL3", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envaL3)), true],
-					"envaT4", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envaT4)), true],
-					"envaL4", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envaL4)), true],
-					"envaCurve", ["knob", ControlSpec(-20, 20, step: 0.01, default: event.at(\envaCurve)), true],
-					"envfT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envfT1)), true],
-					"envfL1", ["knob", ControlSpec(0, 19050, step: 1, default: event.at(\envfL1)), true],
-					"envfT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envfT2)), true],
-					"envfL2", ["knob", ControlSpec(0, 19050, step: 1, default: event.at(\envfL2)), true],
-					"envfT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envfT3)), true],
-					"envfL3", ["knob", ControlSpec(0, 19050, step: 1, default: event.at(\envfL3)), true],
-					"envfT4", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envfT4)), true],
-					"envfL4", ["knob", ControlSpec(0, 19050, step: 1, default: event.at(\envfL4)), true],
-					"envfCurve", ["knob", ControlSpec(-20, 20, step: 0.01, default: event.at(\envfCurve)), true],
-					"pitch", ["knob", ControlSpec(0, 3, step: 0.01, default: event.at(\pitch)), true],
-					"hpfFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\hpfFreq)), true],
-					"hpfRq", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\hpfRq)), true],
-					"verbMix", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\verbMix)), true],
-					"verbRoom", ["knob", ControlSpec(0, 100, step: 0.01, default: event.at(\verbRoom)), true],
-					"verbTime", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\verbTime)), true],
-					"verbDamp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\verbDamp)), true]
+					"envL1", ["knob", ControlSpec(0, 5, step: 0.01, default: event.at(\envL1)), true],
+					"envL2", ["knob", ControlSpec(0, 5, step: 0.01, default: event.at(\envL2)), true],
+					"envL3", ["knob", ControlSpec(0, 5, step: 0.01, default: event.at(\envL3)), true],
+					"envL4", ["knob", ControlSpec(0, 5, step: 0.01, default: event.at(\envL4)), true],
+					"envT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT1)), true],
+					"envT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT2)), true],
+					"envT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT3)), true],
+					"envCurve", ["knob", ControlSpec(-20, 20, step: 0.01, default: event.at(\envCurve)), true],
+					"freq", ["knob", ControlSpec(0, 1000, step: 0.01, default: event.at(\freq)), true],
+					"sweep1", ["knob", ControlSpec(0.01, 10000, step: 0.1, default: event.at(\sweep1)), true],
+					"sweep2", ["knob", ControlSpec(0.01, 10000, step: 0.1, default: event.at(\sweep2)), true],
+					"vol1", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\vol1)), true],
+					"vol2", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\vol2)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
 		});
 		0;
 	})
-);*/
+);
+
+~song6Pattern7 = Pbind(
+	\instrument, \fabHi1,
+	\dur, Pseq([0.125, 0.25, Rest(0.125), 0.125, Rest(0.25), 0.125, Pn(0.125, 10), 0.25], inf), // 0.125+ 0.25+ 0.125+ 0.125+ 0.25+ 0.125 + (0.125 * 10)
+	\amp, Pseq([0.02, 0.015, 0.01, 0.005, 0.01, 0.02, 0.005, 0.015, 0.005, 0.01]+0.005, inf),
+	\pan, Pwhite(-1.0, 1.0, inf),
+	\wamp, 1,
+	\envNatt, 0,
+	\envNrel, 1.05,
+	\wbpfFreq, 10010,
+	\wbpfRq, 1,
+	\sinFrq1, 266,
+	\sinFrq2, 13353,
+	\sinPh1, 0,
+	\sinPh2, 0,
+	\sinLev1, 5.56,
+	\sinLev2, 15.25,
+	\envSatt, 0,
+	\envSrel, 1.05,
+	\mix, 0.6,
+	\envL1, 0,
+	\envL2, 1,
+	\envL3, 0.67,
+	\envT1, 0,
+	\envT2, 0.01,
+	\envT3, 0.53,
+	\ffreq, 248,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~fabHi1SynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"t_gate", ["none"],
+					"doneAction", ["none"],
+					"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\amp)), true],
+					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
+					"wamp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\wamp)), true],
+					"envNatt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envNatt)), true],
+					"envNrel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envNrel)), true],
+					"wbpfFreq", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\wbpfFreq)), true],
+					"wbpfRq", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\wbpfRq)), true],
+					"sinFrq1", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\sinFrq1)), true],
+					"sinFrq2", ["knob", ControlSpec(20, 20000, step: 1, default: event.at(\sinFrq2)), true],
+					"sinPh1", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\sinPh1)), true],
+					"sinPh2", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\sinPh2)), true],
+					"sinLev1", ["knob", ControlSpec(0, 24, step: 0.01, default: event.at(\sinLev1)), true],
+					"sinLev2", ["knob", ControlSpec(0, 24, step: 0.01, default: event.at(\sinLev2)), true],
+					"envSatt", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envSatt)), true],
+					"envSrel", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envSrel)), true],
+					"mix", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\mix)), true],
+					"envL1", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL1)), true],
+					"envL2", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL2)), true],
+					"envL3", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\envL3)), true],
+					"envT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT1)), true],
+					"envT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT2)), true],
+					"envT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT3)), true],
+					"ffreq", ["knob", ControlSpec(02, 20000, step: 1, default: event.at(\ffreq)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
+///////////////////// test pattern
 
 ~pattern1 = Pbind(
 	\instrument, \samplerStereo,
