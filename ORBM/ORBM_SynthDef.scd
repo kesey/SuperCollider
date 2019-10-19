@@ -191,15 +191,14 @@ SynthDef(\Limiter, { arg in = 0, out = 0, gain = 1, level = 0.99, dur = 0.01;
 	ReplaceOut.ar(out, effect); // overwriting previous data on the corresponding bus
 }).add;
 
-SynthDef(\delayeffect, { arg in = 0, out = 0, gate = 1;
-	var source = In.ar(in,2);
-	var delay;
-	var env = Linen.kr(gate, 0.1, 1, 0.1, 2);
+SynthDef(\delayeffect, { arg in = 0, out = 0, delTime = 0.25, decTime = 2.0, t_gate = 1, doneAction = 2;
+	var source, delay, env;
+	source = In.ar(in, 2);
+	env = Linen.kr(t_gate, 0.1, 1, 0.1, doneAction);
 
-	delay= CombC.ar(source,0.25,0.25,2.0);
+	delay= CombC.ar(source, 4, delTime, decTime);
 
-	XOut.ar(out,env, delay);
-
+	XOut.ar(out, env, delay);
 }).add;
 
 ~quadDelaySynthDef = SynthDef(\quadDelay, { arg in = 0, out = 0, drywet = 0.4, amp = 1, feedBack = 0.2;
@@ -468,16 +467,16 @@ SynthDef(\gabberkick, { arg out = 0, amp = 0.1, attack = 0.001, release = 0.05;
 	OffsetOut.ar(out, sig);
 }).add;
 
-SynthDef(\kick2new,{arg out = 0, amp = 1, pan = 0, att = 0, rel = 1, freq = 60, tu = 1, t_gate = 1, doneAction = 2;
-    var env = EnvGen.ar(Env.perc(att,rel), t_gate, doneAction: doneAction);
-    var frequ = EnvGen.ar(Env([freq+1100,freq,31.4],[0.002,0.1]));
-    var sig = SinOsc.ar(frequ*tu,0,env);
-    sig = BPeakEQ.ar(sig,80,1,6);
+~kick2newSynthDef = SynthDef(\kick2new,{arg out = 0, amp = 1, pan = 0, att = 0, rel = 1, envfT1 = 0.002, envfT2 = 0.1, freq = 60, tu = 1, bpeqf1 = 80, bpeqrq1 = 1, bpeqamp1 = 6, bpeqf2 = 800, bpeqrq2 = 10, bpeqamp2 = (-12), hpff = 20000, t_gate = 1, doneAction = 2;
+    var env = EnvGen.ar(Env.perc(att, rel), t_gate, doneAction: doneAction);
+    var frequ = EnvGen.ar(Env([freq+1100, freq, 31.4],[envfT1, envfT2]));
+    var sig = SinOsc.ar(frequ*tu, 0, env);
+    sig = BPeakEQ.ar(sig, bpeqf1, bpeqrq1, bpeqamp1);
     sig = sig *0.4*(env+0.2);
-    sig = BPeakEQ.ar(sig,800,10,-12);
-    sig = Limiter.ar(sig,0.5);
+    sig = BPeakEQ.ar(sig, bpeqf2, bpeqrq2, bpeqamp2);
+    //sig = Limiter.ar(sig,0.5);
     //Out.ar(6,[DelayL.ar(sig*(-1),0.1,SinOsc.kr(-0.1,0,0.05,0.1)),sig]);
-	sig = LPF.ar(sig,100);
+	sig = HPF.ar(sig, hpff);
 	sig = Pan2.ar(sig, pan, amp);
     OffsetOut.ar(out, sig);
 }).add;
@@ -1080,17 +1079,17 @@ sig = HPF.ar(sig * env, ffreq);
 OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
-~fabHi1SynthDef = SynthDef(\fabHi1, {arg out = 0, amp = 0.2, pan = 0, wamp = 0.5, envNatt = 0.001, envNrel = 0.2, wbpfFreq = 2800, wbpfRq = 1, sinFrq1 = 2120, sinFrq2 = 12423, sinPh1 = 0, sinPh2 = 0.02, sinLev1 = 1, sinLev2 = 1, envSatt = 0.001, envSrel = 0.2, mix = 0.5, envL1 = 0, envL2 = 1, envL3 = 0.75, envT1 = 0.1, envT2 = 0.02, envT3 = 0.2, ffreq = 6000, t_gate = 1, doneAction = 2;
-	var noise, sin1, sin2, sig, env, envNoise, envSin;
+~fabHi1SynthDef = SynthDef(\fabHi1, {arg out = 0, amp = 0.2, pan = 0, wamp = 0.5, envNatt = 0.001, envNrel = 0.2, wbpfFreq = 2800, wbpfRq = 1, sinFrq1 = 2120, sinFrq2 = 12423, sinPh1 = 0, sinPh2 = 0.02, sinLev1 = 1, sinLev2 = 1, envSatt = 0.001, envSrel = 0.2, mix = 0.5, envL1 = 0, envL2 = 1, envL3 = 0.75, envL4 = 0, envT1 = 0.1, envT2 = 0.02, envT3 = 0.2, ffreq = 6000, t_gate = 1, doneAction = 2;
+	var noise, sin1, sin2, sig, env, envNoise, envSin, delay;
 	envNoise = EnvGen.kr(Env.perc(envNatt, envNrel), t_gate);
 	envSin = EnvGen.kr(Env.perc(envSatt, envSrel), t_gate);
 	noise = BPF.ar(WhiteNoise.ar(wamp) * envNoise, wbpfFreq, wbpfRq.max(0.01));
 	sin1 = SinOsc.ar(sinFrq1, sinPh1, sinLev1);
 	sin2 = SinOsc.ar(sinFrq2, sinPh2, sinLev2);
 	sig = XFade2.ar(noise, Mix.ar([sin1, sin2]) * envSin, mix);
-env = Env.new([envL1, envL2, envL3], [envT1, envT2, envT3]).kr(doneAction: doneAction);
-sig = HPF.ar(sig * env, ffreq);
-OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+	env = Env.new([envL1, envL2, envL3, envL4], [envT1, envT2, envT3]).kr(doneAction: doneAction);
+	sig = HPF.ar(sig * env, ffreq);
+	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
 
 ///////////////////////////////////////  Cymbal

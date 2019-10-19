@@ -145,7 +145,7 @@ w.view.decorator = FlowLayout(w.view.bounds, 3@3, 3@3);
 		// db midi map
 		MIDIFunc.cc({ arg val, num, chan, src;
 			var guiControl, midiControl, threshold;
-			midiControl = val.linlin(0, 127, 0, 60);
+			midiControl = val.linlin(0, 127, -60, 60);
 			guiControl = ~channel[(\band ++ j ++ \db ++ i).asSymbol].value;
 			threshold = 10;
 			if ( // soft takeover

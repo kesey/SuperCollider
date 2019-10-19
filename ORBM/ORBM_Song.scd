@@ -1413,8 +1413,8 @@
 		~changePattern.value(Pdef(\unit2), ~song6Pattern2);
 		~changePattern.value(Pdef(\unit3), ~song6Pattern3);
 		~changePattern.value(Pdef(\unit4), ~song6Pattern4);
-		/*~changePattern.value(Pdef(\unit5), ~song6Pattern5);
-		~changePattern.value(Pdef(\unit6), ~song6Pattern6);*/
+		~changePattern.value(Pdef(\unit5), ~song6Pattern5);
+		~changePattern.value(Pdef(\unit6), ~song6Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song6Pattern7);
 		// ~changePattern.value(Pdef(\unit8), ~song6Pattern8);
 		~resetAllControlBus.value;
@@ -1423,7 +1423,7 @@
 	~song6Part1 = {
 		"song6 part1".postln;
 		~song6InitPart.value;
-		5.0.wait;
+		10.0.wait;
 	};
 
 	~song6Part2 = {
@@ -1469,14 +1469,14 @@
 
 		// aux 1
 
-		~autoGuiControl.at("noiseInjection1017drywet").valueAction_(-0.58);
-		~autoGuiControl.at("noiseInjection1017attack").valueAction_(1.02);
-		~autoGuiControl.at("noiseInjection1017release").valueAction_(0.01);
+		~autoGuiControl.at("noiseInjection1017drywet").valueAction_(-0.78);
+		~autoGuiControl.at("noiseInjection1017attack").valueAction_(0.04);
+		~autoGuiControl.at("noiseInjection1017release").valueAction_(0.67);
 		~autoGuiControl.at("noiseInjection1017noiseType").valueAction_(0);
-		~autoGuiControl.at("noiseInjection1017noiseLevel").valueAction_(1);
+		~autoGuiControl.at("noiseInjection1017noiseLevel").valueAction_(0.31);
 		~autoGuiControl.at("noiseInjection1017impFreq").valueAction_(34);
 		~autoGuiControl.at("noiseInjection1017impPhase").valueAction_(0);
-		~autoGuiControl.at("noiseInjection1017impLevel").valueAction_(5.26);
+		~autoGuiControl.at("noiseInjection1017impLevel").valueAction_(4.99);
 
 		~autoGuiControl.at("distoCrossOver1016drywet").valueAction_(-1);
 		~autoGuiControl.at("distoCrossOver1016amp").valueAction_(0.14);
@@ -1486,7 +1486,7 @@
 		~autoGuiControl.at("distoInsideOut1015drywet").valueAction_(-1);
 		~autoGuiControl.at("distoInsideOut1015level").valueAction_(0.02);
 
-		~autoGuiControl.at("waveShape1014mix").valueAction_(0.21);
+		~autoGuiControl.at("waveShape1014mix").valueAction_(0.66);
 		~autoGuiControl.at("waveShape1014gain").valueAction_(29.9);
 
 		// aux 2
@@ -1500,19 +1500,19 @@
 		~autoGuiControl.at("quadDelay1013amp3").valueAction_(0);
 		~autoGuiControl.at("quadDelay1013amp4").valueAction_(0);
 
-		~autoGuiControl.at("pitchShifter1012drywet").valueAction_(0.95);
-		~autoGuiControl.at("pitchShifter1012pitchRatio").valueAction_(1.01);
+		~autoGuiControl.at("pitchShifter1012drywet").valueAction_(1);
+		~autoGuiControl.at("pitchShifter1012pitchRatio").valueAction_(0.28);
 		~autoGuiControl.at("pitchShifter1012pitchDisper").valueAction_(0.37);
 		~autoGuiControl.at("pitchShifter1012timeDisper").valueAction_(0.43);
 
 		~autoGuiControl.at("flanging1011drywet").valueAction_(0.43);
-		~autoGuiControl.at("flanging1011fgfreq").valueAction_(0);
-		~autoGuiControl.at("flanging1011fdback").valueAction_(0.36);
+		~autoGuiControl.at("flanging1011fgfreq").valueAction_(118.1);
+		~autoGuiControl.at("flanging1011fdback").valueAction_(0.17);
 
 		~autoGuiControl.at("verb1010drywet").valueAction_(0);
-		~autoGuiControl.at("verb1010feedback").valueAction_(0);
-		~autoGuiControl.at("verb1010room").valueAction_(1);
-		~autoGuiControl.at("verb1010damp").valueAction_(0.02);
+		~autoGuiControl.at("verb1010feedback").valueAction_(0.41);
+		~autoGuiControl.at("verb1010room").valueAction_(0.8);
+		~autoGuiControl.at("verb1010damp").valueAction_(0.84);
 		~autoGuiControl.at("verb1010amount").valueAction_(1);
 
 		~channel.at(\level2).valueAction_(0.17);
