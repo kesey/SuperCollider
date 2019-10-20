@@ -1126,7 +1126,7 @@ OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
     OffsetOut.ar(out, sig * 0.2);
 }).add;
 
-SynthDef(\cymbalicMcld, { |out=0, amp=0.1, pan=0, attLowf = 0.5, relLowf = 5, lowNoiseLev = 0.1, attHif = 1, relHif = 3, hiNoiseLev = 0.1, attHi = 1, relHi = 2, hiLev = 0.25, attTh = 0.001, relTh = 0.001, freq1 = 627, freq2 = 2961, freq3 = 7824, freq4 = 476, t_trig = 1, doneAction = 2|
+~cymbalicMcldSynthDef = SynthDef(\cymbalicMcld, { |out=0, amp=0.1, pan=0, attLowf = 0.5, relLowf = 5, lowNoiseLev = 0.1, attHif = 1, relHif = 3, hiNoiseLev = 0.1, attHi = 1, relHi = 2, hiLev = 0.25, attTh = 0.001, relTh = 0.001, freq1 = 627, freq2 = 2961, freq3 = 7824, freq4 = 476, t_trig = 1, doneAction = 2|
 	var lodriver, locutoffenv, hidriver, hicutoffenv, freqs, res, thwack, sig;
 
 	locutoffenv = EnvGen.kr(Env.perc(attLowf, relLowf), t_trig, doneAction: doneAction) * 20000 + 10;
@@ -1139,10 +1139,14 @@ SynthDef(\cymbalicMcld, { |out=0, amp=0.1, pan=0, attLowf = 0.5, relLowf = 5, lo
 	thwack = EnvGen.kr(Env.perc(attTh,relTh), t_trig, doneAction: doneAction);
 
 	// This bit will regenerate new freqs every time you evaluate the SynthDef!
-	freqs  = {exprand(300, 20000)}.dup(100);
-	//freqs = [freq1, freq2, freq3, freq4];
+	//freqs  = {exprand(300, 20000)}.dup(100);
 
-	res = Ringz.ar(lodriver + hidriver + thwack, freqs).mean;
+	freqs = [freq1, freq2, freq3, freq4] /** LFNoise2.kr(0.002, 0.5, 0.5)*/;
+
+	res = Ringz.ar(
+		lodriver + hidriver + thwack,
+		freqs
+	).mean;
 	sig = (res * 1) + (lodriver * 2) + thwack;
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;

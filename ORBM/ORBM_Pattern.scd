@@ -2682,7 +2682,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 ~song6Pattern3 = Pbind(
 	\instrument, \tweetFogAttack,
 	\dur, Pseq([2.5, 5, 2.5], inf),
-	\amp, 0.2,
+	\amp, 0.24,
 	\attack, 0.01,
 	\release, 2.5,
 	\sigatt, 0,
@@ -2721,7 +2721,6 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song6Pattern4 = Pbind(
 	\instrument, \IkedaBass,
-	// \dur, Pseq([Rest(0.5), 2, 1.75, Rest(0.75)], inf), // 0.5+ 2+ 1.75 + 0.75
 	\dur, Pseq([Rest(0.5), 1, 0.25, Rest(1), 0.75, 1, Rest(0.5)/**/, 1, Rest(1), 0.75, 1, 0.75, 0.5], inf), // 0.5+ 1+ 0.25+ 1+ 0.75+ 1+ 0.5 // 1+ 0.75+ 1+ 0.75+ 1+ 0.5
 	\amp, 2.18,
 	\pan, 0,
@@ -2778,9 +2777,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song6Pattern5 = Pbind(
 	\instrument, \kickMist,
-	// \dur, Pseq([Rest(0.5), 1, 0.25, Rest(1), 0.75, 1, Rest(0.5)/**/, 1, Rest(1), 0.75, 1, 0.75, 0.5], inf),
 	\dur, Pseq([Rest(0.25), 0.5, 1, Rest(1.25), 1.25, Rest(0.75)/**/, Rest(0.25), 0.75, 0.75, Rest(1.25), 1.25, Rest(0.75)], inf), // 0.25+ 0.5+ 1+ 1.25+ 1.25+ 0.75
-	\level, 0.18,
+	\level, 0.15,
 	\tu, 0.8,
 	\noise, 1,
 	\env0L1, 0,
@@ -2962,6 +2960,66 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 		0;
 	})
 );
+
+~song6Pattern8 = Pbind(
+	\instrument, \cymbalicMcld,
+	\dur, Pseq([0.5, 0.25, 0.125, 0.75, 0.125, 0.5, 0.25], inf), // 0.5+ 0.25+ 0.125+ 0.75+ 0.125+ 0.5+ 0.25
+	\amp, 0.0085,
+	\attLowf, 0.06,
+	\relLowf, 1.58,
+	\lowNoiseLev, 0.23,
+	\attHif, 0.18,
+	\relHif, 0.02,
+	\hiNoiseLev, 0.33,
+	\attHi, 0.03,
+	\relHi, 0.23,
+	\hiLev, 0,
+	\attTh, 0,
+	\relTh, Pseq([2.89, 2.89, 0.24, 2.89, 0.04], inf),
+	\freq1, 460,
+	\freq2, 540,
+	\freq3, 13807,
+	\freq4, 476,
+	\out, ~channelBus[1],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~cymbalicMcldSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"t_trig", ["none"],
+					"amp", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
+					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), true],
+					"attLowf", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attLowf)), true],
+					"relLowf", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\relLowf)), true],
+					"lowNoiseLev", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\lowNoiseLev)), true],
+					"attHif", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attHif)), true],
+					"relHif", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\relHif)), true],
+					"hiNoiseLev", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\hiNoiseLev)), true],
+					"attHi", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attHi)), true],
+					"relHi", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\relHi)), true],
+					"hiLev", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\hiLev)), true],
+					"attTh", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\attTh)), true],
+					"relTh", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\relTh)), true],
+					"freq1", ["knob", ControlSpec(02, 20000, step: 1, default: event.at(\freq1)), true],
+					"freq2", ["knob", ControlSpec(02, 20000, step: 1, default: event.at(\freq2)), true],
+					"freq3", ["knob", ControlSpec(02, 20000, step: 1, default: event.at(\freq3)), true],
+					"freq4", ["knob", ControlSpec(02, 20000, step: 1, default: event.at(\freq4)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);
+
 
 ///////////////////// test pattern
 

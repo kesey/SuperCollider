@@ -1416,7 +1416,7 @@
 		~changePattern.value(Pdef(\unit5), ~song6Pattern5);
 		~changePattern.value(Pdef(\unit6), ~song6Pattern6);
 		~changePattern.value(Pdef(\unit7), ~song6Pattern7);
-		// ~changePattern.value(Pdef(\unit8), ~song6Pattern8);
+		~changePattern.value(Pdef(\unit8), ~song6Pattern8);
 		~resetAllControlBus.value;
 	};
 
