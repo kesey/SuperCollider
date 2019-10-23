@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////  Noise
 
-~ikedaBreathSynthDef = SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 = 0.5, amp2 = 0.6, lpfFreq = 103.82, hpfFreq = 2400, attack = 0.0001, decay = 0.4, release = 0.01, pan = 0, level = 1;
+SynthDef(\IkedaBreath, { arg out = 0, t_trig = 0, note1 = 44, note2 = 90, amp1 = 0.5, amp2 = 0.6, lpfFreq = 103.82, hpfFreq = 2400, attack = 0.0001, decay = 0.4, release = 0.01, pan = 0, level = 1;
 	var sin, lpf, hpf, sig;
 	sin = SinOsc.ar(note1.midicps, 0, amp1) + SinOsc.ar(note2.midicps, 0, amp2);
 	lpf = LPF.ar(sin, lpfFreq.max(1));
@@ -345,5 +345,29 @@ SynthDef(\lmcd, { arg out = 0, amp = 1, att = 0.01, rel = 5, trigDur = 0.1, lfCu
 	sig = Splay.ar(sig);
 	OffsetOut.ar(out, sig * env * amp);
 }).add;
+
+SynthDef(\ploux, { arg out = 0, amp = 0.1, pan = 0, att = 0.1, dec = 0.1, sus = 0.8, rel = 0.1, dustfreq = 2, dustdecay = 0.7, freq = 200, fmfreq = 100, t_trig = 1, doneAction = 2;
+    var sig, dust;
+    dust = Dust.ar(dustfreq);
+    dust = Decay.ar(dust, dustdecay);
+    sig = SinOsc.ar(freq * ( SinOsc.ar(fmfreq * dust) * 1 + 1 ));
+    sig = sig * EnvGen.kr(Env.adsr(att, dec, sus, rel), t_trig, doneAction: doneAction);
+    sig = Pan2.ar(sig, pan, amp);
+    OffsetOut.ar(out, sig);
+}, [\kr ! 11, \tr, \ir].flatten).add;
+
+SynthDef(\complexosc, { arg out = 0, amp = 1, feedBack = 1, envL1 = 0, envL2 = 2.2, envL3 = 0.12, envL4 = 0, envT1 = 0.01, envT2 = 0.24, envT3 = 0.12, envCurve = (-4), freq1 = 40, fm1 = 0.1, pm1 = 0, amp1 = 1, ring1 = 1, offset1 = 0, freq2 = 0.5, fm2 = 0.1, pm2 = 0, amp2 = 1, ring2 = 1, offset2 = 0, fold = 0.8, wrap = 0.9, switch = 2, t_trig = 1, doneAction = 2;
+    var osc1, osc2, fbk, outlet, folded, wrapped, env, sigenv;
+    fbk = LocalIn.ar(2) * feedBack;
+	//env = Linen.kr(t_trig, attack, 1, release, doneAction);
+	env = EnvGen.kr(Env([envL1, envL2, envL3, envL4], [envT1, envT2, envT3], envCurve), t_trig, doneAction: doneAction);
+    osc1 = SinOsc.ar(freq1 + (fbk[1].range(1,1000) * fm1), 0 + (fbk[1].range(-pi,pi) * pm1), envT3 + amp1 + (fbk[1] * ring1), offset1);
+    osc2 = SinOsc.ar(freq2 + (fbk[0].range(1,1000) * fm2), 0 + (fbk[1].range(-pi,pi) * pm2), amp2 + (fbk[0] * ring2), offset2);
+    LocalOut.ar([osc1, osc2]);
+    folded = Fold.ar(osc1 ! 2, fold.neg, fold);
+    wrapped = Wrap.ar(osc1 ! 2, wrap.neg, wrap);
+    outlet = LeakDC.ar(Select.ar(switch, [osc1!2, osc2!2, folded, wrapped]));
+    OffsetOut.ar(out, outlet * env * amp);
+}, [\kr ! 11, \ar ! 14, \kr, \tr, \ir].flatten).add;
 
 )

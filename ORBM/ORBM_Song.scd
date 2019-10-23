@@ -1320,22 +1320,22 @@
 		~autoGuiControl.at("samplerStereo1020startPos").valueAction_(0.03);
 		~autoGuiControl.at("samplerStereo1020loop").valueAction_(0);
 
-		~autoGuiControl.at("sinBass1021amp").valueAction_(0.46);
+		~autoGuiControl.at("sinBass1021amp").valueAction_(0.55);
 		~autoGuiControl.at("sinBass1021curve").valueAction_(0);
 		~autoGuiControl.at("sinBass1021loopNode").valueAction_(0);
 		~autoGuiControl.at("sinBass1021attack").valueAction_(0.2);
 		~autoGuiControl.at("sinBass1021release").valueAction_(4);
 		~autoGuiControl.at("sinBass1021envLevel1").valueAction_(0);
-		~autoGuiControl.at("sinBass1021envLevel2").valueAction_(56.1);
-		~autoGuiControl.at("sinBass1021envLevel3").valueAction_(19.9);
-		~autoGuiControl.at("sinBass1021envLevel4").valueAction_(35.1);
-		~autoGuiControl.at("sinBass1021envLevel5").valueAction_(56.1);
+		~autoGuiControl.at("sinBass1021envLevel2").valueAction_(49.5);
+		~autoGuiControl.at("sinBass1021envLevel3").valueAction_(64);
+		~autoGuiControl.at("sinBass1021envLevel4").valueAction_(0);
+		~autoGuiControl.at("sinBass1021envLevel5").valueAction_(64);
 		~autoGuiControl.at("sinBass1021envLevel6").valueAction_(0);
-		~autoGuiControl.at("sinBass1021envTime1").valueAction_(0.3);
-		~autoGuiControl.at("sinBass1021envTime2").valueAction_(0.41);
-		~autoGuiControl.at("sinBass1021envTime3").valueAction_(0.49);
-		~autoGuiControl.at("sinBass1021envTime4").valueAction_(1.62);
-		~autoGuiControl.at("sinBass1021envTime5").valueAction_(0.83);
+		~autoGuiControl.at("sinBass1021envTime1").valueAction_(0.86);
+		~autoGuiControl.at("sinBass1021envTime2").valueAction_(1.1);
+		~autoGuiControl.at("sinBass1021envTime3").valueAction_(0.71);
+		~autoGuiControl.at("sinBass1021envTime4").valueAction_(0.63);
+		~autoGuiControl.at("sinBass1021envTime5").valueAction_(0.23);
 
 		// aux 1
 
@@ -1405,6 +1405,7 @@
 ~song6 = {// ~globalQuant = 5; // !!! change globalQuant before song !!!
 	t.tempo = 68 / 60;
 	t.beatsPerBar = 5;
+	Pdefn(\patt1_6_dur, Pseq([0.125, 0.25, 0.125, 0.25, 0.5/**/, 0.125, 0.25, 0.5, 0.125, 0.25/**/, 0.125, 0.25, 0.125, 0.5, 0.25/**/, 0.125, 0.5, 0.25, 0.125, 0.25], inf)).quant_(~globalQuant);
 
 	// Part
 
@@ -1442,12 +1443,12 @@
 	{
 		// Synth
 
-		~autoGuiControl.at("samplerStereo1020amp").valueAction_(0.14);
+		~autoGuiControl.at("samplerStereo1020amp").valueAction_(3.08);
 		~autoGuiControl.at("samplerStereo1020attack").valueAction_(0.58);
 		~autoGuiControl.at("samplerStereo1020release").valueAction_(1);
-		~autoGuiControl.at("samplerStereo1020buffer").valueAction_(15); // for 16
-		~autoGuiControl.at("samplerStereo1020rate").valueAction_(0.41);
-		~autoGuiControl.at("samplerStereo1020startPos").valueAction_(0.03);
+		~autoGuiControl.at("samplerStereo1020buffer").valueAction_(27); // for 28
+		~autoGuiControl.at("samplerStereo1020rate").valueAction_(0.09);
+		~autoGuiControl.at("samplerStereo1020startPos").valueAction_(0.06);
 		~autoGuiControl.at("samplerStereo1020loop").valueAction_(0);
 
 		~autoGuiControl.at("sinBass1021amp").valueAction_(0.46);

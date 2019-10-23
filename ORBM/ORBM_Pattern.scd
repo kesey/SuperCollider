@@ -2555,12 +2555,12 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ///////////////////// song6
 
-~song6Pattern1 = Pbind(
+/*~song6Pattern1 = Pbind(
 	\instrument, \tweetSynth,
-	\dur, Pwrand([5, 2.5], [0.7, 0.3].normalizeSum, inf),
-	\amp, 0.6,
-	\freq, 0.01, // Pseq([Pn(36.5, 6), 37.5], inf),
-	\rate, 91, // 8.5,
+	\dur, Pseq([2.5, 5, 1.25, 5, 2.5, 1.25, 2.5], inf), // 2.5+ 5+ 1.25+ 5+ 2.5+ 1.25+ 2.5
+	\amp, 0.42,
+	\freq, Pseq([Pn(36.5, 4), 35.5], inf),
+	\rate, Pseq([91, 8.5], inf),
 	\attack, 0.01,
 	\release, 10,
 	\sigatt, 0.01,
@@ -2597,6 +2597,82 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"revMix", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revMix)), true],
 					"revRoom", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revRoom)), true],
 					"revDamp", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\revDamp)), true]
+				]));
+			}.defer;
+			~pdefPrevInstr = currentInstr;
+		});
+		0;
+	})
+);*/
+
+~song6Pattern1 = Pbind(
+	\instrument, \complexosc,
+	\dur, Pdefn(\patt1_6_dur),
+	\amp, 0.054,
+	\feedBack, Pseq([0.42, 0, 0.2, 1, 0.5], inf),
+	\envL1, 0,
+	\envL2, 0.85,
+	\envL3, 0.35,
+	\envL4, 0,
+	\envT1, 0.01,
+	\envT2, 0.22,
+	\envT3, 1.32,
+	\envCurve, -7.35,
+	\freq1, 1, // Pseq([1, 20000], inf),
+	\fm1, 5000,
+	\pm1, 8.94,
+	\amp1, 0.8,
+	\ring1, 0.71,
+	\offset1, 0, // Pseq([0, -6.2, 0.23], inf),
+	\freq2, 12.3,
+	\fm2, 0,
+	\pm2, 0.83,
+	\amp2, 0.74,
+	\ring2, Pseq([0.1, 0.03, 0.07, 0, 0.01], inf),
+	\offset2, -1.5,
+	\fold, 0.9,
+	\wrap, 0.82,
+	\switch, 2,
+	\out, ~channelBus[0],
+	\function, Pfunc({ arg event;
+		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
+		currentInstr = event.at(\instrument);
+
+		if (currentInstr != ~pdefPrevInstr, {
+			synthWindowKey = (~pdefPrevInstr ++ ~pdefName).asString;
+			instance = ~pdefName.asSymbol;
+			ccStart = ~pdefCcStart.asInt;
+			midiChan = ~pdefMidiChan.asInt;
+			{
+				~removePrev.value(synthWindowKey);
+				~autoGui.value(v, ~complexoscSynthDef, instance, ccStart, midiChan, Color.white, Dictionary.newFrom(List[
+					"doneAction", ["none"],
+					"t_trig", ["none"],
+					"amp", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
+					"feedBack", ["slider", ControlSpec(0, 2, step: 0.01, default: event.at(\feedBack)), true],
+					"envL1", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envL1)), true],
+					"envL2", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envL2)), true],
+					"envL3", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envL3)), true],
+					"envL4", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\envL4)), true],
+					"envT1", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT1)), true],
+					"envT2", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT2)), true],
+					"envT3", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\envT3)), true],
+					"envCurve", ["slider", ControlSpec(-20, 20, step: 0.01, default: event.at(\envCurve)), true],
+					"freq1", ["knob", ControlSpec(0, 20000, step: 1, default: event.at(\freq1)), true],
+					"fm1", ["knob", ControlSpec(0, 10000, step: 1, default: event.at(\fm1)), true],
+					"pm1", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\pm1)), true],
+					"amp1", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\amp1)), true],
+					"ring1", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\ring1)), true],
+					"offset1", ["knob", ControlSpec(-4, 4, step: 0.01, default: event.at(\offset1)), true],
+					"freq2", ["knob", ControlSpec(0, 1000, step: 0.01, default: event.at(\freq2)), true],
+					"fm2", ["knob", ControlSpec(0, 100, step: 0.01, default: event.at(\fm2)), true],
+					"pm2", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\pm2)), true],
+					"amp2", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\amp2)), true],
+					"ring2", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\ring2)), true],
+					"offset2", ["knob", ControlSpec(-4, 4, step: 0.01, default: event.at(\offset2)), true],
+					"fold", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\fold)), true],
+					"warp", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\warp)), true],
+					"switch", ["knob", ControlSpec(0, 3, step: 1, default: event.at(\switch)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -2721,7 +2797,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song6Pattern4 = Pbind(
 	\instrument, \IkedaBass,
-	\dur, Pseq([Rest(0.5), 1, 0.25, Rest(1), 0.75, 1, Rest(0.5)/**/, 1, Rest(1), 0.75, 1, 0.75, 0.5], inf), // 0.5+ 1+ 0.25+ 1+ 0.75+ 1+ 0.5 // 1+ 0.75+ 1+ 0.75+ 1+ 0.5
+	\dur, Pseq([Rest(0.5), 1, 0.25, Rest(1), 0.75, 1, Rest(0.5)/**/, 1, Rest(1), 0.75, 1, 0.75, 0.5], inf), // 0.5+ 1+ 0.25+ 1+ 0.75+ 1+ 0.5+ 1+ 1+ 0.75+ 1+ 0.75+ 0.5 == 10
 	\amp, 2.18,
 	\pan, 0,
 	\envL1, 0,
@@ -2777,8 +2853,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song6Pattern5 = Pbind(
 	\instrument, \kickMist,
-	\dur, Pseq([Rest(0.25), 0.5, 1, Rest(1.25), 1.25, Rest(0.75)/**/, Rest(0.25), 0.75, 0.75, Rest(1.25), 1.25, Rest(0.75)], inf), // 0.25+ 0.5+ 1+ 1.25+ 1.25+ 0.75
-	\level, 0.15,
+	\dur, Pseq([Rest(0.25), 0.5, 1, Rest(1.25), 1.25, Rest(0.75)/**/, Rest(0.25), 0.75, 0.75, Rest(1.25), 1.25, Rest(0.75)], inf), // 0.25+ 0.5+ 1+ 1.25+ 1.25+ 0.75+ 0.25+ 0.75+ 0.75+ 1.25+ 1.25+ 0.75 == 10
+	\level, 0.1,
 	\tu, 0.8,
 	\noise, 1,
 	\env0L1, 0,
@@ -2833,7 +2909,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song6Pattern6 = Pbind(
 	\instrument, \kick2new,
-	\dur, Pseq([0.125, 0.25, 0.125, 0.25, 0.5/**/, 0.125, 0.25, 0.5, 0.125, 0.25/**/, 0.125, 0.25, 0.125, 0.5, 0.25/**/, 0.125, 0.5, 0.25, 0.125, 0.25], inf), // 0.125+ 0.25+ 0.125+ 0.25+ 0.5 == 1.25 // 1.25*4
+	\dur, Pdefn(\patt1_6_dur), // 0.125+ 0.25+ 0.125+ 0.25+ 0.5 == 1.25 // 1.25*4 == 5
 	\amp, 2.5,
 	\pan, 0,
 	\att, 0,
@@ -2889,7 +2965,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song6Pattern7 = Pbind(
 	\instrument, \fabHi1,
-	\dur, Pseq([0.125, 0.25, Rest(0.125), 0.125, Rest(0.25), 0.125, Pn(0.125, 8), 0.125, Rest(0.25), 0.125, 0.25], inf),
+	\dur, Pseq([0.125, 0.25, Rest(0.125), 0.125, Rest(0.25), 0.125, Pn(0.125, 6), 0.125, Rest(0.25), 0.125, 0.25], inf), // 0.125+ 0.25+      0.125+  0.125+      0.25+  0.125+  (0.125 * 6)+ 0.125+      0.25+  0.125+ 0.25 == 2.5
 	\amp, Pseq([0.02, 0.015, 0.01, 0.005, 0.01, 0.02, 0.005, 0.015, 0.005, 0.01]+0.015, inf),
 	\pan, Pwhite(-1.0, 1.0, inf),
 	\wamp, 1,
@@ -2963,7 +3039,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 
 ~song6Pattern8 = Pbind(
 	\instrument, \cymbalicMcld,
-	\dur, Pseq([0.5, 0.25, 0.125, 0.75, 0.125, 0.5, 0.25], inf), // 0.5+ 0.25+ 0.125+ 0.75+ 0.125+ 0.5+ 0.25
+	\dur, Pseq([0.5, 0.25, 0.125, 0.75, 0.125, 0.5, 0.25], inf), // 0.5+ 0.25+ 0.125+ 0.75+ 0.125+ 0.5+ 0.25 == 2.5
 	\amp, 0.0085,
 	\attLowf, 0.06,
 	\relLowf, 1.58,

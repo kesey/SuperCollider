@@ -484,7 +484,7 @@ v.canvas.layout = VLayout();
 		"rate", ["knob", ControlSpec(0.01, 24, step: 0.01, default: 0.21), true],
 		"startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: 0), true],
 		"release", ["slider", ControlSpec(0, 10, step: 0.01, default: 1), true],
-		"amp", ["knob", ControlSpec(0, 1, step: 0.01, default: 0.23), true]
+		"amp", ["knob", ControlSpec(0, 4, step: 0.01, default: 0.23), true]
 	]
 ));
 

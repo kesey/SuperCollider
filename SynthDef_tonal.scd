@@ -430,4 +430,23 @@ SynthDef(\flash, { arg out = 0, amp = 0.3, fund = 400, decay = 4, filter = 1, do
 	OffsetOut.ar(out, sig)
 }).add;
 
+SynthDef(\elifm, { arg freq = 500, mRatio = 1, cRatio = 1, index = 1, iScale = 5, amp = 0.2, atk = 0.01, rel = 3, cAtk = 4, cRel = (-4), pan = 0;
+    var car, mod, env, iEnv;
+    iEnv = EnvGen.kr(
+        Env.new(
+            [index, index * iScale, index],
+            [atk, rel],
+            [cAtk, cRel]
+        )
+    );
+    env = EnvGen.kr(
+        Env.perc(atk, rel, curve: [cAtk, cRel]),
+        doneAction: 2
+    );
+    mod = SinOsc.ar(freq * mRatio, mul: freq * mRatio * iEnv);
+    car = SinOsc.ar(freq * cRatio + mod) * env * amp;
+    car = Pan2.ar(car, pan);
+    OffsetOut.ar(0, car);
+}).add;
+
 )

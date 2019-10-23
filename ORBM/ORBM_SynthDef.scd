@@ -1624,6 +1624,30 @@ SynthDef(\lmcd, { arg out = 0, amp = 1, att = 0.01, rel = 5, trigDur = 0.1, lfCu
 	OffsetOut.ar(out, sig * env * amp);
 }).add;
 
+SynthDef(\ploux, { arg out = 0, amp = 0.1, pan = 0, att = 0.1, dec = 0.1, sus = 0.8, rel = 0.1, dustfreq = 2, dustdecay = 0.7, freq = 200, fmfreq = 100, t_trig = 1, doneAction = 2;
+    var sig, dust;
+    dust = Dust.ar(dustfreq);
+    dust = Decay.ar(dust, dustdecay);
+    sig = SinOsc.ar(freq * ( SinOsc.ar(fmfreq * dust) * 1 + 1 ));
+    sig = sig * EnvGen.kr(Env.adsr(att, dec, sus, rel), t_trig, doneAction: doneAction);
+    sig = Pan2.ar(sig, pan, amp);
+    OffsetOut.ar(out, sig);
+}, [\kr ! 11, \tr, \ir].flatten).add;
+
+~complexoscSynthDef = SynthDef(\complexosc, { arg out = 0, amp = 1, feedBack = 1, envL1 = 0, envL2 = 2.2, envL3 = 0.12, envL4 = 0, envT1 = 0.01, envT2 = 0.24, envT3 = 0.12, envCurve = (-4), freq1 = 40, fm1 = 0.1, pm1 = 0, amp1 = 1, ring1 = 1, offset1 = 0, freq2 = 0.5, fm2 = 0.1, pm2 = 0, amp2 = 1, ring2 = 1, offset2 = 0, fold = 0.8, wrap = 0.9, switch = 2, t_trig = 1, doneAction = 2;
+    var osc1, osc2, fbk, outlet, folded, wrapped, env, sigenv;
+    fbk = LocalIn.ar(2) * feedBack;
+	//env = Linen.kr(t_trig, attack, 1, release, doneAction);
+	env = EnvGen.kr(Env([envL1, envL2, envL3, envL4], [envT1, envT2, envT3], envCurve), t_trig, doneAction: doneAction);
+    osc1 = SinOsc.ar(freq1 + (fbk[1].range(1,1000) * fm1), 0 + (fbk[1].range(-pi,pi) * pm1), envT3 + amp1 + (fbk[1] * ring1), offset1);
+    osc2 = SinOsc.ar(freq2 + (fbk[0].range(1,1000) * fm2), 0 + (fbk[1].range(-pi,pi) * pm2), amp2 + (fbk[0] * ring2), offset2);
+    LocalOut.ar([osc1, osc2]);
+    folded = Fold.ar(osc1 ! 2, fold.neg, fold);
+    wrapped = Wrap.ar(osc1 ! 2, wrap.neg, wrap);
+    outlet = LeakDC.ar(Select.ar(switch, [osc1!2, osc2!2, folded, wrapped]));
+    OffsetOut.ar(out, outlet * env * amp);
+}, [\kr ! 11, \ar ! 14, \kr, \tr, \ir].flatten).add;
+
 ///////////////////////////////////////  Sampler
 
 ~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, gate = 1, amp = 1, pan = 0, attack = 0.001, release = 1, buffer = 0, rate = 1, startPos = 0, loop = 0, doneAction = 2;
@@ -1913,9 +1937,10 @@ SynthDef(\ressquares,{|out= 0 freq = 440 amp = 0.1 gate=1 cutoff=8000 rq=0.8 pan
 
 }).add;
 
-SynthDef(\glauk, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+SynthDef(\glauk, { arg out = 0, amp = 1, attack = 0.01, release = 10, t_trig = 1, doneAction = 2;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	// env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	env = Linen.kr(t_trig, attack, 1, release, doneAction);
 	sig = Splay.ar(
 		SinOsc.ar(
 			Array.fill(50,{\freq.asSpec.map(LFNoise2.kr(0.001))})
@@ -1925,9 +1950,10 @@ SynthDef(\glauk, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2,
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\scinty, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+SynthDef(\scinty, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 10, doneAction = 2;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	// env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	env = Linen.kr(t_trig, attack, 1, release, doneAction);
 	sig = Splay.ar(
 		Array.fill(15,{Ringz.ar(Dust.ar(Rand(1,10)), Rand(50,9000).round(100), 2)},
 			1,
@@ -1939,9 +1965,10 @@ SynthDef(\scinty, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\bublybub, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 2, x = 165, doneAction = 2;
+SynthDef(\bublybub, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release = 10, x = 165, doneAction = 2;
 	var sig, env, waveForm, freq, dur, input;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	// env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	env = Linen.kr(t_trig, attack, 1, release, doneAction);
 	waveForm = SinOsc;
 	freq = Trig.ar(Saw.ar(x),1);
 	dur = waveForm.ar(freq * x);
@@ -1951,10 +1978,11 @@ SynthDef(\bublybub, { arg out = 0, amp = 1, t_trig = 1, attack = 0.01, release =
 	OffsetOut.ar(out, sig * amp);
 }).add;
 
-SynthDef(\chdegaulleabout, { arg out = 0, amp = 1, pan = 0, t_trig = 1, attack = 0.01, release = 2, doneAction = 2;
+~chdegaulleaboutSynthDef = SynthDef(\chdegaulleabout, { arg out = 0, amp = 1, pan = 0, freq = 0.01, attack = 0.01, release = 10, t_trig = 1, doneAction = 2;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
-	sig = SinOsc.ar(LFNoise1.kr(0.01).exprange(100,{exprand(300,10000)}!120)).mean;
+	//env = EnvGen.kr(Env.asr(attack, releaseTime: release), t_trig, doneAction: doneAction);
+	env = Linen.kr(t_trig, attack, 1, release, doneAction);
+	sig = SinOsc.ar(LFNoise1.kr(freq).exprange(100,{exprand(300,10000)}!120)).mean;
 	sig = sig * env;
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
@@ -2038,6 +2066,25 @@ SynthDef(\flash, { arg out = 0, amp = 0.3, fund = 400, decay = 4, filter = 1, do
 	sig = Pan2.ar(sig, Rand(-1.0, 1.0), amp);
 	DetectSilence.ar(sig, doneAction: doneAction);
 	OffsetOut.ar(out, sig)
+}).add;
+
+SynthDef(\elifm, { arg freq = 500, mRatio = 1, cRatio = 1, index = 1, iScale = 5, amp = 0.2, atk = 0.01, rel = 3, cAtk = 4, cRel = (-4), pan = 0;
+    var car, mod, env, iEnv;
+    iEnv = EnvGen.kr(
+        Env.new(
+            [index, index * iScale, index],
+            [atk, rel],
+            [cAtk, cRel]
+        )
+    );
+    env = EnvGen.kr(
+        Env.perc(atk, rel, curve: [cAtk, cRel]),
+        doneAction: 2
+    );
+    mod = SinOsc.ar(freq * mRatio, mul: freq * mRatio * iEnv);
+    car = SinOsc.ar(freq * cRatio + mod) * env * amp;
+    car = Pan2.ar(car, pan);
+    OffsetOut.ar(0, car);
 }).add;
 
 ///////////////////////////////////////  Sequence
