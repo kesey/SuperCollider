@@ -294,6 +294,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\startPos, 0.04,
 	\attack, 2.2,
 	\release, 2,
+	\curve, -4,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -315,7 +316,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true],
 					"startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\startPos)), true],
 					"rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\rate)), true],
-					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true]
+					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+					"curve", ["knob", ControlSpec(-20, 20, step: 0.01, default: event.at(\curve)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -791,6 +793,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\loopNode, 0,
 	\attack, 0,
 	\release, 2,
+	\curve, -4,
 	\envLevel1, 0,
 	\envLevel2, 20.3,
 	\envLevel3, 64,
@@ -817,7 +820,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), false],
 					"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
 					"gate", ["none"],
-					"curve", ["knob", ControlSpec(-8, 8, step: 1, default: event.at(\curve)), true],
+					"curve", ["knob", ControlSpec(-20, 20, step: 1, default: event.at(\curve)), true],
 					"loopNode", ["knob", ControlSpec(0, 4, step: 1, default: event.at(\loopNode)), true],
 					"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
 					"release", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
@@ -850,6 +853,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\startPos, 0.08,
 	\attack, 2.2,
 	\release, 2,
+	\curve, -4,
 	\out, ~channelBus[1],
 	\function, Pfunc({ arg event;
 		var currentInstr, synthWindowKey, instance, ccStart, midiChan;
@@ -871,7 +875,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true],
 					"startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\startPos)), true],
 					"rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\rate)), true],
-					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true]
+					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+					"curve", ["knob", ControlSpec(-20, 20, step: 0.01, default: event.at(\curve)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -1306,6 +1311,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 	\loopNode, 0,
 	\attack, 0,
 	\release, 2,
+	\curve, -4,
 	\envLevel1, 0,
 	\envLevel2, 64,
 	\envLevel3, 20.3,
@@ -1333,7 +1339,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: event.at(\pan)), false],
 					"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
 					"gate", ["none"],
-					"curve", ["knob", ControlSpec(-8, 8, step: 1, default: event.at(\curve)), true],
+					"curve", ["knob", ControlSpec(-20, 20, step: 1, default: event.at(\curve)), true],
 					"loopNode", ["knob", ControlSpec(0, 4, step: 1, default: event.at(\loopNode)), true],
 					"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\attack)), true],
 					"release", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
@@ -2608,28 +2614,28 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 ~song6Pattern1 = Pbind(
 	\instrument, \complexosc,
 	\dur, Pdefn(\patt1_6_dur),
-	\amp, 0.054,
-	\feedBack, Pseq([0.42, 0, 0.2, 1, 0.5], inf),
-	\envL1, 0,
-	\envL2, 0.85,
-	\envL3, 0.35,
-	\envL4, 0,
-	\envT1, 0.01,
-	\envT2, 0.22,
-	\envT3, 1.32,
+	\amp, 0.02,
+	\feedBack, 0.42,
+	\envL1, 2,
+	\envL2, 0,
+	\envL3, 0,
+	\envL4, 0.99,
+	\envT1, 0.64,
+	\envT2, 0.52,
+	\envT3, 0.19,
 	\envCurve, -7.35,
-	\freq1, 1, // Pseq([1, 20000], inf),
+	\freq1, 1,
 	\fm1, 5000,
 	\pm1, 8.94,
 	\amp1, 0.8,
-	\ring1, 0.71,
-	\offset1, 0, // Pseq([0, -6.2, 0.23], inf),
-	\freq2, 12.3,
+	\ring1, 3.62,
+	\offset1, Pseq([0, -6.2, 0.23, 7], inf),
+	\freq2, Pseq([32.09, 12.3], inf),
 	\fm2, 0,
-	\pm2, 0.83,
-	\amp2, 0.74,
+	\pm2, 0.8,
+	\amp2, 0.27,
 	\ring2, Pseq([0.1, 0.03, 0.07, 0, 0.01], inf),
-	\offset2, -1.5,
+	\offset2, -1.96,
 	\fold, 0.9,
 	\wrap, 0.82,
 	\switch, 2,
@@ -2662,13 +2668,13 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"fm1", ["knob", ControlSpec(0, 10000, step: 1, default: event.at(\fm1)), true],
 					"pm1", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\pm1)), true],
 					"amp1", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\amp1)), true],
-					"ring1", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\ring1)), true],
+					"ring1", ["knob", ControlSpec(0, 20, step: 0.01, default: event.at(\ring1)), true],
 					"offset1", ["knob", ControlSpec(-4, 4, step: 0.01, default: event.at(\offset1)), true],
 					"freq2", ["knob", ControlSpec(0, 1000, step: 0.01, default: event.at(\freq2)), true],
 					"fm2", ["knob", ControlSpec(0, 100, step: 0.01, default: event.at(\fm2)), true],
 					"pm2", ["knob", ControlSpec(0, 10, step: 0.01, default: event.at(\pm2)), true],
 					"amp2", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\amp2)), true],
-					"ring2", ["knob", ControlSpec(0, 1, step: 0.01, default: event.at(\ring2)), true],
+					"ring2", ["knob", ControlSpec(0, 20, step: 0.01, default: event.at(\ring2)), true],
 					"offset2", ["knob", ControlSpec(-4, 4, step: 0.01, default: event.at(\offset2)), true],
 					"fold", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\fold)), true],
 					"warp", ["knob", ControlSpec(0, 4, step: 0.01, default: event.at(\warp)), true],
@@ -3123,7 +3129,8 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"amp", ["knob", ControlSpec(0, 2, step: 0.1, default: event.at(\amp)), true],
 					"startPos", ["slider", ControlSpec(0, 1, step: 0.01, default: event.at(\startPos)), true],
 					"rate", ["knob", ControlSpec(0.01, 1, step: 0.01, default: event.at(\rate)), true],
-					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true]
+					"release", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\release)), true],
+					"curve", ["knob", ControlSpec(-20, 20, step: 0.01, default: event.at(\curve)), true]
 				]));
 			}.defer;
 			~pdefPrevInstr = currentInstr;
@@ -3151,7 +3158,7 @@ Pdefn(\durIkedaClick, Pseq([1/8, 1/4], inf)).quant_(~globalQuant);
 					"pan", ["knob", ControlSpec(-1, 1, step: 0.01, default: 0), false],
 					"amp", ["slider", ControlSpec(0, 10, step: 0.01, default: event.at(\amp)), true],
 					"gate", ["none"],
-					"curve", ["knob", ControlSpec(-8, 8, step: 1, default: 0), true],
+					"curve", ["knob", ControlSpec(-20, 20, step: 1, default: 0), true],
 					"loopNode", ["knob", ControlSpec(0, 4, step: 1, default: 0), true],
 					"attack", ["knob", ControlSpec(0, 10, step: 0.01, default: 0.2), true],
 					"release", ["knob", ControlSpec(0, 10, step: 0.01, default: 4), true],

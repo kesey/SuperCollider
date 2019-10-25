@@ -1632,35 +1632,35 @@ SynthDef(\ploux, { arg out = 0, amp = 0.1, pan = 0, att = 0.1, dec = 0.1, sus = 
     sig = sig * EnvGen.kr(Env.adsr(att, dec, sus, rel), t_trig, doneAction: doneAction);
     sig = Pan2.ar(sig, pan, amp);
     OffsetOut.ar(out, sig);
-}, [\kr ! 11, \tr, \ir].flatten).add;
+}, [\kr ! 11, \tr, \ir].flat).add;
 
 ~complexoscSynthDef = SynthDef(\complexosc, { arg out = 0, amp = 1, feedBack = 1, envL1 = 0, envL2 = 2.2, envL3 = 0.12, envL4 = 0, envT1 = 0.01, envT2 = 0.24, envT3 = 0.12, envCurve = (-4), freq1 = 40, fm1 = 0.1, pm1 = 0, amp1 = 1, ring1 = 1, offset1 = 0, freq2 = 0.5, fm2 = 0.1, pm2 = 0, amp2 = 1, ring2 = 1, offset2 = 0, fold = 0.8, wrap = 0.9, switch = 2, t_trig = 1, doneAction = 2;
     var osc1, osc2, fbk, outlet, folded, wrapped, env, sigenv;
     fbk = LocalIn.ar(2) * feedBack;
 	//env = Linen.kr(t_trig, attack, 1, release, doneAction);
 	env = EnvGen.kr(Env([envL1, envL2, envL3, envL4], [envT1, envT2, envT3], envCurve), t_trig, doneAction: doneAction);
-    osc1 = SinOsc.ar(freq1 + (fbk[1].range(1,1000) * fm1), 0 + (fbk[1].range(-pi,pi) * pm1), envT3 + amp1 + (fbk[1] * ring1), offset1);
+    osc1 = SinOsc.ar(freq1 + (fbk[1].range(1,1000) * fm1), 0 + (fbk[1].range(-pi,pi) * pm1), amp1 + (fbk[1] * ring1), offset1);
     osc2 = SinOsc.ar(freq2 + (fbk[0].range(1,1000) * fm2), 0 + (fbk[1].range(-pi,pi) * pm2), amp2 + (fbk[0] * ring2), offset2);
     LocalOut.ar([osc1, osc2]);
     folded = Fold.ar(osc1 ! 2, fold.neg, fold);
     wrapped = Wrap.ar(osc1 ! 2, wrap.neg, wrap);
     outlet = LeakDC.ar(Select.ar(switch, [osc1!2, osc2!2, folded, wrapped]));
     OffsetOut.ar(out, outlet * env * amp);
-}, [\kr ! 11, \ar ! 14, \kr, \tr, \ir].flatten).add;
+}, [\kr ! 11, \ar ! 14, \kr, \tr, \ir].flat).add;
 
 ///////////////////////////////////////  Sampler
 
-~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, gate = 1, amp = 1, pan = 0, attack = 0.001, release = 1, buffer = 0, rate = 1, startPos = 0, loop = 0, doneAction = 2;
+~samplerStereoSynthDef = SynthDef(\samplerStereo,{ arg out = 0, gate = 1, amp = 1, pan = 0, attack = 0.001, release = 1, curve = (-4), buffer = 0, rate = 1, startPos = 0, loop = 0, doneAction = 2;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, 1, doneAction: doneAction);
+	env = EnvGen.kr(Env.asr(attack, 1, release, curve), gate, 1, doneAction: doneAction);
 	sig = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.kr(buffer)*startPos, loop, doneAction) * env;
 	sig = Balance2.ar(sig[0], sig[1], pan, amp/*.curvelin(0, 1, 0, 1, log(10))*/);
 	OffsetOut.ar(out, sig);
 }).add;
 
-SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 0, attack = 0.001, release = 1, pan = 0, amp = 1, gate = 1, doneAction = 2;
+SynthDef(\samplerMono,{ arg out = 0, gate = 1, amp = 1, pan = 0, attack = 0.001, release = 1, curve = (-4), buffer = 0, rate = 1, startPos = 0, loop = 0, doneAction = 2;
 	var sig, env;
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
+	env = EnvGen.kr(Env.asr(attack, 1, release, curve), gate, 1, doneAction: doneAction);
 	sig = PlayBuf.ar(1, buffer, BufRateScale.kr(buffer) * rate, gate, BufFrames.kr(buffer)*startPos, loop, doneAction) * env;
 	sig = Pan2.ar(sig, pan, amp.curvelin(0, 1, 0, 1, log(10)));
 	OffsetOut.ar(out, sig);
@@ -1668,7 +1668,7 @@ SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 
 
 ///////////////////////////////////////  Input
 
-~inputSigSynthDef = SynthDef(\inputSig, { arg out = 0, in = 0, gate = 1, amp = 0.5, pan = 0, attack = 0.5, release = 1, delaytime = 0, lpfreq = 20000, band1freq = 8000, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 80, band3rq = 1, band3db = 0, hpfreq = 20, doneAction = 2;
+~inputSigSynthDef = SynthDef(\inputSig, { arg out = 0, in = 0, gate = 1, amp = 0.5, pan = 0, attack = 0.5, release = 1, curve = (-4), delaytime = 0, lpfreq = 20000, band1freq = 8000, band1rq = 1, band1db = 0, band2freq = 1200, band2rq = 1, band2db = 0, band3freq = 80, band3rq = 1, band3db = 0, hpfreq = 20, doneAction = 2;
 	var input, sig;
 	input = SoundIn.ar(in);
 	sig = BHiPass.ar(input, Lag2.kr(hpfreq.max(20).min(20000), 0.5)); // HPF
@@ -1676,7 +1676,7 @@ SynthDef(\samplerMono,{ arg out = 0, buffer = 0, rate = 1, startPos = 0, loop = 
 	sig = BPeakEQ.ar(sig, Lag2.kr(band2freq.max(20).min(20000), 0.5), band2rq, band2db); // Band 2
 	sig = BPeakEQ.ar(sig, Lag2.kr(band3freq.max(20).min(20000), 0.5), band3rq, band3db); // Band 3
 	sig = BLowPass.ar(sig, Lag2.kr(lpfreq.max(20).min(20000), 0.5)); // LPF
-	sig = sig * EnvGen.kr(Env.asr(attack, releaseTime: release), gate, gate, doneAction: doneAction);
+	sig = sig * EnvGen.kr(Env.asr(attack, 1, release, curve), gate, gate, doneAction: doneAction);
 	sig = DelayL.ar(sig, 1, delaytime);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }).add;
@@ -2278,10 +2278,10 @@ SynthDef(\bass,{arg out=0, gate = 1 ,dis = 0.5,freq=60,tu = 1,amp=1,atf = 80, re
     OffsetOut.ar(out,sig * amp);
 }).add;
 
-~sinBassSynthDef = SynthDef(\sinBass, { arg out = 0, gate = 1, amp = 1, pan = 0, curve = 0, loopNode = nil, attack = 0.2, release = 4, envLevel1 = 0, envLevel2 = 40, envLevel3 = 32, envLevel4 = 50, envLevel5 = 0, envLevel6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
+~sinBassSynthDef = SynthDef(\sinBass, { arg out = 0, gate = 1, amp = 1, pan = 0, loopNode = nil, attack = 0.2, release = 4, curve = (-4), envLevel1 = 0, envLevel2 = 40, envLevel3 = 32, envLevel4 = 50, envLevel5 = 0, envLevel6 = 60, envTime1 = 0.5, envTime2 = 0.3, envTime3 = 0.25, envTime4 = 1, envTime5 = 0.5, doneAction = 2;
 	var freqEnv, env, sig;
 	freqEnv = EnvGen.kr(Env([envLevel1, envLevel2, envLevel3, envLevel4, envLevel5, envLevel6], [envTime1, envTime2, envTime3, envTime4, envTime5], curve), gate);
-	env = EnvGen.kr(Env.asr(attack, releaseTime: release), gate, doneAction: doneAction);
+	env = EnvGen.kr(Env.asr(attack, 1, release, curve), gate, doneAction: doneAction);
 	sig = HPF.ar(SinOsc.ar(freqEnv, mul: env), 20);
 	OffsetOut.ar(out, Pan2.ar(sig, pan, Lag.kr(amp, 0.5)));
 }).add;

@@ -1443,15 +1443,24 @@
 	{
 		// Synth
 
-		~autoGuiControl.at("samplerStereo1020amp").valueAction_(3.08);
+		/*~autoGuiControl.at("samplerStereo1020amp").valueAction_(3.08);
 		~autoGuiControl.at("samplerStereo1020attack").valueAction_(0.58);
-		~autoGuiControl.at("samplerStereo1020release").valueAction_(1);
+		~autoGuiControl.at("samplerStereo1020release").valueAction_(3.16);
 		~autoGuiControl.at("samplerStereo1020buffer").valueAction_(27); // for 28
 		~autoGuiControl.at("samplerStereo1020rate").valueAction_(0.09);
-		~autoGuiControl.at("samplerStereo1020startPos").valueAction_(0.06);
+		~autoGuiControl.at("samplerStereo1020startPos").valueAction_(0.0635);
+		~autoGuiControl.at("samplerStereo1020loop").valueAction_(0);*/
+
+		~autoGuiControl.at("samplerStereo1020amp").valueAction_(0.15);
+		~autoGuiControl.at("samplerStereo1020attack").valueAction_(0.2);
+		~autoGuiControl.at("samplerStereo1020release").valueAction_(1.44);
+		~autoGuiControl.at("samplerStereo1020curve").valueAction_(3.54);
+		~autoGuiControl.at("samplerStereo1020buffer").valueAction_(35); // for 36
+		~autoGuiControl.at("samplerStereo1020rate").valueAction_(0.64);
+		~autoGuiControl.at("samplerStereo1020startPos").valueAction_(0.1);
 		~autoGuiControl.at("samplerStereo1020loop").valueAction_(0);
 
-		~autoGuiControl.at("sinBass1021amp").valueAction_(0.46);
+		~autoGuiControl.at("sinBass1021amp").valueAction_(0.77);
 		~autoGuiControl.at("sinBass1021curve").valueAction_(0);
 		~autoGuiControl.at("sinBass1021loopNode").valueAction_(0);
 		~autoGuiControl.at("sinBass1021attack").valueAction_(0.2);
